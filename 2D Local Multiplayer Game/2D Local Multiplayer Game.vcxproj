@@ -69,7 +69,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProjectDir)\Engine\Dependencies\freeglut;$(ProjectDir)\Engine\Dependencies\glew;$(ProjectDir)\Engine\Dependencies\soil;$(ProjectDir)\Engine\Dependencies\glm;$(ProjectDir)\Engine\Dependencies;$(ProjectDir)\Engine\Dependencies\freetype;$(ProjectDir)\Engine\Dependencies\FMOD;$(ProjectDir)\Engine\Dependencies\vld\include\;$(ProjectDir)\Engine\Dependencies\assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Engine\Dependencies\glew;$(ProjectDir)\Engine\Dependencies\freeglut;$(ProjectDir)\Engine\Dependencies\soil;$(ProjectDir)\Engine\Dependencies\freetype;$(ProjectDir)\Engine\Dependencies\vld\lib\Win32;$(ProjectDir)\Engine\Dependencies\assimp;$(ProjectDir)\Engine\Dependencies;$(ProjectDir)\Engine\Dependencies\FMOD;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(ProjectDir)\Engine\Dependencies\freeglut;$(ProjectDir)\Engine\Dependencies\glew;$(ProjectDir)\Engine\Dependencies\soil;$(ProjectDir)\Engine\Dependencies\glm;$(ProjectDir)\Engine\Dependencies;$(ProjectDir)\Engine\Dependencies\freetype;$(ProjectDir)\Engine\Dependencies\FMOD;$(ProjectDir)\Engine\Dependencies\vld\include\;$(ProjectDir)\Engine\Dependencies\assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Engine\Dependencies\glew;$(ProjectDir)\Engine\Dependencies\freeglut;$(ProjectDir)\Engine\Dependencies\soil;$(ProjectDir)\Engine\Dependencies\freetype;$(ProjectDir)\Engine\Dependencies\vld\lib\Win32;$(ProjectDir)\Engine\Dependencies\assimp;$(ProjectDir)\Engine\Dependencies;$(ProjectDir)\Engine\Dependencies\FMOD;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -77,6 +84,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;freeglut.lib;glew32.lib;SOIL.lib;freetype.lib;vld.lib;fmod_vc.lib;assimp-vc130-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -98,6 +108,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;freeglut.lib;glew32.lib;SOIL.lib;freetype.lib;vld.lib;fmod_vc.lib;assimp-vc130-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -115,6 +126,78 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Camera.cpp" />
+    <ClCompile Include="Engine\CollisionBounds.cpp" />
+    <ClCompile Include="Engine\Cube.cpp" />
+    <ClCompile Include="Engine\CubeMap.cpp" />
+    <ClCompile Include="Engine\Cursor.cpp" />
+    <ClCompile Include="Engine\Entity.cpp" />
+    <ClCompile Include="Engine\Input.cpp" />
+    <ClCompile Include="Engine\Lighting.cpp" />
+    <ClCompile Include="Engine\LogManager.cpp" />
+    <ClCompile Include="Engine\Mesh.cpp" />
+    <ClCompile Include="Engine\Model.cpp" />
+    <ClCompile Include="Engine\ParticleSystem.cpp" />
+    <ClCompile Include="Engine\Plane.cpp" />
+    <ClCompile Include="Engine\Pyramid.cpp" />
+    <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="Engine\SceneManager.cpp" />
+    <ClCompile Include="Engine\Shader.cpp" />
+    <ClCompile Include="Engine\ShaderLoader.cpp" />
+    <ClCompile Include="Engine\SoundManager.cpp" />
+    <ClCompile Include="Engine\Sphere.cpp" />
+    <ClCompile Include="Engine\Text.cpp" />
+    <ClCompile Include="Engine\Time.cpp" />
+    <ClCompile Include="Engine\UIButton.cpp" />
+    <ClCompile Include="Engine\UIElement.cpp" />
+    <ClCompile Include="Engine\UIImage.cpp" />
+    <ClCompile Include="Engine\UISlider.cpp" />
+    <ClCompile Include="Engine\UIText.cpp" />
+    <ClCompile Include="Engine\UITextField.cpp" />
+    <ClCompile Include="Engine\Utils.cpp" />
+    <ClCompile Include="Level.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Player.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\Camera.h" />
+    <ClInclude Include="Engine\CollisionBounds.h" />
+    <ClInclude Include="Engine\Cube.h" />
+    <ClInclude Include="Engine\CubeMap.h" />
+    <ClInclude Include="Engine\Cursor.h" />
+    <ClInclude Include="Engine\Entity.h" />
+    <ClInclude Include="Engine\Input.h" />
+    <ClInclude Include="Engine\Lighting.h" />
+    <ClInclude Include="Engine\LogManager.h" />
+    <ClInclude Include="Engine\Mesh.h" />
+    <ClInclude Include="Engine\Model.h" />
+    <ClInclude Include="Engine\ModelMesh.h" />
+    <ClInclude Include="Engine\ModelObject.h" />
+    <ClInclude Include="Engine\ParticleSystem.h" />
+    <ClInclude Include="Engine\Plane.h" />
+    <ClInclude Include="Engine\Pyramid.h" />
+    <ClInclude Include="Engine\Scene.h" />
+    <ClInclude Include="Engine\SceneManager.h" />
+    <ClInclude Include="Engine\Shader.h" />
+    <ClInclude Include="Engine\ShaderLoader.h" />
+    <ClInclude Include="Engine\SoundManager.h" />
+    <ClInclude Include="Engine\Sphere.h" />
+    <ClInclude Include="Engine\Text.h" />
+    <ClInclude Include="Engine\Time.h" />
+    <ClInclude Include="Engine\UIButton.h" />
+    <ClInclude Include="Engine\UIElement.h" />
+    <ClInclude Include="Engine\UIImage.h" />
+    <ClInclude Include="Engine\UISlider.h" />
+    <ClInclude Include="Engine\UIText.h" />
+    <ClInclude Include="Engine\UITextField.h" />
+    <ClInclude Include="Engine\Utils.h" />
+    <ClInclude Include="Level.h" />
+    <ClInclude Include="LevelManager.h" />
+    <ClInclude Include="Menu.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

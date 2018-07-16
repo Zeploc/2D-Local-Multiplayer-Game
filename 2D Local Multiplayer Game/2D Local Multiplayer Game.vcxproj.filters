@@ -9,9 +9,252 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{5bce25bb-be27-4777-ae5e-2d4448d5331f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Sound">
+      <UniqueIdentifier>{ba68b7b6-5b3c-488b-b347-72d1d60d4214}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Input">
+      <UniqueIdentifier>{b1d8f493-35ee-4abc-8464-5587af06291b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UI">
+      <UniqueIdentifier>{b40eafe2-7764-4936-b321-1e00a4788d25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Entity">
+      <UniqueIdentifier>{e3ecb23e-288a-4a24-8f5d-015a8bb790d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Camera">
+      <UniqueIdentifier>{8ae8d6dd-e6e7-4c16-937d-f54a613699fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Scene">
+      <UniqueIdentifier>{edafde15-0bff-4aad-840b-aea97a117b15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Render">
+      <UniqueIdentifier>{92d72969-16a4-42ce-9a3d-bed733147721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\System">
+      <UniqueIdentifier>{4cf312bc-7297-4db4-a79e-ac1ec555998e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{b8d9dde6-9b56-4307-b2d0-471957d6206c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Scenes">
+      <UniqueIdentifier>{ab102022-f959-4305-9ec9-bc2d3bd870fd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Camera.cpp">
+      <Filter>Engine\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Cursor.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Entity.cpp">
+      <Filter>Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Input.cpp">
+      <Filter>Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleSystem.cpp">
+      <Filter>Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Scene.cpp">
+      <Filter>Engine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\SceneManager.cpp">
+      <Filter>Engine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ShaderLoader.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Shader.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\SoundManager.cpp">
+      <Filter>Engine\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Text.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UIButton.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UIElement.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UIImage.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UISlider.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UIText.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Utils.cpp">
+      <Filter>Engine\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Mesh.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Plane.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pyramid.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Sphere.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Lighting.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Time.cpp">
+      <Filter>Engine\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Cube.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\CubeMap.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UITextField.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Model.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\CollisionBounds.cpp">
+      <Filter>Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\LogManager.cpp">
+      <Filter>Engine\System</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\Camera.h">
+      <Filter>Engine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Cursor.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Entity.h">
+      <Filter>Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input.h">
+      <Filter>Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleSystem.h">
+      <Filter>Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Scene.h">
+      <Filter>Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SceneManager.h">
+      <Filter>Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ShaderLoader.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Shader.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SoundManager.h">
+      <Filter>Engine\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Text.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UIButton.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UIElement.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UIImage.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UISlider.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UIText.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Time.h">
+      <Filter>Engine\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Utils.h">
+      <Filter>Engine\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Mesh.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Plane.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pyramid.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Sphere.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lighting.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Cube.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CubeMap.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UITextField.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Model.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionBounds.h">
+      <Filter>Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ModelMesh.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ModelObject.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\LogManager.h">
+      <Filter>Engine\System</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
