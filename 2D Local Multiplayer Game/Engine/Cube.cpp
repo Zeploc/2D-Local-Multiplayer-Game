@@ -36,8 +36,9 @@ Cube::Cube(float fWidth, float fHeight, float fDepth, glm::vec4 _Colour)
 	m_iIndicies = 36;
 	BindCube();
 	m_eShape = Utils::CUBE;
-
 	program = Shader::Programs["program"];
+
+	SetInitialStates();
 }
 
 /************************************************************
@@ -58,8 +59,9 @@ Cube::Cube(float fWidth, float fHeight, float fDepth, glm::vec4 _Colour, const c
 	m_iIndicies = 36;
 	BindCube();
 	m_eShape = Utils::CUBE;
-
 	program = Shader::Programs["Textureprogram"];
+
+	SetInitialStates();
 }
 
 /************************************************************
@@ -193,6 +195,7 @@ void Cube::Rebind()
 {
 	BindCube();
 }
+
 
 void Cube::SetLit(bool _bIsLit)
 {

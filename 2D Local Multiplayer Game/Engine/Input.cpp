@@ -34,6 +34,18 @@ void LMouseInput(int x, int y);
 void LMouseButton(int button, int state, int x, int y);
 void LJoystick(unsigned int buttonMask, int x, int y, int z);
 
+#define Controller_Bottom_Face_Button 1
+#define Controller_Right_Face_Button 2
+#define Controller_Left_Face_Button 4
+#define Controller_Top_Face_Button 8
+#define Controller_Left_Button 16
+#define Controller_Right_Button 32
+#define Special_Left_Button 64
+#define Special_Right_Button 128
+#define Left_Stick_Down 256
+#define Right_Stick_Down 512
+
+
 /************************************************************
 #--Description--#:  Constructor function
 #--Author--#: 		Alex Coultas
@@ -68,6 +80,7 @@ Input * Input::GetInstance()
 		m_pInput = new Input;
 		std::fill(m_pInput->KeyState, m_pInput->KeyState + 255, INPUT_RELEASED);
 		std::fill(m_pInput->MouseState, m_pInput->MouseState + 3, INPUT_RELEASED);
+		std::fill(m_pInput->ControllerState, m_pInput->ControllerState + 10, INPUT_RELEASED);
 	}
 	return m_pInput;
 }
@@ -99,7 +112,7 @@ void Input::Init()
 	glutPassiveMotionFunc(LMouseInput);
 	glutMouseFunc(LMouseButton);
 	glutMotionFunc(LMouseInput);
-	glutJoystickFunc(LJoystick, 1.0f);
+	glutJoystickFunc(LJoystick, (float)GLUT_JOYSTICK_POLL_RATE / 100.0f);
 }
 
 /************************************************************
@@ -184,131 +197,115 @@ void Input::MouseButton(int button, int state, int x, int y)
 
 void Input::Joystick(unsigned int buttonMask, int x, int y, int z)
 {
-	int CurrentValue = buttonMask;
-	while (CurrentValue > 0)
+	bool ReleasedCheck[10];
+	for (int i = 0; i < 10; i++)
 	{
-		if (CurrentValue >= 512)
-		{
-			if (ControllerState[RIGHT_STICK_DOWN] != INPUT_HOLD)
-				ControllerState[RIGHT_STICK_DOWN] = INPUT_FIRST_PRESS;
-			CurrentValue -= 512;
-		}
-		else if (CurrentValue >= 256)
-		{
-			if (ControllerState[LEFT_STICK_DOWN] != INPUT_HOLD)
-				ControllerState[LEFT_STICK_DOWN] = INPUT_FIRST_PRESS;
-			CurrentValue -= 256;
-		}
-		else if (CurrentValue >= 128)
-		{
-			if (ControllerState[SPECIAL_BUTTON_RIGHT] != INPUT_HOLD)
-				ControllerState[SPECIAL_BUTTON_RIGHT] = INPUT_FIRST_PRESS;
-			CurrentValue -= 128;
-		}
-		else if (CurrentValue >= 64)
-		{
-			if (ControllerState[SPECIAL_BUTTON_LEFT] != INPUT_HOLD)
-				ControllerState[SPECIAL_BUTTON_LEFT] = INPUT_FIRST_PRESS;
-			CurrentValue -= 64;
-		}
-		else if (CurrentValue >= 32)
-		{
-			if (ControllerState[RIGHT_BUTTON] != INPUT_HOLD)
-				ControllerState[RIGHT_BUTTON] = INPUT_FIRST_PRESS;
-			CurrentValue -= 32;
-		}
-		else if (CurrentValue >= 16)
-		{
-			if (ControllerState[LEFT_BUTTON] != INPUT_HOLD)
-				ControllerState[LEFT_BUTTON] = INPUT_FIRST_PRESS;
-			CurrentValue -= 16;
-		}
-		else if (CurrentValue >= 8)
-		{
-			if (ControllerState[TOP_FACE_BUTTON] != INPUT_HOLD)
-				ControllerState[TOP_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			CurrentValue -= 8;
-		}
-		else if (CurrentValue >= 4)
-		{
-			if (ControllerState[LEFT_FACE_BUTTON] != INPUT_HOLD)
-				ControllerState[LEFT_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			CurrentValue -= 4;
-		}
-		else if (CurrentValue >= 2)
-		{
-			if (ControllerState[RIGHT_FACE_BUTTON] != INPUT_HOLD)
-				ControllerState[RIGHT_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			CurrentValue -= 2;
-		}
-		else if (CurrentValue >= 1)
-		{
-			if (ControllerState[BOTTOM_FACE_BUTTON] != INPUT_HOLD)
-				ControllerState[BOTTOM_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			CurrentValue -= 1;
-		}
+		ReleasedCheck[i] = false;
 	}
-/*
-	switch (buttonMask)
+	if (buttonMask & 1024)
 	{
-		case 0:
-		{
-
-			break;
-		}
-		case 1:
-		{
-			ControllerState[BOTTOM_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			break;
-		}
-		case 2:
-		{
-			ControllerState[RIGHT_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			break;
-		}
-		case 4:
-		{
-			ControllerState[LEFT_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			break;
-		}
-		case 8:
-		{
-			ControllerState[TOP_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			break;
-		}
-		case 16:
-		{
-			ControllerState[LEFT_BUTTON] = INPUT_FIRST_PRESS;
-			break;
-		}
-		case 32:
-		{
-			ControllerState[RIGHT_BUTTON] = INPUT_FIRST_PRESS;
-			break;
-		}
-		case 64:
-		{
-			ControllerState[SPECIAL_BUTTON_LEFT] = INPUT_FIRST_PRESS;
-			break;
-		}
-		case 128:
-		{
-			ControllerState[SPECIAL_BUTTON_RIGHT] = INPUT_FIRST_PRESS;
-			break;
-		}
-		case 256:
-		{
-			ControllerState[LEFT_STICK_DOWN] = INPUT_FIRST_PRESS;
-			break;
-		}
-		case 512:
+		std::cout << "Different button pressed?\n";
+	}
+	if (buttonMask & Right_Stick_Down)
+	{
+		if (ControllerState[RIGHT_STICK_DOWN] != INPUT_HOLD)
 		{
 			ControllerState[RIGHT_STICK_DOWN] = INPUT_FIRST_PRESS;
-			break;
+			std::cout << "RIGHT_STICK_DOWN Pressed\n";
 		}
-	}*/
+		ReleasedCheck[RIGHT_STICK_DOWN] = true;
+	}
+	if (buttonMask & Left_Stick_Down)
+	{
+		if (ControllerState[LEFT_STICK_DOWN] != INPUT_HOLD)
+		{
+			ControllerState[LEFT_STICK_DOWN] = INPUT_FIRST_PRESS;
+			std::cout << "LEFT_STICK_DOWN Pressed\n";
+		}
+		ReleasedCheck[LEFT_STICK_DOWN] = true;
+	}
+	if (buttonMask & Special_Right_Button)
+	{
+		if (ControllerState[SPECIAL_BUTTON_RIGHT] != INPUT_HOLD)
+		{
+			ControllerState[SPECIAL_BUTTON_RIGHT] = INPUT_FIRST_PRESS;
+			std::cout << "SPECIAL_BUTTON_RIGHT Pressed\n";
+		}
+		ReleasedCheck[SPECIAL_BUTTON_RIGHT] = true;
+	}
+	if (buttonMask & Special_Left_Button)
+	{
+		if (ControllerState[SPECIAL_BUTTON_LEFT] != INPUT_HOLD)
+		{
+			ControllerState[SPECIAL_BUTTON_LEFT] = INPUT_FIRST_PRESS;
+			std::cout << "SPECIAL_BUTTON_LEFT Pressed\n";
+		}
+		ReleasedCheck[SPECIAL_BUTTON_LEFT] = true;
+	}
+	if (buttonMask & Controller_Right_Button)
+	{
+		if (ControllerState[RIGHT_BUTTON] != INPUT_HOLD)
+		{
+			ControllerState[RIGHT_BUTTON] = INPUT_FIRST_PRESS;
+			std::cout << "RIGHT_BUTTON Pressed\n";
+		}
+		ReleasedCheck[RIGHT_BUTTON] = true;
+	}
+	if (buttonMask & Controller_Left_Button)
+	{
+		if (ControllerState[LEFT_BUTTON] != INPUT_HOLD)
+		{
+			ControllerState[LEFT_BUTTON] = INPUT_FIRST_PRESS;
+			std::cout << "LEFT_BUTTON Pressed\n";
+		}
+		ReleasedCheck[LEFT_BUTTON] = true;
+	}
+	if (buttonMask & Controller_Top_Face_Button)
+	{
+		if (ControllerState[TOP_FACE_BUTTON] != INPUT_HOLD)
+		{
+			ControllerState[TOP_FACE_BUTTON] = INPUT_FIRST_PRESS;
+			std::cout << "TOP_FACE_BUTTON Pressed\n";
+		}
+		ReleasedCheck[TOP_FACE_BUTTON] = true;
+	}
+	if (buttonMask & Controller_Left_Face_Button)
+	{
+		if (ControllerState[LEFT_FACE_BUTTON] != INPUT_HOLD)
+		{
+			ControllerState[LEFT_FACE_BUTTON] = INPUT_FIRST_PRESS;
+			std::cout << "LEFT_FACE_BUTTON Pressed\n";
+		}
+		ReleasedCheck[LEFT_FACE_BUTTON] = true;
+	}
+	if (buttonMask & Controller_Right_Face_Button)
+	{
+		if (ControllerState[RIGHT_FACE_BUTTON] != INPUT_HOLD)
+		{
+			ControllerState[RIGHT_FACE_BUTTON] = INPUT_FIRST_PRESS;
+			std::cout << "RIGHT_FACE_BUTTON Pressed\n";
+		}
+		ReleasedCheck[RIGHT_FACE_BUTTON] = true;
+	}
+	if (buttonMask & Controller_Bottom_Face_Button)
+	{
+		if (ControllerState[BOTTOM_FACE_BUTTON] != INPUT_HOLD)
+		{
+			ControllerState[BOTTOM_FACE_BUTTON] = INPUT_FIRST_PRESS;
+			std::cout << "BOTTOM_FACE_BUTTON Pressed\n";
+		}
+		ReleasedCheck[BOTTOM_FACE_BUTTON] = true;
+	}
+
+	for (int i = 0; i < 10; i++)
+	{
+		if (!ReleasedCheck[i] && ControllerState[i] == INPUT_HOLD)
+		{
+			ControllerState[i] = INPUT_FIRST_RELEASE;
+			std::cout << i << " button released\n";
+		}
+	}
 	Axis = { x, y, z };
-	std::cout << "Button mask: [" << buttonMask << "] x: [" << x << "] y: [" << y << "] z: [" << z << "]" << std::endl;
 }
 
 /************************************************************
@@ -339,6 +336,18 @@ void Input::Update()
 		if (MouseState[i] == INPUT_FIRST_PRESS)
 		{
 			MouseState[i] = INPUT_HOLD;
+		}
+	}
+
+	for (int i = 0; i < 10; i++)
+	{
+		if (ControllerState[i] == INPUT_FIRST_RELEASE)
+		{
+			ControllerState[i] = INPUT_RELEASED;
+		}
+		if (ControllerState[i] == INPUT_FIRST_PRESS)
+		{
+			ControllerState[i] = INPUT_HOLD;
 		}
 	}
 	bKBHit = false;

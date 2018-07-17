@@ -44,12 +44,18 @@ public:
 	void DestroyUIElement(std::shared_ptr<UIElement> _Element);
 	
 	virtual void Update();
-	virtual void OnLoadScene() {};
+	virtual void OnLoadScene();
+	void SetPersistantOnLoad(bool _bIsPersistant) {
+		bIsPersistant = _bIsPersistant; };
 
 	bool operator==(const Scene& rhs)const;
 
 	std::string SceneName;
 	std::vector<std::shared_ptr<Entity>> Entities;
 	std::vector<std::shared_ptr<UIElement>> UIElements;
+protected:
+	std::vector<std::shared_ptr<Entity>> DestroyedEntities;
+	std::vector<std::shared_ptr<UIElement>> UIElementsToBeDestroyed;
+	bool bIsPersistant = false;
 };
 

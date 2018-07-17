@@ -27,6 +27,7 @@ public:
 	~UIElement();
 	
 	virtual void DrawUIElement();
+	void BaseUpdate();
 	virtual void Update();
 
 	virtual void SetPosition(glm::vec2 _NewPosition);

@@ -19,6 +19,10 @@
 #include "Engine\Plane.h"
 #include "Engine\Input.h"
 #include "Engine\Time.h"
+#include "Engine\SceneManager.h"
+
+// Local Includes //
+#include "Level.h"
 
 
 Player::Player(glm::vec3 StartPosition)
@@ -38,30 +42,40 @@ void Player::Update()
 {
 	Entity::Update();
 
-	if (Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->Axis.x > 100)
+	if (Input::GetInstance()->Axis.x > 100 || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_FIRST_PRESS)
 	{
 		MoveHorizontally(false);
 	}
-	else if (Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->Axis.x < -100)
+	else if (Input::GetInstance()->Axis.x < -100 || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_FIRST_PRESS)
 	{
 		MoveHorizontally(true);
 	}
 	else
-	{
 		v2Speed.x = 0;
-	}
 
-	if (Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->Axis.y < -100)
+	if (Input::GetInstance()->Axis.y < -100 || Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_FIRST_PRESS)
 	{
 		MoveVertical(true);
 	}
-	else if (Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->Axis.y > 100)
+	else if (Input::GetInstance()->Axis.y > 100 || Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_FIRST_PRESS)
 	{
 		MoveVertical(false);
 	}
 	else
-	{
 		v2Speed.y = 0;
+	
+	if (Input::GetInstance()->ControllerState[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS)
+	{
+		v2Speed *= 10.0f;
+	}
+
+	if (Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS)
+	{
+		std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
+		if (LevelRef)
+		{
+			LevelRef->DestroyEntity(LevelRef->TestEntity);
+		}
 	}
 
 	Translate(glm::vec3(v2Speed.x, v2Speed.y, 0));

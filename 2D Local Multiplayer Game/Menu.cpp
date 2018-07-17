@@ -72,6 +72,7 @@ void StartGameBtn()
 
 void ExitGameBtn()
 {
+	glutLeaveMainLoop();
 }
 
 void OptionsScreenBtn()

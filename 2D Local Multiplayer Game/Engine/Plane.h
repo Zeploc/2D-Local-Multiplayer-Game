@@ -27,6 +27,8 @@ public:
 
 	void BindPlane();
 	void Rebind();
+	virtual void SetInitialStates();
+	virtual void Reset() override;
 
 	void Render(Utils::Transform Newtransform);
 	void Update();
@@ -35,5 +37,16 @@ public:
 	double m_dFPSCounter = 0;
 	double m_fFrameCheck = 0;
 	Utils::Col2DI CollisionBox;
+
+protected:
+	struct PlaneInitialState
+	{
+		Utils::AnimInfo AnimationInfo;
+		double m_dFPSCounter;
+		double m_fFrameCheck;
+		Utils::Col2DI CollisionBox;
+	};
+
+	PlaneInitialState m_PlaneInitialState;
 };
 

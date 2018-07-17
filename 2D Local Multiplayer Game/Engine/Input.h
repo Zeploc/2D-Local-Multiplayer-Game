@@ -18,6 +18,20 @@
 // Library Includes //
 #include <string>
 
+enum InputController
+{
+	BOTTOM_FACE_BUTTON = 0,
+	RIGHT_FACE_BUTTON = 1,
+	LEFT_FACE_BUTTON = 2,
+	TOP_FACE_BUTTON = 3,
+	LEFT_BUTTON = 4,
+	RIGHT_BUTTON = 5,
+	SPECIAL_BUTTON_LEFT = 6,
+	SPECIAL_BUTTON_RIGHT = 7,
+	LEFT_STICK_DOWN = 8,
+	RIGHT_STICK_DOWN = 9
+};
+
 #pragma once
 class Input
 {
@@ -35,34 +49,7 @@ public:
 		MOUSE_MIDDLE,
 		MOUSE_RIGHT,
 	};
-
-
-	//	BOTTOM_FACE_BUTTON = 1,
-	//	RIGHT_FACE_BUTTON = 2,
-	//	LEFT_FACE_BUTTON = 4,
-	//	TOP_FACE_BUTTON = 8,
-	//
-	//	LEFT_BUTTON = 16,
-	//	RIGHT_BUTTON = 32,
-	//
-	//	SPECIAL_BUTTON_LEFT = 64,
-	//	SPECIAL_BUTTON_RIGHT = 128,
-	//
-	//	LEFT_STICK_DOWN = 256,
-	//	RIGHT_STICK_DOWN = 512
-	enum InputController
-	{
-		BOTTOM_FACE_BUTTON = 0,
-		RIGHT_FACE_BUTTON = 1,
-		LEFT_FACE_BUTTON = 2,
-		TOP_FACE_BUTTON = 3,
-		LEFT_BUTTON = 4,
-		RIGHT_BUTTON = 5,
-		SPECIAL_BUTTON_LEFT = 6,
-		SPECIAL_BUTTON_RIGHT = 7,
-		LEFT_STICK_DOWN = 8,
-		RIGHT_STICK_DOWN = 9
-	};
+	
 	
 	glm::vec2 MousePos;
 	unsigned int KeyState[255];

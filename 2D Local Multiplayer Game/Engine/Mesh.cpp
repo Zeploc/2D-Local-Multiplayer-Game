@@ -29,19 +29,10 @@
 ************************************************************/
 Mesh::Mesh()
 {
-	/*switch (_Shape)
-	{
-	case Utils::PLANE:
-		break;
-	case Utils::PYRAMID:
-		break;
-	case Utils::CUBE:
-		break;
-	case Utils::SPHERE:
-		break;
-	default:
-		break;
-	}*/
+	MeshInitialState.bIsLit = bIsLit;
+	MeshInitialState.bReflection = bReflection;
+	MeshInitialState.m_fDepth = m_fDepth;
+	MeshInitialState.LightProperties = LightProperties;
 }
 
 /************************************************************
@@ -87,10 +78,61 @@ void Mesh::Render(Utils::Transform Newtransform)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Mesh::SetReflection()
+void Mesh::SetInitialStates()
 {
-	bReflection = true;
-	program = Shader::Programs["ReflectionProgram"];
+	MeshInitialState.m_eShape = m_eShape;
+	MeshInitialState.m_fWidth = m_fWidth;
+	MeshInitialState.m_fHeight = m_fHeight;
+	MeshInitialState.m_fDepth = m_fDepth;
+	MeshInitialState.Colour = Colour;
+	MeshInitialState.program = program;
+	MeshInitialState.vao = vao;
+	MeshInitialState.texture = texture;
+	MeshInitialState.TextureSource = TextureSource;
+	MeshInitialState.UVCoords = UVCoords;
+	MeshInitialState.bHasTexture = bHasTexture;
+	MeshInitialState.m_iIndicies = m_iIndicies;
+}
+
+void Mesh::Reset()
+{
+	// Reset all mesh variables
+	m_eShape = MeshInitialState.m_eShape;
+	m_fWidth = MeshInitialState.m_fWidth;
+	m_fDepth = MeshInitialState.m_fDepth;
+	Colour = MeshInitialState.Colour;
+	program = MeshInitialState.program;
+	vao = MeshInitialState.vao;
+	texture = MeshInitialState.texture;
+	TextureSource = MeshInitialState.TextureSource;
+	UVCoords = MeshInitialState.UVCoords;
+	bHasTexture = MeshInitialState.bHasTexture;
+	m_iIndicies = MeshInitialState.m_iIndicies;
+	LightProperties = MeshInitialState.LightProperties;
+	bIsLit = MeshInitialState.bIsLit;
+	bReflection = MeshInitialState.bReflection;
+	// Reset Mesh Collision Bounds
+	if (MeshCollisionBounds) MeshCollisionBounds->Reset();
+}
+
+void Mesh::SetReflection(bool _bReflecting, bool _bIsInitialState)
+{
+	bReflection = _bReflecting;
+	if (bReflection)
+		program = Shader::Programs["ReflectionProgram"];
+	else
+	{
+		if (bIsLit)
+		{
+			program = Shader::Programs["LitTextureprogram"];
+		}
+		else
+		{
+			program = Shader::Programs["program"];
+		}
+	}
+	if (_bIsInitialState)
+		MeshInitialState.bReflection = bReflection;
 }
 
 void Mesh::AddCollisionBounds(float fWidth, float fHeight, float fDepth, std::shared_ptr<Entity> _EntityRef)

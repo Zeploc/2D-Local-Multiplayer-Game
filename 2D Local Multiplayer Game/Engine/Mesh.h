@@ -42,12 +42,18 @@ public:
 	virtual void Render(Utils::Transform Newtransform);
 	virtual void Update() {};
 	virtual void OnDestroy() {};
+	virtual void SetInitialStates();
+	virtual void Reset();
 
 	virtual void Rebind() {}; // Will replace if texture exists
-	virtual void SetLit(bool _bIsLit) { bIsLit = _bIsLit; };
+	virtual void SetLit(bool _bIsLit, bool _bIsInitialState = false) {
+		bIsLit = _bIsLit;
+		if (_bIsInitialState)
+			MeshInitialState.bIsLit = bIsLit;
+	};
 	bool IsLit() { return bIsLit; };
 
-	void SetReflection();
+	void SetReflection(bool _bReflecting, bool _bIsInitialState = false);
 	bool IsReflecting() { return bReflection; };
 
 	void AddCollisionBounds(float fHeight, float fWidth, float fDepth, std::shared_ptr<Entity> _EntityRef);
@@ -74,6 +80,27 @@ protected:
 	std::shared_ptr<CollisionBounds> MeshCollisionBounds;
 	bool bIsLit = false;
 	bool bReflection = false;
+	
+	struct InitialState
+	{
+		Utils::EMESHTYPE m_eShape;
+		float m_fWidth;
+		float m_fHeight;
+		float m_fDepth;
+		glm::vec4 Colour;
+		GLuint program;
+		GLuint vao;
+		GLuint texture;
+		const char * TextureSource;
+		glm::vec4 UVCoords;
+		bool bHasTexture;
+		int m_iIndicies;
+		LightInfo LightProperties;
+		bool bIsLit;
+		bool bReflection;
+	};
+
+	InitialState MeshInitialState;
 };
 
 #endif

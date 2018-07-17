@@ -145,25 +145,23 @@ std::shared_ptr<Entity> Scene::AddEntity(Utils::Transform _Transform, float _fWi
 #--Return--#: 		NA
 ************************************************************/
 void Scene::DestroyEntity(std::shared_ptr<Entity> _Entity)
-{
-	if (_Entity)
-	{
-		if (_Entity.use_count() > 1)
-		{
-			std::cout << "Entity still has " << std::to_string(_Entity.use_count() - 1) << std::endl;
-		}
-		_Entity->OnDestroy();
-	}
+{	
+	DestroyedEntities.push_back(_Entity);
+	_Entity->SetActive(false);
+	_Entity->OnDestroy();
+	
+	// Find entity in entities
 	for (auto it = Entities.begin(); it != Entities.end(); ++it)
 	{
 		if (*it == _Entity || *it == nullptr)
 		{
+			// Remove from entities list
 			Entities.erase(it);
-			//*it = nullptr;
 			break;
 		}
 	}
-	_Entity.reset();
+	// Reset all but this option?
+	//EntDetroy.reset();
 }
 
 /************************************************************
@@ -208,16 +206,8 @@ void Scene::AddUITextElement(glm::vec2 _Position, float _fRotation, glm::vec4 _C
 ************************************************************/
 void Scene::DestroyUIElement(std::shared_ptr<UIElement> _Element)
 {
-	for (auto it = UIElements.begin(); it != UIElements.end(); ++it)
-	{
-		if (*it == _Element)
-		{
-			*it == nullptr;
-			UIElements.erase(it);
-			break;
-		}
-	}
-	_Element = nullptr;
+	UIElementsToBeDestroyed.push_back(_Element);
+	_Element->SetActive(false);		
 }
 
 /************************************************************
@@ -228,54 +218,72 @@ void Scene::DestroyUIElement(std::shared_ptr<UIElement> _Element)
 ************************************************************/
 void Scene::Update()
 {
-	if (Entities.size() != 0)
+	for (auto& Entity : Entities)
 	{
-		unsigned int iEndPos = Entities.size() - 1;
-		for (unsigned int i = 0; i <= iEndPos; i++)
-		{
-			if (Entities[i])
-				Entities[i]->Update();
-			if (iEndPos >= Entities.size())
-			{
-				iEndPos = Entities.size() - 1;
-				i--;
-			}
-			if (Entities[iEndPos] != Entities.back()) // if current last value is not equal to the back of the vector
-			{
-				iEndPos = Entities.size() - 1;
-				//i--;
-			}
-		}
-	}
+		if (Entity)
+			Entity->BaseUpdate();
+	}	
+	//if (Entities.size() != 0)
+	//{
+	//	unsigned int iEndPos = Entities.size() - 1;
+	//	for (unsigned int i = 0; i <= iEndPos; i++)
+	//	{
+	//		if (Entities[i])
+	//			Entities[i]->Update();
+	//		if (iEndPos >= Entities.size())
+	//		{
+	//			iEndPos = Entities.size() - 1;
+	//			i--;
+	//		}
+	//		if (Entities[iEndPos] != Entities.back()) // if current last value is not equal to the back of the vector
+	//		{
+	//			iEndPos = Entities.size() - 1;
+	//			//i--;
+	//		}
+	//	}
+	//}
 	/*for (auto it : Entities)
 	{
 		if (it)
 			it->Update();
 	}*/
-	if (UIElements.size() != 0)
+	for (auto& UIElem : UIElements)
 	{
-		unsigned int iEndPos = UIElements.size() - 1;
-		for (unsigned int i = 0; i <= iEndPos; i++)
+		if (UIElem)
+			UIElem->BaseUpdate();
+	}
+	//UIButton::bButtonPressedThisFrame = false;
+	
+
+	for (auto& UIDestroy : UIElementsToBeDestroyed)
+	{
+		for (auto it = UIElements.begin(); it != UIElements.end(); ++it)
 		{
-			if (UIElements[i])
-				UIElements[i]->Update();
-			if (iEndPos >= UIElements.size())
+			if (*it == UIDestroy)
 			{
-				iEndPos = UIElements.size() - 1;
-				i--;
-			}
-			if (UIElements[iEndPos] != UIElements.back()) // if current last value is not equal to the back of the vector
-			{
-				iEndPos = UIElements.size() - 1;
-				i--;
+				UIElements.erase(it);
+				break;
 			}
 		}
+		UIDestroy.reset();
 	}
-	/*for (auto it : UIElements)
+	if (!UIElementsToBeDestroyed.empty()) UIElementsToBeDestroyed.clear();
+}
+
+void Scene::OnLoadScene()
+{
+	if (!bIsPersistant)
 	{
-		if (it) it->Update();
-	}*/
-	//UIButton::bButtonPressedThisFrame = false;
+		for (auto& EntDestroy : DestroyedEntities)
+		{
+			Entities.push_back(EntDestroy);
+		}
+		DestroyedEntities.clear();
+		for (auto& Ent : Entities)
+		{
+			Ent->Reset();
+		}
+	}
 }
 
 /************************************************************

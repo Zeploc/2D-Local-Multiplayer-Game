@@ -39,14 +39,9 @@ Plane::Plane(float fWidth, float fHeight, glm::vec4  _Colour)
 	bHasTexture = false;
 	BindPlane();
 	m_eShape = Utils::PLANE;
-	if (bHasTexture)
-	{
-		program = Shader::Programs["Textureprogram"];
-	}
-	else
-	{
-		program = Shader::Programs["program"];
-	}
+	program = Shader::Programs["program"];
+
+	SetInitialStates();
 }
 
 /************************************************************
@@ -66,14 +61,9 @@ Plane::Plane(float fWidth, float fHeight, glm::vec4 _Colour, const char * _Textu
 	bHasTexture = true;
 	BindPlane();
 	m_eShape = Utils::PLANE;
-	if (bHasTexture)
-	{
-		program = Shader::Programs["Textureprogram"];
-	}
-	else
-	{
-		program = Shader::Programs["program"];
-	}
+	program = Shader::Programs["Textureprogram"];
+
+	SetInitialStates();
 }
 
 /************************************************************
@@ -105,14 +95,9 @@ Plane::Plane(float _fWidth, float _fHeight, glm::vec4 _Colour, const char * Text
 	UVCoords = glm::vec4(0, AnimationInfo.v2FrameSize.x, 0, AnimationInfo.v2FrameSize.y);
 
 	BindPlane();
-	if (bHasTexture)
-	{
-		program = Shader::Programs["Textureprogram"];
-	}
-	else
-	{
-		program = Shader::Programs["program"];
-	}
+	program = Shader::Programs["Textureprogram"];
+
+	SetInitialStates();
 }
 
 /************************************************************
@@ -149,14 +134,9 @@ Plane::Plane(float _fWidth, float _fHeight, glm::vec4 _Colour, const char * Text
 
 	UVCoords = glm::vec4(0, hSize, 0, vSize);
 	BindPlane();
-	if (bHasTexture)
-	{
-		program = Shader::Programs["Textureprogram"];
-	}
-	else
-	{
-		program = Shader::Programs["program"];
-	}
+	program = Shader::Programs["Textureprogram"];
+
+	SetInitialStates();
 }
 
 /************************************************************
@@ -207,6 +187,26 @@ void Plane::BindPlane()
 void Plane::Rebind()
 {
 	BindPlane();
+}
+
+void Plane::SetInitialStates()
+{
+	Mesh::SetInitialStates();
+	// Set plane specific states
+	m_PlaneInitialState.AnimationInfo = AnimationInfo;
+	m_PlaneInitialState.m_dFPSCounter = m_dFPSCounter;
+	m_PlaneInitialState.m_fFrameCheck = m_fFrameCheck;
+	m_PlaneInitialState.CollisionBox = CollisionBox;
+}
+
+void Plane::Reset()
+{
+	Mesh::Reset();
+	// Reset plane specific states
+	AnimationInfo = m_PlaneInitialState.AnimationInfo;
+	m_dFPSCounter = m_PlaneInitialState.m_dFPSCounter;
+	m_fFrameCheck = m_PlaneInitialState.m_fFrameCheck;
+	CollisionBox = m_PlaneInitialState.CollisionBox;
 }
 
 /************************************************************

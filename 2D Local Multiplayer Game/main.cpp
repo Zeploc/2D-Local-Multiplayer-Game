@@ -81,30 +81,30 @@ int main(int argc, char **argv)
 	glutInitWindowSize(CAM->SCR_WIDTH, CAM->SCR_HEIGHT);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutCreateWindow("Game Window");
-
-
 	//glutFullScreen();
 
-	glewInit();				// OpenGL init
-	Init();					// Settings Initialised
+	// OpenGL init
+	glewInit();		
+	// Settings Initialised
+	Init();					
 
-							// register callbacks
+	// register callbacks
 	glutDisplayFunc(renderScene);
 
-	glutCloseFunc(OnExit); // Set close function if window is closed
+	// Set close function if window is closed
+	glutCloseFunc(OnExit); 
 
-						   // here is the idle func registration
+	// here is the idle func registration
 	glutIdleFunc(Update);
 
-	// the input function registration
+	// The input function registration
 	SI->Init();
 
 	// Window Resize Function
 	glutReshapeFunc(changeSize);
 
-	// enter GLUT event processing cycle
+	// Enter GLUT event processing cycle
 	glutMainLoop();
-
 
 	return 0;
 }

@@ -35,6 +35,7 @@ public:
 	std::shared_ptr<Scene> GetCurrentScene() { return Scenes[CurrentScene]; };
 
 	int CurrentScene = 0;
+	int SceneToSwitch = 0;
 
 	// Singleton
 public:

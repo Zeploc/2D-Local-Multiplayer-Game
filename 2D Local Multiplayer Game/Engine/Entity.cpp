@@ -44,6 +44,12 @@ Entity::Entity(Utils::Transform _Transform, Utils::EANCHOR _Anchor)
 {
 	iEntityID = Utils::AddEntityID();
 	LogManager::GetInstance()->DisplayLogMessage("New Entity created with ID #" + std::to_string(iEntityID));
+	// Set initial States
+	EntityInitialState.bActive = bActive;
+	EntityInitialState.bVisible = bVisible;
+	EntityInitialState.EntityAnchor = EntityAnchor;
+	EntityInitialState.iEntityID = iEntityID;
+	EntityInitialState.transform = transform;
 }
 
 /************************************************************
@@ -102,6 +108,20 @@ void Entity::DrawEntity()
 }
 
 /************************************************************
+#--Description--#: 	Base Update called every frame to check before called derived Update
+#--Author--#: 		Alex Coultas
+#--Parameters--#: 	NA
+#--Return--#: 		NA
+************************************************************/
+void Entity::BaseUpdate()
+{
+	if (!bActive)
+		return;
+	Update();
+	if (!EntityMesh) EntityMesh->Update();
+}
+
+/************************************************************
 #--Description--#: 	Updated every frame
 #--Author--#: 		Alex Coultas
 #--Parameters--#: 	NA
@@ -109,8 +129,7 @@ void Entity::DrawEntity()
 ************************************************************/
 void Entity::Update()
 {
-	if (!EntityMesh || !bActive) return;
-	EntityMesh->Update();
+
 }
 
 /************************************************************
@@ -124,14 +143,30 @@ void Entity::OnDestroy()
 	LogManager::GetInstance()->DisplayLogMessage("Entity with ID #" + std::to_string(iEntityID) + " destroyed!");
 }
 
-void Entity::SetActive(bool _bIsActive)
+void Entity::Reset()
 {
-	bActive = _bIsActive;
+	// Reset all entity variables
+	bActive = EntityInitialState.bActive;
+	bVisible = EntityInitialState.bVisible;
+	EntityAnchor = EntityInitialState.EntityAnchor;
+	iEntityID = EntityInitialState.iEntityID;
+	transform = EntityInitialState.transform;
+	// Reset Entity Mesh
+	EntityMesh->Reset();
 }
 
-void Entity::SetVisible(bool _bIsVisible)
+void Entity::SetActive(bool _bIsActive, bool _bIsInitialState)
+{
+	bActive = _bIsActive;
+	if (_bIsInitialState)
+		EntityInitialState.bActive = bActive;
+}
+
+void Entity::SetVisible(bool _bIsVisible, bool _bIsInitialState)
 {
 	bVisible = _bIsVisible;
+	if (_bIsInitialState)
+		EntityInitialState.bVisible = bVisible;
 }
 
 /************************************************************

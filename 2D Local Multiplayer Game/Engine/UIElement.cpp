@@ -58,6 +58,19 @@ void UIElement::DrawUIElement()
 }
 
 /************************************************************
+#--Description--#: 	Base Update called every frame to check before called derived Update
+#--Author--#: 		Alex Coultas
+#--Parameters--#: 	NA
+#--Return--#: 		NA
+************************************************************/
+void UIElement::BaseUpdate()
+{
+	if (!bActive)
+		return;
+	Update();
+}
+
+/************************************************************
 #--Description--#: 	Updated every frame
 #--Author--#: 		Alex Coultas
 #--Parameters--#: 	NA

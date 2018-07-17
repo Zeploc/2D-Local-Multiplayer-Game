@@ -27,6 +27,9 @@
 CollisionBounds::CollisionBounds(float _fWidth, float _fHeight, float _fDepth, std::shared_ptr<Entity> _EntityRef)
 	: fHeight(_fHeight), fWidth(_fWidth), fDepth(_fDepth), EntityRef(_EntityRef)
 {
+	CollisionBoundsInitialState.fHeight = fHeight;
+	CollisionBoundsInitialState.fWidth = fWidth;
+	CollisionBoundsInitialState.fDepth = fDepth;
 }
 
 /************************************************************
@@ -38,6 +41,14 @@ CollisionBounds::CollisionBounds(float _fWidth, float _fHeight, float _fDepth, s
 CollisionBounds::~CollisionBounds()
 {
 
+}
+
+void CollisionBounds::Reset()
+{
+	fHeight = CollisionBoundsInitialState.fHeight;
+	fWidth = CollisionBoundsInitialState.fWidth;
+	fDepth = CollisionBoundsInitialState.fDepth;
+	v3Offset = CollisionBoundsInitialState.v3Offset;
 }
 
 bool CollisionBounds::isColliding(std::shared_ptr<Entity> Entity2)

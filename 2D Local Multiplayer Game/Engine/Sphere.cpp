@@ -38,28 +38,16 @@ Sphere::Sphere(float fWidth, float fHeight, float fDepth, glm::vec4 _Colour)
 	bHasTexture = false;
 	BindSphere();
 	m_eShape = Utils::SPHERE;
-	if (bHasTexture)
+	if (bIsLit)
 	{
-		if (bIsLit)
-		{
-			program = Shader::Programs["LitTextureprogram"];
-		}
-		else
-		{
-			program = Shader::Programs["Textureprogram"];
-		}
+		program = Shader::Programs["LitTextureprogram"];
 	}
 	else
 	{
-		if (bIsLit)
-		{
-			program = Shader::Programs["LitTextureprogram"];
-		}
-		else
-		{
-			program = Shader::Programs["program"];
-		}
+		program = Shader::Programs["program"];
 	}
+
+	SetInitialStates();
 }
 
 /************************************************************
@@ -79,14 +67,9 @@ Sphere::Sphere(float fWidth, float fHeight, float fDepth, glm::vec4 _Colour, con
 	bHasTexture = true;
 	BindSphere();
 	m_eShape = Utils::SPHERE;
-	if (bHasTexture)
-	{
-		program = Shader::Programs["Textureprogram"];
-	}
-	else
-	{
-		program = Shader::Programs["program"];
-	}
+	program = Shader::Programs["Textureprogram"];
+
+	SetInitialStates();
 }
 
 /************************************************************

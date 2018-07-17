@@ -30,11 +30,12 @@
 //#include "Sphere.h"
 //#include "Pyramid.h"
 
+
 class Entity : public std::enable_shared_from_this<Entity>
 {
 public:
 	Entity(Utils::Transform _Transform, Utils::EANCHOR _Anchor);
-	Entity() {};
+	//Entity() {};
 	/*Entity(Utils::Transform _Transform, float _fWidth, float _fHeight, Utils::EANCHOR _Anchor, glm::vec4 _Colour, Utils::ESHAPE _eShape);
 	Entity(Utils::Transform _Transform, float _fWidth, float _fHeight, Utils::EANCHOR _Anchor, glm::vec4 _Colour, const char* TextureSource, Utils::ESHAPE _eShape, glm::vec4 UVCoords = glm::vec4(0, 1, 0, 1));
 	Entity(Utils::Transform _Transform, float _fWidth, float _fHeight, Utils::EANCHOR _Anchor, glm::vec4 _Colour, const char* TextureSource, int iCount, bool bHorizontal);
@@ -45,12 +46,14 @@ public:
 	//void AddMesh(Utils::ESHAPE _NewShape);
 
 	virtual void DrawEntity();
+	void BaseUpdate();
 	virtual void Update();
 	virtual void OnDestroy();
+	virtual void Reset();
 
-	virtual void SetActive(bool _bIsActive);
+	virtual void SetActive(bool _bIsActive, bool _bIsInitialState = false);
 	bool IsActive() { return bActive; };
-	virtual void SetVisible(bool _bIsVisible);
+	virtual void SetVisible(bool _bIsVisible, bool _bIsInitialState = false);
 	bool IsVisible() { return bVisible; };
 	
 	void Translate(glm::vec3 _Movement);
@@ -62,12 +65,23 @@ public:
 	std::shared_ptr<Mesh> EntityMesh;
 
 	int GetEntityValue() { return iEntityID; };
-
+	
 protected:
 	bool bActive = true;
 	bool bVisible = true;
 
 	int iEntityID;
+
+	struct InitialState
+	{
+		Utils::Transform transform;
+		Utils::EANCHOR EntityAnchor;
+		bool bActive;
+		bool bVisible;
+		int iEntityID;
+	};
+
+	InitialState EntityInitialState;
 };
 
 #endif

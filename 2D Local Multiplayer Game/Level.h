@@ -26,5 +26,7 @@ public:
 
 	virtual void Update() override;
 	virtual void OnLoadScene() override;
+
+	std::shared_ptr<Entity> TestEntity;
 };
 

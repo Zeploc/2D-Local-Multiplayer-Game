@@ -16,7 +16,7 @@
 // This Includes //
 #include "Mesh.h"
 
-class Cube :	public Mesh
+class Cube : public Mesh
 {
 public:
 	Cube(float fWidth, float fHeight, float fDepth, glm::vec4 Colour);
