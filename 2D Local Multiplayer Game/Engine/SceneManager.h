@@ -28,7 +28,7 @@ public:
 	void AddScene(std::shared_ptr<Scene> _Scene);
 	void RemoveScene(std::string SceneName);
 	void RemoveScene(std::shared_ptr<Scene> _Scene);
-	void SwitchScene(std::string SceneName);
+	void SwitchScene(std::string SceneName, bool _bInstant = false);
 
 	void UpdateCurrentScene();
 	void RenderCurrentScene();

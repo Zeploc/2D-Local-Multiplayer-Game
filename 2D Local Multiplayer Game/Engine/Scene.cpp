@@ -218,11 +218,16 @@ void Scene::DestroyUIElement(std::shared_ptr<UIElement> _Element)
 ************************************************************/
 void Scene::Update()
 {
-	for (auto& Entity : Entities)
+	for (int i = 0; i < Entities.size(); i++)
 	{
-		if (Entity)
-			Entity->BaseUpdate();
-	}	
+		if (Entities[i])
+			Entities[i]->BaseUpdate();
+	}
+	/*for (auto& Ent : Entities)
+	{
+		if (Ent)
+			Ent->BaseUpdate();
+	}	*/
 	//if (Entities.size() != 0)
 	//{
 	//	unsigned int iEndPos = Entities.size() - 1;
@@ -247,11 +252,17 @@ void Scene::Update()
 		if (it)
 			it->Update();
 	}*/
-	for (auto& UIElem : UIElements)
+	for (int i = 0; i < UIElements.size(); i++)
+	{
+		if (UIElements[i])
+			UIElements[i]->BaseUpdate();
+	}
+
+	/*for (auto& UIElem : UIElements)
 	{
 		if (UIElem)
 			UIElem->BaseUpdate();
-	}
+	}*/
 	//UIButton::bButtonPressedThisFrame = false;
 	
 

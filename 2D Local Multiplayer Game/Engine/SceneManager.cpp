@@ -112,13 +112,20 @@ void SceneManager::RemoveScene(std::shared_ptr<Scene> _Scene)
 #--Parameters--#: 	Takes in scene name to switch to
 #--Return--#: 		Returns true if scene found, if not returns false
 ************************************************************/
-void SceneManager::SwitchScene(std::string SceneName)
+void SceneManager::SwitchScene(std::string SceneName, bool _bInstant)
 {
 	for (unsigned int i = 0; i < Scenes.size(); i++)
 	{
 		if (Scenes[i]->SceneName == SceneName)
 		{
-			SceneToSwitch = i;
+			if (_bInstant)
+			{
+				CurrentScene = i;
+				Scenes[SceneToSwitch]->OnLoadScene();
+				LogManager::GetInstance()->DisplayLogMessage("Switching to Scene \"" + Scenes[SceneToSwitch]->SceneName + "\"");
+			}
+			else
+				SceneToSwitch = i;
 			return;
 		}
 	}
@@ -137,8 +144,8 @@ void SceneManager::UpdateCurrentScene()
 	// Switch to scene flag has been set
 	if (SceneToSwitch != CurrentScene)
 	{
-		Scenes[SceneToSwitch]->OnLoadScene();
 		CurrentScene = SceneToSwitch;
+		Scenes[SceneToSwitch]->OnLoadScene();
 		LogManager::GetInstance()->DisplayLogMessage("Switching to Scene \"" + Scenes[SceneToSwitch]->SceneName + "\"");
 	}
 }
