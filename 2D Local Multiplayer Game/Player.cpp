@@ -25,12 +25,18 @@
 // Local Includes //
 #include "Level.h"
 
+#include <iostream>
+#include <glm\gtx\string_cast.hpp>
 
-Player::Player(glm::vec3 StartPosition)
+
+Player::Player(glm::vec3 StartPosition, int PlayerID)
 	: Entity({ StartPosition , {0, 0, 0}, {1, 1, 1} }, Utils::CENTER)
 {
-	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, "Resources/Images/Box.png"));
+	std::shared_ptr<Plane> NewImage;
+	if (PlayerID == 1) NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.4f, 1.0f, 0.6f, 1.0f }, "Resources/Images/Box.png"));
+	else NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, "Resources/Images/Box.png"));
 	AddMesh(NewImage);
+	m_iPlayerID = PlayerID;
 }
 
 
@@ -44,13 +50,15 @@ void Player::Update()
 	Entity::Update();
 
 	glm::vec2 Direction = { 0, 0 };
-	glm::vec2 LeftThumbStick = { Input::GetInstance()->Players[0]->GetState().Gamepad.sThumbLX , Input::GetInstance()->Players[0]->GetState().Gamepad.sThumbLY };
+	glm::vec2 LeftThumbStick = { Input::GetInstance()->Players[m_iPlayerID]->GetState().Gamepad.sThumbLX , Input::GetInstance()->Players[m_iPlayerID]->GetState().Gamepad.sThumbLY };
 
-	if (LeftThumbStick.x > 150 || LeftThumbStick.x < -150)
+	std::cout << "Player " << m_iPlayerID << " current left stick " + glm::to_string(LeftThumbStick) << std::endl;
+
+	if (LeftThumbStick.x > 10000 || LeftThumbStick.x < -10000)
 	{
 		Direction.x = LeftThumbStick.x;
 	}
-	if (LeftThumbStick.y > 150 || LeftThumbStick.y < -150)
+	if (LeftThumbStick.y > 10000 || LeftThumbStick.y < -10000)
 	{
 		Direction.y = LeftThumbStick.y;
 	}
@@ -80,12 +88,12 @@ void Player::Update()
 	//else
 	//	v2Speed.y = 0;
 	
-	if (Input::GetInstance()->Players[0]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS) //Player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
+	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS) //Player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
 	{
 		v2Speed *= 10.0f;
 	}
 
-	if (Input::GetInstance()->Players[0]->ControllerButtons[LEFT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS)
+	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[LEFT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS)
 	{
 		std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
 		if (LevelRef)

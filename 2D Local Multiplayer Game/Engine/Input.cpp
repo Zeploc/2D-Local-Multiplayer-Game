@@ -103,6 +103,7 @@ void Input::Init()
 	//glutJoystickFunc(LJoystick, (float)GLUT_JOYSTICK_POLL_RATE / 100.0f);
 
 	Players.push_back(new XBOXController(1));
+	Players.push_back(new XBOXController(2));
 }
 
 /************************************************************

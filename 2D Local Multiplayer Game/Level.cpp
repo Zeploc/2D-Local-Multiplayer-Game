@@ -29,8 +29,11 @@ void BackToMenu();
 
 Level::Level(std::string sSceneName) : Scene(sSceneName)
 {
-	std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player({0, 0, 0}));
+	std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player({0, 0, 0}, 0));
 	AddEntity(PlayerEnt);
+
+	std::shared_ptr<Player> Player2Ent = std::make_shared<Player>(Player({ 3, 2, 0 }, 1));
+	AddEntity(Player2Ent);
 
 	std::shared_ptr<Entity> NewEnt = std::make_shared<Entity>(Entity({ { -2, 2, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png"));

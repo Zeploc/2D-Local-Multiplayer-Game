@@ -20,7 +20,7 @@ class Player :	public Entity
 {
 public:
 
-	Player(glm::vec3 StartPosition);
+	Player(glm::vec3 StartPosition, int PlayerID);
 	~Player();
 	
 	virtual void Update() override;
@@ -31,5 +31,7 @@ private:
 	void MoveVertical(bool bUp);
 	glm::vec2 v2Speed = { 0, 0};
 	float m_fCurrentPlayerSpeed = 3.0f;
+
+	int m_iPlayerID = -1;
 };
 
