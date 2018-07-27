@@ -17,25 +17,13 @@
 
 // Library Includes //
 #include <string>
-
-enum InputController
-{
-	BOTTOM_FACE_BUTTON = 0,
-	RIGHT_FACE_BUTTON = 1,
-	LEFT_FACE_BUTTON = 2,
-	TOP_FACE_BUTTON = 3,
-	LEFT_BUTTON = 4,
-	RIGHT_BUTTON = 5,
-	SPECIAL_BUTTON_LEFT = 6,
-	SPECIAL_BUTTON_RIGHT = 7,
-	LEFT_STICK_DOWN = 8,
-	RIGHT_STICK_DOWN = 9
-};
+#include <vector>
 
 #pragma once
 class Input
 {
 public:
+
 	enum InputState
 	{
 		INPUT_FIRST_RELEASE, // First frame of Up state
@@ -50,12 +38,13 @@ public:
 		MOUSE_RIGHT,
 	};
 	
-	
 	glm::vec2 MousePos;
 	unsigned int KeyState[255];
 	unsigned int MouseState[3];
-	unsigned int ControllerState[10];
+
 	glm::vec3 Axis = { 0, 0, 0 };
+
+	std::vector<class XBOXController*> Players;
 
 	void Init();
 	void processNormalKeysDown(unsigned char key, int x, int y);
@@ -63,7 +52,7 @@ public:
 	void processSpecialKeys(int key, int x, int y);
 	void MouseInput(int x, int y);
 	void MouseButton(int button, int state, int x, int y);
-	void Joystick(unsigned int buttonMask, int x, int y, int z);
+	//void Joystick(unsigned int buttonMask, int x, int y, int z);
 	void Update();
 
 	std::string InputStateString(unsigned int State);

@@ -20,6 +20,7 @@
 #include <freeglut.h>
 
 // Engine Includes //
+#include "CXBOXController.h"
 #include "Input.h"
 #include "UIButton.h"
 
@@ -32,18 +33,6 @@ void LprocessNormalKeysUp(unsigned char key, int x, int y);
 void LprocessSpecialKeys(int key, int x, int y);
 void LMouseInput(int x, int y);
 void LMouseButton(int button, int state, int x, int y);
-void LJoystick(unsigned int buttonMask, int x, int y, int z);
-
-#define Controller_Bottom_Face_Button 1
-#define Controller_Right_Face_Button 2
-#define Controller_Left_Face_Button 4
-#define Controller_Top_Face_Button 8
-#define Controller_Left_Button 16
-#define Controller_Right_Button 32
-#define Special_Left_Button 64
-#define Special_Right_Button 128
-#define Left_Stick_Down 256
-#define Right_Stick_Down 512
 
 
 /************************************************************
@@ -80,7 +69,6 @@ Input * Input::GetInstance()
 		m_pInput = new Input;
 		std::fill(m_pInput->KeyState, m_pInput->KeyState + 255, INPUT_RELEASED);
 		std::fill(m_pInput->MouseState, m_pInput->MouseState + 3, INPUT_RELEASED);
-		std::fill(m_pInput->ControllerState, m_pInput->ControllerState + 10, INPUT_RELEASED);
 	}
 	return m_pInput;
 }
@@ -112,7 +100,9 @@ void Input::Init()
 	glutPassiveMotionFunc(LMouseInput);
 	glutMouseFunc(LMouseButton);
 	glutMotionFunc(LMouseInput);
-	glutJoystickFunc(LJoystick, (float)GLUT_JOYSTICK_POLL_RATE / 100.0f);
+	//glutJoystickFunc(LJoystick, (float)GLUT_JOYSTICK_POLL_RATE / 100.0f);
+
+	Players.push_back(new XBOXController(1));
 }
 
 /************************************************************
@@ -195,118 +185,41 @@ void Input::MouseButton(int button, int state, int x, int y)
 
 }
 
-void Input::Joystick(unsigned int buttonMask, int x, int y, int z)
-{
-	bool ReleasedCheck[10];
-	for (int i = 0; i < 10; i++)
-	{
-		ReleasedCheck[i] = false;
-	}
-	if (buttonMask & 1024)
-	{
-		std::cout << "Different button pressed?\n";
-	}
-	if (buttonMask & Right_Stick_Down)
-	{
-		if (ControllerState[RIGHT_STICK_DOWN] != INPUT_HOLD)
-		{
-			ControllerState[RIGHT_STICK_DOWN] = INPUT_FIRST_PRESS;
-			std::cout << "RIGHT_STICK_DOWN Pressed\n";
-		}
-		ReleasedCheck[RIGHT_STICK_DOWN] = true;
-	}
-	if (buttonMask & Left_Stick_Down)
-	{
-		if (ControllerState[LEFT_STICK_DOWN] != INPUT_HOLD)
-		{
-			ControllerState[LEFT_STICK_DOWN] = INPUT_FIRST_PRESS;
-			std::cout << "LEFT_STICK_DOWN Pressed\n";
-		}
-		ReleasedCheck[LEFT_STICK_DOWN] = true;
-	}
-	if (buttonMask & Special_Right_Button)
-	{
-		if (ControllerState[SPECIAL_BUTTON_RIGHT] != INPUT_HOLD)
-		{
-			ControllerState[SPECIAL_BUTTON_RIGHT] = INPUT_FIRST_PRESS;
-			std::cout << "SPECIAL_BUTTON_RIGHT Pressed\n";
-		}
-		ReleasedCheck[SPECIAL_BUTTON_RIGHT] = true;
-	}
-	if (buttonMask & Special_Left_Button)
-	{
-		if (ControllerState[SPECIAL_BUTTON_LEFT] != INPUT_HOLD)
-		{
-			ControllerState[SPECIAL_BUTTON_LEFT] = INPUT_FIRST_PRESS;
-			std::cout << "SPECIAL_BUTTON_LEFT Pressed\n";
-		}
-		ReleasedCheck[SPECIAL_BUTTON_LEFT] = true;
-	}
-	if (buttonMask & Controller_Right_Button)
-	{
-		if (ControllerState[RIGHT_BUTTON] != INPUT_HOLD)
-		{
-			ControllerState[RIGHT_BUTTON] = INPUT_FIRST_PRESS;
-			std::cout << "RIGHT_BUTTON Pressed\n";
-		}
-		ReleasedCheck[RIGHT_BUTTON] = true;
-	}
-	if (buttonMask & Controller_Left_Button)
-	{
-		if (ControllerState[LEFT_BUTTON] != INPUT_HOLD)
-		{
-			ControllerState[LEFT_BUTTON] = INPUT_FIRST_PRESS;
-			std::cout << "LEFT_BUTTON Pressed\n";
-		}
-		ReleasedCheck[LEFT_BUTTON] = true;
-	}
-	if (buttonMask & Controller_Top_Face_Button)
-	{
-		if (ControllerState[TOP_FACE_BUTTON] != INPUT_HOLD)
-		{
-			ControllerState[TOP_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			std::cout << "TOP_FACE_BUTTON Pressed\n";
-		}
-		ReleasedCheck[TOP_FACE_BUTTON] = true;
-	}
-	if (buttonMask & Controller_Left_Face_Button)
-	{
-		if (ControllerState[LEFT_FACE_BUTTON] != INPUT_HOLD)
-		{
-			ControllerState[LEFT_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			std::cout << "LEFT_FACE_BUTTON Pressed\n";
-		}
-		ReleasedCheck[LEFT_FACE_BUTTON] = true;
-	}
-	if (buttonMask & Controller_Right_Face_Button)
-	{
-		if (ControllerState[RIGHT_FACE_BUTTON] != INPUT_HOLD)
-		{
-			ControllerState[RIGHT_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			std::cout << "RIGHT_FACE_BUTTON Pressed\n";
-		}
-		ReleasedCheck[RIGHT_FACE_BUTTON] = true;
-	}
-	if (buttonMask & Controller_Bottom_Face_Button)
-	{
-		if (ControllerState[BOTTOM_FACE_BUTTON] != INPUT_HOLD)
-		{
-			ControllerState[BOTTOM_FACE_BUTTON] = INPUT_FIRST_PRESS;
-			std::cout << "BOTTOM_FACE_BUTTON Pressed\n";
-		}
-		ReleasedCheck[BOTTOM_FACE_BUTTON] = true;
-	}
-
-	for (int i = 0; i < 10; i++)
-	{
-		if (!ReleasedCheck[i] && ControllerState[i] == INPUT_HOLD)
-		{
-			ControllerState[i] = INPUT_FIRST_RELEASE;
-			std::cout << i << " button released\n";
-		}
-	}
-	Axis = { x, y, z };
-}
+//void Input::Joystick(unsigned int buttonMask, int x, int y, int z)
+//{
+//	int iCurrentButton = 0;
+//	for (int i = 1; i <= 512; i *= 2)
+//	{
+//		if (buttonMask & i)
+//		{
+//			if (ControllerState[iCurrentButton] == INPUT_FIRST_PRESS)
+//			{
+//				ControllerState[iCurrentButton] = INPUT_HOLD;
+//			}
+//			else if (ControllerState[iCurrentButton] != INPUT_HOLD)
+//			{
+//				ControllerState[iCurrentButton] = INPUT_FIRST_PRESS;
+//				std::cout << iCurrentButton << " Pressed\n";
+//			}
+//		}
+//		else
+//		{
+//			if (ControllerState[iCurrentButton] == INPUT_HOLD)
+//			{
+//				ControllerState[iCurrentButton] = INPUT_FIRST_RELEASE;
+//			}
+//			else if (ControllerState[iCurrentButton] == INPUT_FIRST_RELEASE)
+//			{
+//				ControllerState[iCurrentButton] = INPUT_RELEASED;
+//			}
+//		}
+//		iCurrentButton++;
+//	}
+//	
+//	std::cout << "Button [" << buttonMask << "]\n";
+//
+//	Axis = { x, y, z };
+//}
 
 /************************************************************
 #--Description--#: 	Updated every frame
@@ -338,18 +251,11 @@ void Input::Update()
 			MouseState[i] = INPUT_HOLD;
 		}
 	}
-
-	for (int i = 0; i < 10; i++)
+	for (auto& player : Players)
 	{
-		if (ControllerState[i] == INPUT_FIRST_RELEASE)
-		{
-			ControllerState[i] = INPUT_RELEASED;
-		}
-		if (ControllerState[i] == INPUT_FIRST_PRESS)
-		{
-			ControllerState[i] = INPUT_HOLD;
-		}
+		player->Update();
 	}
+	
 	bKBHit = false;
 	UIButton::bButtonPressedThisFrame = false;
 }
@@ -432,7 +338,3 @@ void LMouseButton(int button, int state, int x, int y)
 	Input::GetInstance()->MouseButton(button, state, x, y);
 }
 
-void LJoystick(unsigned int buttonMask, int x, int y, int z)
-{
-	Input::GetInstance()->Joystick(buttonMask, x, y, z);
-}

@@ -20,6 +20,7 @@
 #include "Engine\Input.h"
 #include "Engine\Time.h"
 #include "Engine\SceneManager.h"
+#include "Engine\CXBOXController.h"
 
 // Local Includes //
 #include "Level.h"
@@ -42,34 +43,49 @@ void Player::Update()
 {
 	Entity::Update();
 
-	if (Input::GetInstance()->Axis.x > 100 || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_FIRST_PRESS)
-	{
-		MoveHorizontally(false);
-	}
-	else if (Input::GetInstance()->Axis.x < -100 || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_FIRST_PRESS)
-	{
-		MoveHorizontally(true);
-	}
-	else
-		v2Speed.x = 0;
+	glm::vec2 Direction = { 0, 0 };
+	glm::vec2 LeftThumbStick = { Input::GetInstance()->Players[0]->GetState().Gamepad.sThumbLX , Input::GetInstance()->Players[0]->GetState().Gamepad.sThumbLY };
 
-	if (Input::GetInstance()->Axis.y < -100 || Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_FIRST_PRESS)
+	if (LeftThumbStick.x > 150 || LeftThumbStick.x < -150)
 	{
-		MoveVertical(true);
+		Direction.x = LeftThumbStick.x;
 	}
-	else if (Input::GetInstance()->Axis.y > 100 || Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_FIRST_PRESS)
+	if (LeftThumbStick.y > 150 || LeftThumbStick.y < -150)
 	{
-		MoveVertical(false);
+		Direction.y = LeftThumbStick.y;
 	}
-	else
-		v2Speed.y = 0;
+	if (glm::length(Direction) > 0) Direction = glm::normalize(Direction);
+
+	v2Speed = Direction * m_fCurrentPlayerSpeed * (float)Time::dTimeDelta;
+
+	//if (Input::GetInstance()->Player1->GetState().Gamepad.sThumbLX > 150)// || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_FIRST_PRESS)
+	//{
+	//	MoveHorizontally(false);
+	//}
+	//else if (Input::GetInstance()->Player1->GetState().Gamepad.sThumbLX < -150)// || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_FIRST_PRESS)
+	//{
+	//	MoveHorizontally(true);
+	//}
+	//else
+	//	v2Speed.x = 0;
+
+	//if (Input::GetInstance()->Player1->GetState().Gamepad.sThumbLY > 150)// || Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_FIRST_PRESS)
+	//{
+	//	MoveVertical(true);
+	//}
+	//else if (Input::GetInstance()->Player1->GetState().Gamepad.sThumbLY < -150)// || Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_FIRST_PRESS)
+	//{
+	//	MoveVertical(false);
+	//}
+	//else
+	//	v2Speed.y = 0;
 	
-	if (Input::GetInstance()->ControllerState[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS)
+	if (Input::GetInstance()->Players[0]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS) //Player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
 	{
 		v2Speed *= 10.0f;
 	}
 
-	if (Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS)
+	if (Input::GetInstance()->Players[0]->ControllerButtons[LEFT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS)
 	{
 		std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
 		if (LevelRef)
