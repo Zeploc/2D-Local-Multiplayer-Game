@@ -28,5 +28,7 @@ public:
 	virtual void OnLoadScene() override;
 
 	std::shared_ptr<Entity> TestEntity;
+	std::shared_ptr<Entity> SphereRaycastTest;
+	std::shared_ptr<Entity> LocationBox;
 };
 

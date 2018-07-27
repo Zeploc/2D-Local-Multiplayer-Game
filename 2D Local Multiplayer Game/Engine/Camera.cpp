@@ -20,6 +20,7 @@
 #include <glm\gtc\type_ptr.hpp>
 #include <glm\gtc/matrix_transform.hpp>
 #include <glm\gtx\string_cast.hpp>
+#include <glm\gtx\rotate_vector.hpp>
 
 // Engine Includes //
 #include "Input.h"
@@ -66,6 +67,7 @@ void Camera::Update()
 {
 	/*if (m_ProjectionMode == PERSPECTIVE && m_bFPS)
 		FPSControls();*/
+	if (bUseSpectatorControls) SpectatorControls();
 	view = glm::lookAt(cameraPos,
 		cameraPos + cameraFront,
 		cameraUp);	
@@ -81,6 +83,35 @@ void Camera::MoveCamera(glm::vec3 _Movement)
 {
 	cameraPos += _Movement;
 	//SetMVP(Utils::Transform());
+}
+
+void Camera::SpectatorControls()
+{
+	glm::vec2 Offset = glm::vec2(Input::GetInstance()->MousePos - glm::vec2((float)SCR_WIDTH * 0.5f, (float)SCR_HEIGHT * 0.5f));
+	Offset *= MouseSensitivity;
+	Yaw -= Offset.x;
+	Pitch -= Offset.y;
+
+	glm::clamp((float)Pitch, 89.0f, -89.0f);
+	glm::vec3 frontVector(-cos(glm::radians(Pitch))*sin(glm::radians(Yaw)),
+		sin(glm::radians(Pitch)),
+		-cos(glm::radians(Pitch)) * cos(glm::radians(Yaw)));
+	cameraFront = glm::normalize(frontVector);
+
+	if (Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_HOLD)
+		cameraPos += cameraFront * cameraSpeed * 0.025f;
+	else if (Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_HOLD)
+		cameraPos -= cameraFront * cameraSpeed * 0.025f;
+
+	if (Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD)
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 0.025f;
+	else if (Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_HOLD)
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 0.025f;
+
+	if (Input::GetInstance()->KeyState[(unsigned char)' '] == Input::INPUT_HOLD)
+		cameraPos += cameraUp * cameraSpeed * 0.025f;
+
+	glutWarpPointer((float)SCR_WIDTH * 0.5f, (float)SCR_HEIGHT * 0.5f);	
 }
 
 /************************************************************

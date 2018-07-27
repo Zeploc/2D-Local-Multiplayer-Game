@@ -186,41 +186,6 @@ void Input::MouseButton(int button, int state, int x, int y)
 
 }
 
-//void Input::Joystick(unsigned int buttonMask, int x, int y, int z)
-//{
-//	int iCurrentButton = 0;
-//	for (int i = 1; i <= 512; i *= 2)
-//	{
-//		if (buttonMask & i)
-//		{
-//			if (ControllerState[iCurrentButton] == INPUT_FIRST_PRESS)
-//			{
-//				ControllerState[iCurrentButton] = INPUT_HOLD;
-//			}
-//			else if (ControllerState[iCurrentButton] != INPUT_HOLD)
-//			{
-//				ControllerState[iCurrentButton] = INPUT_FIRST_PRESS;
-//				std::cout << iCurrentButton << " Pressed\n";
-//			}
-//		}
-//		else
-//		{
-//			if (ControllerState[iCurrentButton] == INPUT_HOLD)
-//			{
-//				ControllerState[iCurrentButton] = INPUT_FIRST_RELEASE;
-//			}
-//			else if (ControllerState[iCurrentButton] == INPUT_FIRST_RELEASE)
-//			{
-//				ControllerState[iCurrentButton] = INPUT_RELEASED;
-//			}
-//		}
-//		iCurrentButton++;
-//	}
-//	
-//	std::cout << "Button [" << buttonMask << "]\n";
-//
-//	Axis = { x, y, z };
-//}
 
 /************************************************************
 #--Description--#: 	Updated every frame
@@ -282,6 +247,25 @@ std::string Input::InputStateString(unsigned int State)
 		default:
 			return "ERROR";
 	}
+}
+
+void Input::SetCursorVisible(bool _bIsVisible)
+{
+	if (_bIsVisible)
+	{
+		glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+	}
+	else
+	{
+		glutSetCursor(GLUT_CURSOR_NONE);
+	}
+	bCursorVisible = _bIsVisible;
+}
+
+void Input::ToggleCursorVisible()
+{
+	bCursorVisible = !bCursorVisible;
+	SetCursorVisible(bCursorVisible);
 }
 
 /************************************************************

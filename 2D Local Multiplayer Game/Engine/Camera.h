@@ -59,7 +59,24 @@ public:
 	void SetCameraPos(glm::vec3 NewPos) { cameraPos = NewPos; };
 
 	void MoveCamera(glm::vec3 _Movement);
+
+	void EnableSpectatorControls(bool _bSpectatorControls)
+	{
+		bUseSpectatorControls = _bSpectatorControls;
+	}
+	void ToggleSpectatorControls()
+	{
+		bUseSpectatorControls = !bUseSpectatorControls;
+	}
 private:
+	// FPS CONTROLLS
+	bool bUseSpectatorControls = false;
+
+	void SpectatorControls();
+	float MouseSensitivity = 0.15f;
+	float cameraSpeed = 5.0f;
+	GLfloat Yaw = 0.0f;
+	GLfloat Pitch = 0.0f;
 
 	glm::vec3 cameraPos;
 	glm::vec3 cameraFront;

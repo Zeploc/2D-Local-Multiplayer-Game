@@ -52,7 +52,7 @@ void Player::Update()
 	glm::vec2 Direction = { 0, 0 };
 	glm::vec2 LeftThumbStick = { Input::GetInstance()->Players[m_iPlayerID]->GetState().Gamepad.sThumbLX , Input::GetInstance()->Players[m_iPlayerID]->GetState().Gamepad.sThumbLY };
 
-	std::cout << "Player " << m_iPlayerID << " current left stick " + glm::to_string(LeftThumbStick) << std::endl;
+	//std::cout << "Player " << m_iPlayerID << " current left stick " + glm::to_string(LeftThumbStick) << std::endl;
 
 	if (LeftThumbStick.x > 10000 || LeftThumbStick.x < -10000)
 	{

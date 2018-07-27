@@ -74,8 +74,8 @@ int main(int argc, char **argv)
 {
 	srand(unsigned int(time(NULL)));
 	// init GLUT and create Window
-	CAM->Init(1280, 720, glm::vec3(0, 0, 3), glm::vec3(0, 0, -1), glm::vec3(0, 1.0f, 0.0f));
-	CAM->SwitchProjection(Camera::ORTHAGRAPHIC);
+	CAM->Init(1280, 720, glm::vec3(0, 0, 10), glm::vec3(0, 0, -1), glm::vec3(0, 1.0f, 0.0f));
+	CAM->SwitchProjection(Camera::PERSPECTIVE);
 	glutInit(&argc, argv);
 	//glutInitWindowPosition(0, 0);
 	glutInitWindowSize(CAM->SCR_WIDTH, CAM->SCR_HEIGHT);

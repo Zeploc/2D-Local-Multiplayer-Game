@@ -57,11 +57,16 @@ public:
 
 	std::string InputStateString(unsigned int State);
 
+	void SetCursorVisible(bool _bIsVisible);
+	void ToggleCursorVisible();
+	bool GetCursorVisible() { return bCursorVisible; };
+
 	bool bKBHit = false;
 	unsigned char cLastKey;
 
 private:
 
+	bool bCursorVisible = true;
 
 
 public:
