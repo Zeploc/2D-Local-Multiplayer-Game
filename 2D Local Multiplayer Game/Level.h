@@ -17,6 +17,7 @@
 
 // Engine Includes //
 #include "Engine\Scene.h"
+#include <Box2D.h>
 
 class Level : public Scene
 {
@@ -28,7 +29,13 @@ public:
 	virtual void OnLoadScene() override;
 
 	std::shared_ptr<Entity> TestEntity;
-	std::shared_ptr<Entity> SphereRaycastTest;
-	std::shared_ptr<Entity> LocationBox;
+
+	b2World world;
+	b2Body* body;
+
+	float32 timeStep;
+	int32 velocityIterations = 6;
+	int32 positionIterations = 2;
+
 };
 
