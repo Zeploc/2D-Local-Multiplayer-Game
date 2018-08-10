@@ -26,6 +26,7 @@
 // Engine Includes //
 #include "Utils.h"
 #include "Mesh.h"
+#include <Box2D.h>
 //#include "Plane.h"
 //#include "Sphere.h"
 //#include "Pyramid.h"
@@ -63,8 +64,12 @@ public:
 	Utils::Transform transform;
 	Utils::EANCHOR EntityAnchor;
 	std::shared_ptr<Mesh> EntityMesh;
-
+	
 	int GetEntityValue() { return iEntityID; };
+
+	// Box2D Physics
+	b2Body* body = nullptr;
+	void SetupB2Body(b2World& Box2DWorld, b2BodyType BodyType, bool bCanRotate = true, bool bHasFixture = true, float Density = 1.0f, float Friction = 0.3f);
 	
 protected:
 	bool bActive = true;

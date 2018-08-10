@@ -72,11 +72,13 @@ Plane::Plane(float fWidth, float fHeight, glm::vec4 _Colour, const char * _Textu
 #--Parameters--#:	Takes contructor values
 #--Return--#: 		NA
 ************************************************************/
-Plane::Plane(float _fWidth, float _fHeight, glm::vec4 _Colour, const char * TextureSource, glm::vec2 v2FrameCounts, int _iFPS)
+Plane::Plane(float _fWidth, float _fHeight, glm::vec4 _Colour, const char * _TextureSource, glm::vec2 v2FrameCounts, int _iFPS)
 {
 	m_fWidth = _fWidth;
 	m_fHeight = _fHeight;
+	m_iIndicies = 6;
 	Colour = _Colour;
+	TextureSource = _TextureSource;
 	bHasTexture = true;
 	AnimationInfo.iFPS = _iFPS;
 	m_fFrameCheck = 1.0f / AnimationInfo.iFPS;
@@ -86,7 +88,7 @@ Plane::Plane(float _fWidth, float _fHeight, glm::vec4 _Colour, const char * Text
 
 	// Get Image Dimensions
 	int width, height;
-	unsigned char* image = SOIL_load_image(TextureSource, &width, &height, 0, SOIL_LOAD_RGBA);
+	unsigned char* image = SOIL_load_image(_TextureSource, &width, &height, 0, SOIL_LOAD_RGBA);
 	SOIL_free_image_data(image);
 	AnimationInfo.v2FrameCount = v2FrameCounts;
 	AnimationInfo.v2EndFrame = v2FrameCounts;
@@ -106,18 +108,20 @@ Plane::Plane(float _fWidth, float _fHeight, glm::vec4 _Colour, const char * Text
 #--Parameters--#:	Takes contructor values
 #--Return--#: 		NA
 ************************************************************/
-Plane::Plane(float _fWidth, float _fHeight, glm::vec4 _Colour, const char * TextureSource, int iCount, bool bHorizontal)
+Plane::Plane(float _fWidth, float _fHeight, glm::vec4 _Colour, const char * _TextureSource, int iCount, bool bHorizontal)
 {
 	m_fWidth = _fWidth;
 	m_fHeight = _fHeight;
+	m_iIndicies = 6;
 	Colour = _Colour;
+	TextureSource = _TextureSource;
 	bHasTexture = true;
 	CollisionBox.fHeight = m_fHeight;
 	CollisionBox.fWidth = m_fWidth;
 	m_eShape = Utils::PLANE;
 
 	int width, height;
-	unsigned char* image = SOIL_load_image(TextureSource, &width, &height, 0, SOIL_LOAD_RGBA);
+	unsigned char* image = SOIL_load_image(_TextureSource, &width, &height, 0, SOIL_LOAD_RGBA);
 	SOIL_free_image_data(image);
 	float fImageRatio = (float)width / (float)height;
 	float fObjectRatio = _fHeight / _fWidth;

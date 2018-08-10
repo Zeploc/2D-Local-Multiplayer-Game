@@ -52,12 +52,22 @@ void Player::Update()
 	glm::vec2 Direction = { 0, 0 };
 	glm::vec2 LeftThumbStick = { Input::GetInstance()->Players[m_iPlayerID]->GetState().Gamepad.sThumbLX , Input::GetInstance()->Players[m_iPlayerID]->GetState().Gamepad.sThumbLY };
 
-	//std::cout << "Player " << m_iPlayerID << " current left stick " + glm::to_string(LeftThumbStick) << std::endl;
+	bool APressed = m_iPlayerID == 1 && (Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_FIRST_PRESS);
+	bool DPressed = m_iPlayerID == 1 && (Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_FIRST_PRESS);
 
 	if (LeftThumbStick.x > 10000 || LeftThumbStick.x < -10000)
 	{
 		Direction.x = LeftThumbStick.x;
 	}
+	else if (APressed || DPressed)
+	{
+		if (!(APressed && DPressed))
+		{
+			if (APressed) Direction.x = -1;
+			else Direction.x = 1;
+		}
+	}
+
 	if (LeftThumbStick.y > 10000 || LeftThumbStick.y < -10000)
 	{
 		Direction.y = LeftThumbStick.y;
@@ -65,32 +75,11 @@ void Player::Update()
 	if (glm::length(Direction) > 0) Direction = glm::normalize(Direction);
 
 	v2Speed = Direction * m_fCurrentPlayerSpeed * (float)Time::dTimeDelta;
-
-	//if (Input::GetInstance()->Player1->GetState().Gamepad.sThumbLX > 150)// || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_FIRST_PRESS)
-	//{
-	//	MoveHorizontally(false);
-	//}
-	//else if (Input::GetInstance()->Player1->GetState().Gamepad.sThumbLX < -150)// || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_FIRST_PRESS)
-	//{
-	//	MoveHorizontally(true);
-	//}
-	//else
-	//	v2Speed.x = 0;
-
-	//if (Input::GetInstance()->Player1->GetState().Gamepad.sThumbLY > 150)// || Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_FIRST_PRESS)
-	//{
-	//	MoveVertical(true);
-	//}
-	//else if (Input::GetInstance()->Player1->GetState().Gamepad.sThumbLY < -150)// || Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_FIRST_PRESS)
-	//{
-	//	MoveVertical(false);
-	//}
-	//else
-	//	v2Speed.y = 0;
-	
-	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS) //Player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
+			
+	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[32] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1))
 	{
-		v2Speed *= 10.0f;
+		//v2Speed *= 10.0f;
+		body->ApplyForce(b2Vec2(0, fJumpForce), body->GetWorldCenter(), false);
 	}
 
 	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[LEFT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS)
@@ -98,11 +87,31 @@ void Player::Update()
 		std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
 		if (LevelRef)
 		{
-			LevelRef->DestroyEntity(LevelRef->TestEntity);
+			for (auto& cPlayer : LevelRef->Players)
+			{
+				if (glm::distance(transform.Position, cPlayer->transform.Position) <= fSmackRange && cPlayer->m_iPlayerID != m_iPlayerID)
+				{
+					cPlayer->ApplyKnockback(glm::normalize(cPlayer->transform.Position - transform.Position));
+				}
+			}
+			//LevelRef->DestroyEntity(LevelRef->DynamicBoxEntity);
 		}
-	}
 
-	Translate(glm::vec3(v2Speed.x, v2Speed.y, 0));
+	}
+	v2Speed *= 100.0f;
+	if (body)
+	{
+		body->SetLinearVelocity(b2Vec2(v2Speed.x, body->GetLinearVelocity().y)); //>ApplyForce(b2Vec2(v2Speed.x, v2Speed.y), body->GetWorldCenter(), false);// 
+	}
+	//Translate(glm::vec3(v2Speed.x, v2Speed.y, 0));
+}
+
+void Player::ApplyKnockback(glm::vec2 Direction)
+{
+	Direction.x *= KnockbackSize;
+	if (Direction.y <= 0.1f) Direction.y = 0.1f;
+	std::cout << "Applying knockback to player " << m_iPlayerID << "by " << glm::to_string(Direction) << "\n";
+	body->ApplyLinearImpulseToCenter(b2Vec2(Direction.x, Direction.y), true);// body->GetWorldCenter(), false);
 }
 
 void Player::MoveHorizontally(bool bLeft)

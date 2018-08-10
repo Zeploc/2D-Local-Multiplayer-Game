@@ -17,6 +17,7 @@
 
 // Engine Includes //
 #include "Engine\Scene.h"
+#include "Engine\LogManager.h"
 #include <Box2D.h>
 
 class Level : public Scene
@@ -27,11 +28,13 @@ public:
 
 	virtual void Update() override;
 	virtual void OnLoadScene() override;
+	
+	std::vector<std::shared_ptr<class Player>> Players;
 
-	std::shared_ptr<Entity> TestEntity;
+	std::vector<b2Body*> Box2DCollisionObjects;
 
 	b2World world;
-	b2Body* body;
+	float gravity = 15.0f;
 
 	float32 timeStep;
 	int32 velocityIterations = 6;

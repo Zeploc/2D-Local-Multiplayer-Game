@@ -129,7 +129,12 @@ void Entity::BaseUpdate()
 ************************************************************/
 void Entity::Update()
 {
-
+	if (body)
+	{
+		b2Vec2 BodyPosition = body->GetPosition();
+		transform.Position = glm::vec3(BodyPosition.x, BodyPosition.y, 0.0f);
+		transform.Rotation.z = (body->GetAngle() / b2_pi) * 180;
+	}
 }
 
 /************************************************************
@@ -200,4 +205,43 @@ void Entity::Rotate(glm::vec3 Rotate)
 void Entity::SetScale(glm::vec3 _NewScale)
 {
 	transform.Scale = _NewScale;
+}
+
+void Entity::SetupB2Body(b2World & Box2DWorld, b2BodyType BodyType, bool bCanRotate, bool bHasFixture, float Density, float Friction)
+{
+	if (EntityMesh)
+	{
+		// Define the dynamic body. We set its position and call the body factory.
+		b2BodyDef bodyDef;
+		bodyDef.type = BodyType;
+		bodyDef.position.Set(transform.Position.x, transform.Position.y);
+		body = Box2DWorld.CreateBody(&bodyDef);
+		body->SetTransform(bodyDef.position, (transform.Rotation.z / 180) * b2_pi);
+		body->SetFixedRotation(!bCanRotate);
+
+		// Define another box shape for our dynamic body.
+		b2PolygonShape dynamicBox;
+		dynamicBox.SetAsBox(EntityMesh->m_fWidth / 2.0f, EntityMesh->m_fHeight / 2.0f);
+		if (bHasFixture)
+		{
+			// Define the dynamic body fixture.
+			b2FixtureDef fixtureDef;
+			fixtureDef.shape = &dynamicBox;
+			// Set the box density to be non-zero, so it will be dynamic.
+			fixtureDef.density = Density;
+			// Override the default friction.
+			fixtureDef.friction = Friction;
+
+			// Add the shape to the body.
+			body->CreateFixture(&fixtureDef);
+		}
+		else
+		{
+			body->CreateFixture(&dynamicBox, 0.0f);
+		}
+	}
+	else
+	{
+		LogManager::GetInstance()->DisplayLogMessage("Failed to add Box2D body to Entity #" + std::to_string(iEntityID) + ", Entity has no Mesh");
+	}
 }
