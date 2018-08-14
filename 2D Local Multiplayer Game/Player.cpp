@@ -49,7 +49,19 @@ void Player::Update()
 {
 	Entity::Update();
 
-	glm::vec2 Direction = { 0, 0 };
+	if (body)
+	{
+		CheckGroundRay Result;
+		b2Vec2 CurrentPosition = b2Vec2(transform.Position.x, transform.Position.y);
+		b2Vec2 EndPosition = CurrentPosition + b2Vec2(0.0f, -EntityMesh->m_fHeight / 2.0f - 0.05f);
+		body->GetWorld()->RayCast(&Result, CurrentPosition, EndPosition);
+		if (Result.Hit && !CanJump)
+		{
+			CanJump = true;
+		}
+	}
+
+	glm::vec2 Direction = { 0.0f, 0.0f };
 	glm::vec2 LeftThumbStick = { Input::GetInstance()->Players[m_iPlayerID]->GetState().Gamepad.sThumbLX , Input::GetInstance()->Players[m_iPlayerID]->GetState().Gamepad.sThumbLY };
 
 	bool APressed = m_iPlayerID == 1 && (Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD || Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_FIRST_PRESS);
@@ -73,16 +85,15 @@ void Player::Update()
 		Direction.y = LeftThumbStick.y;
 	}
 	if (glm::length(Direction) > 0) Direction = glm::normalize(Direction);
-
-	v2Speed = Direction * m_fCurrentPlayerSpeed * (float)Time::dTimeDelta;
-			
-	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[32] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1))
+		
+	if (CanJump && (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[32] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1)))
 	{
-		//v2Speed *= 10.0f;
-		body->ApplyForce(b2Vec2(0, fJumpForce), body->GetWorldCenter(), false);
+		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().y * body->GetMass() * 60.0f;
+		body->ApplyForce(b2Vec2(0, fJumpForce - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
+		CanJump = false;
 	}
 
-	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[LEFT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS)
+	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[LEFT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS  && m_iPlayerID == 1))
 	{
 		std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
 		if (LevelRef)
@@ -94,51 +105,81 @@ void Player::Update()
 					cPlayer->ApplyKnockback(glm::normalize(cPlayer->transform.Position - transform.Position));
 				}
 			}
-			//LevelRef->DestroyEntity(LevelRef->DynamicBoxEntity);
 		}
-
 	}
-	v2Speed *= 100.0f;
+	
 	if (body)
 	{
-		body->SetLinearVelocity(b2Vec2(v2Speed.x, body->GetLinearVelocity().y)); //>ApplyForce(b2Vec2(v2Speed.x, v2Speed.y), body->GetWorldCenter(), false);// 
+		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().x * body->GetMass() * 60.0f;
+		float ForceToApply = MaxSpeed * body->GetMass() * 60.0f;
+
+		body->GetFixtureList()->SetFriction(0.0f);
+
+		// No outside forces applying
+		if (!OutsideForcesApplying)
+		{
+			// Trys to move right, and is not currently moving right
+			if (Direction.x > 0 && body->GetLinearVelocity().x < MaxSpeed)
+			{
+				body->ApplyForce(b2Vec2(Direction.x * ForceToApply - ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);//>SetLinearVelocity(b2Vec2(v2Speed.x, body->GetLinearVelocity().y)); //
+			}
+			// Trys to move left, and is not currently moving left
+			else if (Direction.x < 0 && body->GetLinearVelocity().x > -MaxSpeed)
+			{
+				body->ApplyForce(b2Vec2(Direction.x * ForceToApply - ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);//>SetLinearVelocity(b2Vec2(v2Speed.x, body->GetLinearVelocity().y)); //
+			}
+			// Body is moving but input not moving
+			else if (Direction.x == 0.0f)
+			{
+				body->ApplyForce(b2Vec2(-ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);
+			}
+		}
+		// Outside forces applying
+		else if (OutsideForcesApplying)
+		{			
+			// Being knocked back
+			if (KnockedBackTimer > 0)
+			{
+				KnockedBackTimer -= Time::dTimeDelta;
+				if (KnockedBackTimer <= 0.0f)
+					KnockedBackTimer = 0.0f;
+			}
+			// Nnockback timer finished and is trying to move
+			else if (abs(Direction.x) > 0.2f)
+			{
+				if (abs(body->GetLinearVelocity().x) <= MaxSpeed)
+				{
+					OutsideForcesApplying = false;
+				}
+				else
+				{
+					float ForceToApply = KnockedBackAirControl * body->GetMass() *60.0f;
+					body->ApplyForce(b2Vec2(Direction.x * ForceToApply, 0.0f), body->GetWorldCenter(), true);
+				}
+			}
+			
+			body->GetFixtureList()->SetFriction(NormalFriction);
+		}		
+		if (m_iPlayerID == 1) std::cout << "Velocity " << body->GetLinearVelocity().x << ", " << body->GetLinearVelocity().y << " with friction " << body->GetFixtureList()->GetFriction() << std::endl;
 	}
-	//Translate(glm::vec3(v2Speed.x, v2Speed.y, 0));
+}
+
+void Player::Reset()
+{
+	CanJump = true;
+	OutsideForcesApplying = false;
+	KnockedBackTimer = 0.0f;
 }
 
 void Player::ApplyKnockback(glm::vec2 Direction)
 {
-	Direction.x *= KnockbackSize;
-	if (Direction.y <= 0.1f) Direction.y = 0.1f;
+	if (KnockbackPercentage <= 0.9) KnockbackPercentage += 0.1f;
+	if (Direction.y >= -0.1f && Direction.y <= 0.1f)
+		Direction.y = 0.5f;
+	Direction *= BaseKnockbackSize + KnockbackModifierSize * KnockbackPercentage;
 	std::cout << "Applying knockback to player " << m_iPlayerID << "by " << glm::to_string(Direction) << "\n";
-	body->ApplyLinearImpulseToCenter(b2Vec2(Direction.x, Direction.y), true);// body->GetWorldCenter(), false);
+	body->ApplyForceToCenter(b2Vec2(Direction.x, Direction.y), true);
+	OutsideForcesApplying = true;
+	KnockedBackTimer = KnockBackControlTime;
 }
 
-void Player::MoveHorizontally(bool bLeft)
-{
-	int Direction;
-	if (bLeft) Direction = -1;
-	else Direction = 1;
-	
-	if (bLeft)
-		v2Speed.x = -m_fCurrentPlayerSpeed * (float)Time::dTimeDelta;
-	else
-		v2Speed.x = m_fCurrentPlayerSpeed * (float)Time::dTimeDelta;
-	return;
-		
-}
-
-void Player::MoveVertical(bool bUp)
-{
-	int Direction;
-	if (bUp) Direction = -1;
-	else Direction = 1;
-
-	if (bUp)
-		v2Speed.y = m_fCurrentPlayerSpeed * (float)Time::dTimeDelta;
-	else
-		v2Speed.y = -m_fCurrentPlayerSpeed * (float)Time::dTimeDelta;
-	return;
-
-	
-}

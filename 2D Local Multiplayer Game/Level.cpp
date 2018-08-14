@@ -38,17 +38,23 @@ void BackToMenu();
 
 Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10.0f))
 {
+	// Not collide with bodys with a group index 0f -1
+	b2Filter NoPlayerCollisionFilter;
+	NoPlayerCollisionFilter.groupIndex = -1;
+
 	std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player({0, -2, 0}, 0));
 	AddEntity(PlayerEnt);
-	PlayerEnt->SetupB2Body(world, b2_dynamicBody, false, true, 1.0f, 0.0f);
+	PlayerEnt->SetupB2Body(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
 	Box2DCollisionObjects.push_back(PlayerEnt->body);
 	Players.push_back(PlayerEnt);
+	PlayerEnt->body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
 
 	std::shared_ptr<Player> Player2Ent = std::make_shared<Player>(Player({ 3, 2, 0 }, 1));
 	AddEntity(Player2Ent);
-	Player2Ent->SetupB2Body(world, b2_dynamicBody, false, true, 1.0f, 0.0f);
+	Player2Ent->SetupB2Body(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
 	Box2DCollisionObjects.push_back(Player2Ent->body);
 	Players.push_back(Player2Ent);
+	Player2Ent->body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
 
 	std::shared_ptr<Entity> BottomPlatform = std::make_shared<Entity>(Entity({ { 0, -3.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(10.0f, 1.0f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
@@ -57,21 +63,21 @@ Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10
 	BottomPlatform->SetupB2Body(world, b2_staticBody, false, false);
 	Box2DCollisionObjects.push_back(BottomPlatform->body);
 
-	std::shared_ptr<Entity> MiddlePlatform = std::make_shared<Entity>(Entity({ { 0, 1.5f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
+	std::shared_ptr<Entity> MiddlePlatform = std::make_shared<Entity>(Entity({ { 0, 1.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> MiddlePlatformImage = std::make_shared<Plane>(Plane(6.0f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
 	MiddlePlatform->AddMesh(MiddlePlatformImage);
 	AddEntity(MiddlePlatform);
 	MiddlePlatform->SetupB2Body(world, b2_staticBody, false, false);
 	Box2DCollisionObjects.push_back(MiddlePlatform->body);
 
-	std::shared_ptr<Entity> LeftPlatform = std::make_shared<Entity>(Entity({ { -5.0f, -0.5f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
+	std::shared_ptr<Entity> LeftPlatform = std::make_shared<Entity>(Entity({ { -5.0f, -1.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> LeftPlatformImage = std::make_shared<Plane>(Plane(3.0f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
 	LeftPlatform->AddMesh(LeftPlatformImage);
 	AddEntity(LeftPlatform);
 	LeftPlatform->SetupB2Body(world, b2_staticBody, false, false);
 	Box2DCollisionObjects.push_back(LeftPlatform->body);
 
-	std::shared_ptr<Entity> RightPlatform = std::make_shared<Entity>(Entity({ { 5.0f, -0.5f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
+	std::shared_ptr<Entity> RightPlatform = std::make_shared<Entity>(Entity({ { 5.0f, -1.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> RightPlatformImage = std::make_shared<Plane>(Plane(3.0f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
 	RightPlatform->AddMesh(RightPlatformImage);
 	AddEntity(RightPlatform);
@@ -105,22 +111,7 @@ Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10
 	//bIsPersistant = true;	
 	world.SetGravity(b2Vec2(0.0f, -gravity));
 
-	//// Define the ground body.
-	//b2BodyDef groundBodyDef;
-	//groundBodyDef.position.Set(0.0f, -3.0f);
-	//NewEnt->transform.Position = glm::vec3(0.0f, -3.0f, 0.0f);
-
-	//// Call the body factory which allocates memory for the ground body
-	//// from a pool and creates the ground box shape (also from a pool).
-	//// The body is also added to the world.
-	//b2Body* groundBody = world.CreateBody(&groundBodyDef);
-	//// Define the ground box shape.
-	//b2PolygonShape groundBox;
-	//// The extents are the half-widths of the box.
-	//groundBox.SetAsBox(20.0f, 1.0f);
-	//// Add the ground fixture to the ground body.
-	//groundBody->CreateFixture(&groundBox, 0.0f);
-	
+	Camera::GetInstance()->SetWindowScale(CameraClosestZoom);
 
 	timeStep = 1.0f / 60.0f;
 }
@@ -134,15 +125,32 @@ Level::~Level()
 void Level::Update()
 {
 	Scene::Update();
-		
-	world.Step(1.0f / 60.0f, 6, 2);
-	for (auto& CollisionObject : Box2DCollisionObjects)
+	
+	world.Step(timeStep, 6, 2);
+
+	float RangeOutsideClosetView = 0.0f;
+
+	auto Endit = Players.end();
+
+	for (auto it = Players.begin(); it != Endit;)
 	{
-		b2Vec2 CubePos = CollisionObject->GetPosition();
-		/*CollisionObject.EntityObject->transform.Position = glm::vec3(CubePos.x, CubePos.y, 0.0f);
-		CollisionObject.EntityObject->transform.Rotation.z = (CollisionObject.body->GetAngle() / b2_pi) * 180;*/
-		//printf("%4.2f %4.2f %4.2f\n", CubePos.x, CubePos.y, (CollisionObject->GetAngle() / b2_pi) * 180);
-	}	
+		if ((*it)->transform.Position.x < -CameraCloseRange || (*it)->transform.Position.x > CameraCloseRange)
+		{
+			float PDist = abs((*it)->transform.Position.x) - CameraCloseRange;
+			if (PDist > RangeOutsideClosetView) RangeOutsideClosetView = PDist;
+		}
+		// Check if they've fallen out
+		if ((*it)->transform.Position.y < PlayerFalloutYPosition)
+		{
+			it = Players.erase(it);
+			Endit = Players.end();
+			DestroyEntity(*it);
+			continue;
+		}
+		++it;
+	}
+	float NewZoom = glm::clamp(CameraClosestZoom - RangeOutsideClosetView * CameraZoomOutMultiplyer, CameraFurthestZoom, CameraClosestZoom);
+	Camera::GetInstance()->SetWindowScale(NewZoom);
 }
 
 void Level::OnLoadScene()

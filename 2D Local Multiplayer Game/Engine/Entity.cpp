@@ -156,6 +156,8 @@ void Entity::Reset()
 	EntityAnchor = EntityInitialState.EntityAnchor;
 	iEntityID = EntityInitialState.iEntityID;
 	transform = EntityInitialState.transform;
+	body->SetTransform(b2Vec2(transform.Position.x, transform.Position.y), transform.Rotation.z);
+	body->SetAwake(true);
 	// Reset Entity Mesh
 	EntityMesh->Reset();
 }
