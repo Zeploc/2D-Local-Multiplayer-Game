@@ -142,9 +142,9 @@ void Level::Update()
 		// Check if they've fallen out
 		if ((*it)->transform.Position.y < PlayerFalloutYPosition)
 		{
+			DestroyEntity(*it);
 			it = Players.erase(it);
 			Endit = Players.end();
-			DestroyEntity(*it);
 			continue;
 		}
 		++it;
