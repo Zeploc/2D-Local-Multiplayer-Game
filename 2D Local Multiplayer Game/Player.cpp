@@ -33,7 +33,7 @@ Player::Player(glm::vec3 StartPosition, int PlayerID)
 	: Entity({ StartPosition , {0, 0, 0}, {1, 1, 1} }, Utils::CENTER)
 {
 	std::shared_ptr<Plane> NewImage;
-	if (PlayerID == 1) NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.4f, 1.0f, 0.6f, 1.0f }, "Resources/Images/Box.png"));
+	if (PlayerID == 1) NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, "Resources/Images/office-square.png"));
 	else NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, "Resources/Images/Box.png"));
 	AddMesh(NewImage);
 	NewImage->bCullFace = false;
