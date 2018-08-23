@@ -15,6 +15,13 @@
 #pragma once
 // Engine Includes //
 #include "Engine\Entity.h"
+#include "Engine/SceneManager.h"
+
+// Library Includes //
+#include <vector>
+
+// Local Includes //
+#include "Level.h"
 
 class Player :	public Entity
 {
@@ -27,6 +34,7 @@ public:
 	virtual void Reset();
 
 	void ApplyKnockback(glm::vec2 Direction);
+	void AttemptMelee();
 
 private:
 	// Movement
@@ -74,3 +82,38 @@ public:
 	bool Hit = false;
 };
 
+class PlayerRay : public b2RayCastCallback
+{
+public:
+	PlayerRay(std::shared_ptr<Entity> _OwningPlayer)
+	{
+		OwningPlayer = std::dynamic_pointer_cast<Player>(_OwningPlayer);
+		//m_fixture = NULL;
+	}
+
+	float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
+	{
+		//m_fixture = fixture;
+		m_point = point;
+		m_normal = normal;
+		m_fraction = fraction;
+		Hit = true;
+
+		std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
+		for (auto& player : LevelRef->Players)
+		{
+			if (fixture->GetBody() == player->body && player != OwningPlayer)
+			{
+				// Push to vector result
+				m_PlayerFixtureHits.push_back(player);
+			}
+		}
+		return fraction;
+	}
+	std::shared_ptr<Player> OwningPlayer;
+	std::vector<std::shared_ptr<Player>> m_PlayerFixtureHits;
+	b2Vec2 m_point;
+	b2Vec2 m_normal;
+	float32 m_fraction;
+	bool Hit = false;
+};

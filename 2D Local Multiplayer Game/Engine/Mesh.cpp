@@ -70,7 +70,8 @@ void Mesh::Render(Utils::Transform Newtransform)
 		glUniform1f(glGetUniformLocation(program, "ReflectionSize"), 0.1f);
 
 	}
-	glEnable(GL_CULL_FACE);
+	if (bCullFace) glEnable(GL_CULL_FACE);
+	else glDisable(GL_CULL_FACE);
 	Camera::GetInstance()->SetMVP(Newtransform, program);
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, m_iIndicies, GL_UNSIGNED_INT, 0);

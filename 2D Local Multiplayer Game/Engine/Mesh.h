@@ -75,6 +75,7 @@ public:
 	bool bHasTexture = false;
 	int m_iIndicies;
 	LightInfo LightProperties;
+	bool bCullFace = true;
 	//std::shared_ptr<Entity> EntityRef;
 protected:
 	std::shared_ptr<CollisionBounds> MeshCollisionBounds;

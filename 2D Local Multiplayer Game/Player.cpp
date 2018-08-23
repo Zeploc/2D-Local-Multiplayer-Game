@@ -36,6 +36,7 @@ Player::Player(glm::vec3 StartPosition, int PlayerID)
 	if (PlayerID == 1) NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.4f, 1.0f, 0.6f, 1.0f }, "Resources/Images/Box.png"));
 	else NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, "Resources/Images/Box.png"));
 	AddMesh(NewImage);
+	NewImage->bCullFace = false;
 	m_iPlayerID = PlayerID;
 }
 
@@ -85,6 +86,11 @@ void Player::Update()
 		Direction.y = LeftThumbStick.y;
 	}
 	if (glm::length(Direction) > 0) Direction = glm::normalize(Direction);
+
+	if (Direction.x < 0 && transform.Scale.x >= 0)
+		transform.Scale.x = -1.0f;
+	else if (Direction.x > 0 && transform.Scale.x <= 0)
+		transform.Scale.x = 1.0f;
 		
 	if (CanJump && (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[32] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1)))
 	{
@@ -95,17 +101,7 @@ void Player::Update()
 
 	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[LEFT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS  && m_iPlayerID == 1))
 	{
-		std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
-		if (LevelRef)
-		{
-			for (auto& cPlayer : LevelRef->Players)
-			{
-				if (glm::distance(transform.Position, cPlayer->transform.Position) <= fSmackRange && cPlayer->m_iPlayerID != m_iPlayerID)
-				{
-					cPlayer->ApplyKnockback(glm::normalize(cPlayer->transform.Position - transform.Position));
-				}
-			}
-		}
+		AttemptMelee();
 	}
 	
 	if (body)
@@ -181,5 +177,30 @@ void Player::ApplyKnockback(glm::vec2 Direction)
 	body->ApplyForceToCenter(b2Vec2(Direction.x, Direction.y), true);
 	OutsideForcesApplying = true;
 	KnockedBackTimer = KnockBackControlTime;
+}
+
+void Player::AttemptMelee()
+{
+	PlayerRay Result(this->shared_from_this());
+	b2Vec2 CurrentPosition = b2Vec2(transform.Position.x, transform.Position.y);
+	b2Vec2 EndPosition = CurrentPosition + b2Vec2((EntityMesh->m_fWidth / 2.0f + fSmackRange) * transform.Scale.x, 0.0f);
+	body->GetWorld()->RayCast(&Result, CurrentPosition, EndPosition);
+	for (int i = 0; i < Result.m_PlayerFixtureHits.size(); i++)
+	{
+		Result.m_PlayerFixtureHits[i]->ApplyKnockback(Result.m_PlayerFixtureHits[i]->transform.Position - transform.Position);
+		//std::cout << "Hit Player " << Result.m_PlayerFixtureHits[i]->m_iPlayerID << std::endl;
+	}
+
+	/*std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
+	if (LevelRef)
+	{
+		for (auto& cPlayer : LevelRef->Players)
+		{
+			if (glm::distance(transform.Position, cPlayer->transform.Position) <= fSmackRange && cPlayer->m_iPlayerID != m_iPlayerID)
+			{
+				cPlayer->ApplyKnockback(glm::normalize(cPlayer->transform.Position - transform.Position));
+			}
+		}
+	}*/
 }
 
