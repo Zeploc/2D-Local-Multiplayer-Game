@@ -108,6 +108,18 @@ Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10
 	QuitBtn->AddText("Back to Menu", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	AddUIElement(QuitBtn);
 
+	std::shared_ptr<UIText> KnockbackPercentage1(new UIText(glm::vec2(50, Camera::GetInstance()->SCR_HEIGHT -40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
+	AddUIElement(KnockbackPercentage1);
+
+	std::shared_ptr<UIText> KnockbackPercentage2(new UIText(glm::vec2(400, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
+	AddUIElement(KnockbackPercentage2);
+
+	std::shared_ptr<UIText> KnockbackPercentage3(new UIText(glm::vec2(800, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
+	AddUIElement(KnockbackPercentage3);
+
+	std::shared_ptr<UIText> KnockbackPercentage4(new UIText(glm::vec2(1200, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
+	AddUIElement(KnockbackPercentage4);
+	//KnockbackPercentage1->DrawUIElement();
 	//bIsPersistant = true;	
 	world.SetGravity(b2Vec2(0.0f, -gravity));
 
