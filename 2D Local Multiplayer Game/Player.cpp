@@ -33,11 +33,16 @@ Player::Player(glm::vec3 StartPosition, int PlayerID)
 	: Entity({ StartPosition , {0, 0, 0}, {1, 1, 1} }, Utils::CENTER)
 {
 	std::shared_ptr<Plane> NewImage;
-	if (PlayerID == 1) NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, "Resources/Images/office-square.png"));
+	if (PlayerID == 1) NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, NormalImage));
 	else NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, "Resources/Images/Box.png"));
 	AddMesh(NewImage);
 	NewImage->bCullFace = false;
 	m_iPlayerID = PlayerID;
+
+	// Define another Circle shape for our dynamic body.
+	circleShape.m_radius = EntityMesh->m_fHeight / 2.0f;
+
+	boxShape.SetAsBox(EntityMesh->m_fWidth / 2.0f, EntityMesh->m_fHeight / 2.0f);
 }
 
 
@@ -59,6 +64,48 @@ void Player::Update()
 		if (Result.Hit && !CanJump)
 		{
 			CanJump = true;
+		}
+
+		if ((Input::GetInstance()->KeyState[(unsigned char)'g'] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[TOP_FACE_BUTTON] == Input::INPUT_FIRST_PRESS)
+		{
+			bIsRollingMode = !bIsRollingMode;
+
+			b2Fixture *fixtureA = body->GetFixtureList();
+			body->DestroyFixture(fixtureA);
+
+			// Define the dynamic body fixture.
+			b2FixtureDef fixtureDef;
+			if (bIsRollingMode)
+			{
+				fixtureDef.shape = &circleShape;
+				// Override the default friction.
+				fixtureDef.friction = RollingFriction;
+				body->SetAngularDamping(RollingAngularDamping);
+				body->SetFixedRotation(false);
+				std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = BallImage;
+				EntityMesh->Rebind();
+			}
+			else
+			{
+				fixtureDef.shape = &boxShape;
+				// Override the default friction.
+				fixtureDef.friction = NormalFriction;
+				body->SetTransform(body->GetPosition(), 0.0f);
+				body->SetAngularDamping(0.0f);
+				body->SetFixedRotation(true);
+				std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = NormalImage;
+				EntityMesh->Rebind();
+			}
+
+			// Not collide with bodys with a group index 0f -1
+			b2Filter NoPlayerCollisionFilter;
+			NoPlayerCollisionFilter.groupIndex = -1;
+			fixtureDef.filter = NoPlayerCollisionFilter;
+			// Set the box density to be non-zero, so it will be dynamic.
+			fixtureDef.density = 5.0f;
+			
+			// Add the shape to the body.
+			body->CreateFixture(&fixtureDef);
 		}
 	}
 
@@ -109,29 +156,43 @@ void Player::Update()
 		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().x * body->GetMass() * 60.0f;
 		float ForceToApply = MaxSpeed * body->GetMass() * 60.0f;
 
-		body->GetFixtureList()->SetFriction(0.0f);
 
+		//if (bIsRollingMode)
 		// No outside forces applying
 		if (!OutsideForcesApplying)
 		{
-			// Trys to move right, and is not currently moving right
-			if (Direction.x > 0 && body->GetLinearVelocity().x < MaxSpeed)
+			// Trys to move sideways
+			if ((Direction.x > 0 && body->GetLinearVelocity().x < MaxSpeed) || (Direction.x < 0 && body->GetLinearVelocity().x > -MaxSpeed))
 			{
-				body->ApplyForce(b2Vec2(Direction.x * ForceToApply - ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);//>SetLinearVelocity(b2Vec2(v2Speed.x, body->GetLinearVelocity().y)); //
+				if (!bIsRollingMode)
+					body->ApplyForce(b2Vec2(Direction.x * ForceToApply - ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);
+				else
+					body->ApplyForce(b2Vec2(Direction.x * RollingAccelerateSpeed, 0.0f), body->GetWorldCenter(), true);
+
+				if (!bIsRollingMode) body->GetFixtureList()->SetFriction(0.0f);
 			}
-			// Trys to move left, and is not currently moving left
-			else if (Direction.x < 0 && body->GetLinearVelocity().x > -MaxSpeed)
-			{
-				body->ApplyForce(b2Vec2(Direction.x * ForceToApply - ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);//>SetLinearVelocity(b2Vec2(v2Speed.x, body->GetLinearVelocity().y)); //
-			}
+			//// Trys to move left, and is not currently moving left
+			//else if ()
+			//{
+			//	if (!bIsRollingMode)
+			//		body->ApplyForce(b2Vec2(Direction.x * ForceToApply - ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);
+			//	else
+			//		body->ApplyForce(b2Vec2(Direction.x * RollingAccelerateSpeed, 0.0f), body->GetWorldCenter(), true);
+
+			//	if (!bIsRollingMode) body->GetFixtureList()->SetFriction(0.0f);
+			//}
 			// Body is moving but input not moving
 			else if (Direction.x == 0.0f)
 			{
-				body->ApplyForce(b2Vec2(-ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);
+				if (!bIsRollingMode)
+				{
+					body->ApplyForce(b2Vec2(-ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);
+					body->GetFixtureList()->SetFriction(NormalFriction);
+				}
 			}
 		}
 		// Outside forces applying
-		else if (OutsideForcesApplying)
+		else if (OutsideForcesApplying && !bIsRollingMode)
 		{			
 			// Being knocked back
 			if (KnockedBackTimer > 0)
@@ -154,7 +215,8 @@ void Player::Update()
 				}
 			}
 			
-			body->GetFixtureList()->SetFriction(NormalFriction);
+			if (!bIsRollingMode) body->GetFixtureList()->SetFriction(NormalFriction);
+			else  body->GetFixtureList()->SetFriction(RollingFriction);
 		}		
 		if (m_iPlayerID == 1) std::cout << "Velocity " << body->GetLinearVelocity().x << ", " << body->GetLinearVelocity().y << " with friction " << body->GetFixtureList()->GetFriction() << std::endl;
 	}
@@ -182,7 +244,7 @@ void Player::ApplyKnockback(glm::vec2 Direction)
 void Player::AttemptMelee()
 {
 	PlayerRay Result(this->shared_from_this());
-	b2Vec2 CurrentPosition = b2Vec2(transform.Position.x, transform.Position.y);
+	b2Vec2 CurrentPosition = b2Vec2(transform.Position.x + (EntityMesh->m_fWidth / 2.0f) * -transform.Scale.x, transform.Position.y);
 	b2Vec2 EndPosition = CurrentPosition + b2Vec2((EntityMesh->m_fWidth / 2.0f + fSmackRange) * transform.Scale.x, 0.0f);
 	body->GetWorld()->RayCast(&Result, CurrentPosition, EndPosition);
 	for (int i = 0; i < Result.m_PlayerFixtureHits.size(); i++)
@@ -191,16 +253,5 @@ void Player::AttemptMelee()
 		//std::cout << "Hit Player " << Result.m_PlayerFixtureHits[i]->m_iPlayerID << std::endl;
 	}
 
-	/*std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
-	if (LevelRef)
-	{
-		for (auto& cPlayer : LevelRef->Players)
-		{
-			if (glm::distance(transform.Position, cPlayer->transform.Position) <= fSmackRange && cPlayer->m_iPlayerID != m_iPlayerID)
-			{
-				cPlayer->ApplyKnockback(glm::normalize(cPlayer->transform.Position - transform.Position));
-			}
-		}
-	}*/
 }
 
