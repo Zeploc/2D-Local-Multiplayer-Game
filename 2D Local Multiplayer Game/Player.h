@@ -53,6 +53,15 @@ private:
 	bool CanJump = true;
 	float KnockedBackTimer = 0.0f;
 
+	float RollingFriction = 0.7f;
+	float RollingAngularDamping = 2.5f;
+	float RollingAccelerateSpeed = 80.0f;
+	bool bIsRollingMode = false;
+	b2CircleShape circleShape;
+	b2PolygonShape boxShape;
+
+	const char* NormalImage = "Resources/Images/office-square.png";
+	const char* BallImage = "Resources/Images/OfficeBall.png";
 
 	int m_iPlayerID = -1;
 };

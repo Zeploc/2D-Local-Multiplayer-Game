@@ -33,6 +33,8 @@ public:
 
 	std::vector<b2Body*> Box2DCollisionObjects;
 
+	std::shared_ptr<Entity> CircleEntity;
+
 	b2World world;
 	float gravity = 15.0f;
 
