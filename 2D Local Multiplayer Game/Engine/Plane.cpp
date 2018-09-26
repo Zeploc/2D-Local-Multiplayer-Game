@@ -163,8 +163,16 @@ void Plane::BindPlane()
 {
 	float fHalfWidth = m_fWidth / 2;
 	float fHalfHeight = m_fHeight / 2;
-
+	
 	GLfloat vertices[] = {
+		// Positions						// Colors									// Tex Coords
+		-fHalfWidth, fHalfHeight, 0.0f,		Colour.r, Colour.g, Colour.b, Colour.a,		// Top Left
+		fHalfWidth, fHalfHeight, 0.0f,		Colour.r, Colour.g, Colour.b, Colour.a,		// Top Right
+		fHalfWidth, -fHalfHeight, 0.0f,		Colour.r, Colour.g, Colour.b, Colour.a,		// Bottom Right
+		-fHalfWidth, -fHalfHeight, 0.0f,	Colour.r, Colour.g, Colour.b, Colour.a,		// Bottom Left
+	};
+
+	GLfloat Texturedvertices[] = {
 		// Positions						// Colors									// Tex Coords
 		-fHalfWidth, fHalfHeight, 0.0f,		Colour.r, Colour.g, Colour.b, Colour.a,		UVCoords.x, UVCoords.z,	// Top Left
 		fHalfWidth, fHalfHeight, 0.0f,		Colour.r, Colour.g, Colour.b, Colour.a,		UVCoords.y, UVCoords.z, // Top Right
@@ -178,7 +186,10 @@ void Plane::BindPlane()
 	};
 	// If no texture, texture source is equal to ""
 	vao = Shader::CreateBuffer(TextureSource, texture, true);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	if (TextureSource != "")
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Texturedvertices), Texturedvertices, GL_STATIC_DRAW);
+	else
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 

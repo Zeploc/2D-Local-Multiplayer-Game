@@ -33,9 +33,7 @@ public:
 	void DeleteScene();
 	virtual void RenderScene();
 
-	void AddEntity(std::shared_ptr<Entity> _Entity);
-	std::shared_ptr<Entity> AddEntity(Utils::Transform _Transform, float _fWidth, float _fHeight, Utils::EANCHOR _Anchor, glm::vec4 _Colour);
-	std::shared_ptr<Entity> AddEntity(Utils::Transform _Transform, float _fWidth, float _fHeight, Utils::EANCHOR _Anchor, glm::vec4 _Colour, const char* TextureSource, int iCount, bool bHorizontal);
+	void AddEntity(std::shared_ptr<Entity> _Entity, bool IsInitial = false);
 	void DestroyEntity(std::shared_ptr<Entity> _Entity);
 
 	void AddUIElement(std::shared_ptr<UIElement> Element);
@@ -57,5 +55,8 @@ protected:
 	std::vector<std::shared_ptr<Entity>> DestroyedEntities;
 	std::vector<std::shared_ptr<UIElement>> UIElementsToBeDestroyed;
 	bool bIsPersistant = false;
+
+private:
+	void DestroyAllNonInitialEntities();
 };
 

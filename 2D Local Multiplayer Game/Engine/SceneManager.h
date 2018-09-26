@@ -32,7 +32,7 @@ public:
 
 	void UpdateCurrentScene();
 	void RenderCurrentScene();
-	std::shared_ptr<Scene> GetCurrentScene() { return Scenes[CurrentScene]; };
+	std::shared_ptr<Scene> GetCurrentScene();
 
 	int CurrentScene = 0;
 	int SceneToSwitch = 0;

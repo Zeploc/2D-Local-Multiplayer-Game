@@ -145,6 +145,15 @@ glm::vec3 Camera::ScreenToWorldDirection(glm::vec2 _ScreenPosition)
 	return ray_wor;
 }
 
+glm::vec3 Camera::ScreenToWorldPosition2D(glm::vec2 _ScreenPosition)
+{
+	glm::vec3 PlaneNormal = -cameraFront;
+	glm::vec3 MouseDirection = ScreenToWorldDirection(_ScreenPosition);
+	float t = -(glm::dot(cameraPos, PlaneNormal)) / (glm::dot(MouseDirection, PlaneNormal));
+	t /= abs(cameraPos.z);
+	return MouseDirection * t + cameraPos;
+}
+
 
 /************************************************************
 #--Description--#: 	Passes in the new mvp to the current program shader
