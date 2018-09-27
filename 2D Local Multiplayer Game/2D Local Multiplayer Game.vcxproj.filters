@@ -149,6 +149,9 @@
     <ClCompile Include="Engine\CXBOXController.cpp">
       <Filter>Engine\Input</Filter>
     </ClCompile>
+    <ClCompile Include="MenuPlayerController.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Camera.h">
@@ -258,6 +261,9 @@
     </ClInclude>
     <ClInclude Include="Engine\CXBOXController.h">
       <Filter>Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuPlayerController.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

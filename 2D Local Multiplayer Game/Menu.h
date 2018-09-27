@@ -18,15 +18,41 @@
 // Engine Includes //
 #include "Engine\Scene.h"
 
+// Library Includes //
+#include <vector>
+
+enum InputDirection
+{
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
+};
+
 class Menu : public Scene
 {
 public:
+	enum MenuScreens
+	{
+		MENU,
+		PLAYERSELECT
+	};
+
 	Menu();
 	~Menu();
 
 	virtual void Update() override;
 	virtual void OnLoadScene() override;
 
+	void SelectCurrentButton();
+	void ControllerInputAxis(InputDirection NewInput);
 
+	void SwitchScreens(MenuScreens NewScreen);
+
+private:
+	std::vector<std::shared_ptr<UIElement>> MenuElements;
+	std::vector<std::shared_ptr<UIElement>> PlayerSelectElements;
+
+	std::shared_ptr<class UIButton> CurrentSelectedButton;
 };
 

@@ -169,22 +169,20 @@ void UIButton::Update()
 	}
 	if (Input::GetInstance()->MousePos.x > TopLeft.x && Input::GetInstance()->MousePos.x < BottomRight.x && Input::GetInstance()->MousePos.y < BottomRight.y && Input::GetInstance()->MousePos.y > TopLeft.y)
 	{
-		ImageComponent.Colour = btnHighlightColour;
+		Hovered();
 		if (Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::InputState::INPUT_HOLD && HoldFuncCall != nullptr)
 		{
 			HoldFuncCall();
 		}
 		else if (Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::InputState::INPUT_FIRST_PRESS && !bButtonPressedThisFrame)
 		{
-			if (m_PressSoundPath != "")
-			{
-				SoundManager::GetInstance()->PlayAudio(m_PressSoundPath, "FXC");
-			}
-			bPressed = true;
-			bButtonPressedThisFrame = true;
-			if (FuncCall != nullptr) FuncCall();
+			Pressed();			
 		}
 		 
+	}
+	else if (HoverOverride)
+	{
+		Hovered();
 	}
 	else
 		ImageComponent.Colour = btnColour;
@@ -201,4 +199,20 @@ void UIButton::SetPosition(glm::vec2 _NewPosition)
 	UIElement::SetPosition(_NewPosition);
 	TextComponent.SetPosition(_NewPosition);
 	ImageComponent.SetPosition(_NewPosition);
+}
+
+void UIButton::Pressed()
+{
+	if (m_PressSoundPath != "")
+	{
+		SoundManager::GetInstance()->PlayAudio(m_PressSoundPath, "FXC");
+	}
+	bPressed = true;
+	bButtonPressedThisFrame = true;
+	if (FuncCall != nullptr) FuncCall();
+}
+
+void UIButton::Hovered()
+{
+	ImageComponent.Colour = btnHighlightColour;
 }

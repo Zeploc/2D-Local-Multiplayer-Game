@@ -265,6 +265,7 @@ void Entity::SetupB2CircleBody(b2World & Box2DWorld, b2BodyType BodyType, bool b
 		b2BodyDef bodyDef;
 		bodyDef.type = BodyType;
 		bodyDef.position.Set(transform.Position.x, transform.Position.y);
+		bodyDef.userData = &*this;
 		body = Box2DWorld.CreateBody(&bodyDef);
 		body->SetTransform(bodyDef.position, (transform.Rotation.z / 180) * b2_pi);
 		body->SetFixedRotation(!bCanRotate);
