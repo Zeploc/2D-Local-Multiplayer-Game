@@ -33,7 +33,7 @@ public:
 	virtual void Update() override;
 	virtual void Reset();
 
-	void ApplyKnockback(glm::vec2 Direction);
+	void ApplyKnockback(glm::vec2 Direction, bool Normalize = true);
 	void AttemptMelee();
 	bool GetIsRolling();
 
@@ -42,8 +42,8 @@ private:
 	float fJumpForce = 600.0f;
 	float fSmackRange = 1.0f;
 	float BaseKnockbackSize = 200.0f;
-	float KnockbackModifierSize = 500.0f;
-	float KnockbackPercentage = 0.1f;
+	float BaseRollKnockbackSize = 50.0f;
+	float KnockbackPercentage = 1.0f;
 	float MovementForce = 200.0f;
 	float MaxSpeed = 3.0f;
 	float NormalFriction = 1.0f;
@@ -56,7 +56,7 @@ private:
 
 	float RollingFriction = 0.7f;
 	float RollingAngularDamping = 2.5f;
-	float RollingAccelerateSpeed = 80.0f;
+	float RollingAccelerateSpeed = 15.0f;
 	bool bIsRollingMode = false;
 	b2CircleShape circleShape;
 	b2PolygonShape boxShape;
