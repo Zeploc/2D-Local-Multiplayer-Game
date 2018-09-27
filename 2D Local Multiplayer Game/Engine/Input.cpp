@@ -104,6 +104,8 @@ void Input::Init()
 
 	Players.push_back(new XBOXController(1));
 	Players.push_back(new XBOXController(2));
+	Players.push_back(new XBOXController(3));
+	Players.push_back(new XBOXController(4));
 }
 
 /************************************************************

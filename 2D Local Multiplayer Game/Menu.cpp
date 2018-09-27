@@ -22,6 +22,10 @@
 
 // Local Includes //
 #include "LevelManager.h"
+#include "MenuPlayerController.h"
+
+// TEMP
+#include <iostream>
 
 // Prototpyes //
 void StartGameBtn();
@@ -70,14 +74,12 @@ Menu::Menu() : Scene("Menu")
 
 	SwitchScreens(Menu::MENU);
 
-	/*std::shared_ptr<MenuPlayerController> NewMenuPlayer(new MenuPlayerController(0));
-	AddEntity(NewMenuPlayer);*/
 
-	/*for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		std::shared_ptr<MenuPlayerController> NewMenuPlayer = std::make_shared<MenuPlayerController>(i);
-		AddEntity(NewMenuPlayer);
-	}*/
+		AddEntity(NewMenuPlayer, true);
+	}
 }
 
 
@@ -100,22 +102,31 @@ void Menu::OnLoadScene()
 
 void Menu::SelectCurrentButton()
 {
+	std::cout << "Selecting current button\n";
 	CurrentSelectedButton->Pressed();
 }
 
 void Menu::ControllerInputAxis(InputDirection NewInput)
 {
 	CurrentSelectedButton->HoverOverride = false;
-	CurrentSelectedButton = nullptr;
 	
 	for (int i = 0; i < MenuElements.size(); i++)
 	{
 		if (MenuElements[i] == CurrentSelectedButton)
 		{
+			CurrentSelectedButton = nullptr;
 			while (CurrentSelectedButton == nullptr)
 			{
-				i++;
-				if (i >= MenuElements.size()) i = 0;
+				if (NewInput == DOWN || NewInput == RIGHT)
+				{
+					i++;
+					if (i >= MenuElements.size()) i = 0;
+				}
+				else
+				{
+					i--;
+					if (i < 0) i = MenuElements.size() - 1;
+				}
 				std::shared_ptr<UIButton> IsButton = std::dynamic_pointer_cast<UIButton>(MenuElements[i]);
 				if (IsButton)
 				{
@@ -123,6 +134,7 @@ void Menu::ControllerInputAxis(InputDirection NewInput)
 					CurrentSelectedButton->HoverOverride = true;
 				}
 			}
+			break;
 		}
 	}
 }

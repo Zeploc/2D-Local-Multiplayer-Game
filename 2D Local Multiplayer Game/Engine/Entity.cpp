@@ -118,7 +118,7 @@ void Entity::BaseUpdate()
 	if (!bActive)
 		return;
 	Update();
-	if (!EntityMesh) EntityMesh->Update();
+	if (EntityMesh) EntityMesh->Update();
 }
 
 /************************************************************
@@ -166,7 +166,7 @@ void Entity::Reset()
 		body->SetAngularVelocity(0.0f);
 	}
 	// Reset Entity Mesh
-	EntityMesh->Reset();
+	if (EntityMesh) EntityMesh->Reset();
 }
 
 void Entity::SetActive(bool _bIsActive, bool _bIsInitialState)

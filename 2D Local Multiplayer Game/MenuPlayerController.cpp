@@ -10,10 +10,15 @@
 // Local Includes //
 #include "Menu.h"
 
+
+// TEMP
+#include <iostream>
+
 MenuPlayerController::MenuPlayerController(int _ControllerID)
 	: Entity({ {0, 0, 0} ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER)
 {
 	ControllerID = _ControllerID;
+	std::cout << "constructing\n";
 }
 
 
