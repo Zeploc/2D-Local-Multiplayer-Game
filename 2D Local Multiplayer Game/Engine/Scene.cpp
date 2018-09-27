@@ -103,39 +103,10 @@ void Scene::RenderScene()
 #--Parameters--#: 	Entity to add
 #--Return--#: 		NA
 ************************************************************/
-void Scene::AddEntity(std::shared_ptr<Entity> _Entity)
+void Scene::AddEntity(std::shared_ptr<Entity> _Entity, bool IsInitial)
 {
 	Entities.push_back(_Entity);
-}
-
-/************************************************************
-#--Description--#:	Add entity to scene
-#--Author--#: 		Alex Coultas
-#--Parameters--#: 	Entity parameters to add
-#--Return--#: 		NA
-************************************************************/
-std::shared_ptr<Entity> Scene::AddEntity(Utils::Transform _Transform, float _fWidth, float _fHeight, Utils::EANCHOR _Anchor, glm::vec4 _Colour)
-{
-	std::shared_ptr<Entity> NewEnt = std::make_shared<Entity>(_Transform,  _Anchor);
-	std::shared_ptr<Plane> Newmesh = std::make_shared<Plane>(_fWidth, _fHeight, _Colour);
-	NewEnt->AddMesh(Newmesh);
-	Entities.push_back(NewEnt);
-	return NewEnt;
-}
-
-/************************************************************
-#--Description--#:	Add entity to scene
-#--Author--#: 		Alex Coultas
-#--Parameters--#: 	Entity parameters to add
-#--Return--#: 		NA
-************************************************************/
-std::shared_ptr<Entity> Scene::AddEntity(Utils::Transform _Transform, float _fWidth, float _fHeight, Utils::EANCHOR _Anchor, glm::vec4 _Colour, const char * TextureSource, int iCount, bool bHorizontal)
-{
-	std::shared_ptr<Entity> NewEnt = std::make_shared<Entity>(_Transform, _Anchor);
-	std::shared_ptr<Plane> Newmesh = std::make_shared<Plane>(_fWidth, _fHeight, _Colour, TextureSource, iCount, bHorizontal);
-	NewEnt->AddMesh(Newmesh);
-	Entities.push_back(NewEnt);
-	return NewEnt;
+	_Entity->SetInitialEntity(IsInitial);
 }
 
 /************************************************************
@@ -146,8 +117,11 @@ std::shared_ptr<Entity> Scene::AddEntity(Utils::Transform _Transform, float _fWi
 ************************************************************/
 void Scene::DestroyEntity(std::shared_ptr<Entity> _Entity)
 {	
-	DestroyedEntities.push_back(_Entity);
-	_Entity->SetActive(false);
+	if (_Entity->IsInitialEntity())
+	{
+		DestroyedEntities.push_back(_Entity);
+		_Entity->SetActive(false);
+	}
 	_Entity->OnDestroy();
 	
 	// Find entity in entities
@@ -223,49 +197,13 @@ void Scene::Update()
 		if (Entities[i])
 			Entities[i]->BaseUpdate();
 	}
-	/*for (auto& Ent : Entities)
-	{
-		if (Ent)
-			Ent->BaseUpdate();
-	}	*/
-	//if (Entities.size() != 0)
-	//{
-	//	unsigned int iEndPos = Entities.size() - 1;
-	//	for (unsigned int i = 0; i <= iEndPos; i++)
-	//	{
-	//		if (Entities[i])
-	//			Entities[i]->Update();
-	//		if (iEndPos >= Entities.size())
-	//		{
-	//			iEndPos = Entities.size() - 1;
-	//			i--;
-	//		}
-	//		if (Entities[iEndPos] != Entities.back()) // if current last value is not equal to the back of the vector
-	//		{
-	//			iEndPos = Entities.size() - 1;
-	//			//i--;
-	//		}
-	//	}
-	//}
-	/*for (auto it : Entities)
-	{
-		if (it)
-			it->Update();
-	}*/
+
 	for (int i = 0; i < UIElements.size(); i++)
 	{
 		if (UIElements[i])
 			UIElements[i]->BaseUpdate();
 	}
-
-	/*for (auto& UIElem : UIElements)
-	{
-		if (UIElem)
-			UIElem->BaseUpdate();
-	}*/
-	//UIButton::bButtonPressedThisFrame = false;
-	
-
+		
 	for (auto& UIDestroy : UIElementsToBeDestroyed)
 	{
 		for (auto it = UIElements.begin(); it != UIElements.end(); ++it)
@@ -290,6 +228,7 @@ void Scene::OnLoadScene()
 			Entities.push_back(EntDestroy);
 		}
 		DestroyedEntities.clear();
+		DestroyAllNonInitialEntities();
 		for (auto& Ent : Entities)
 		{
 			Ent->Reset();
@@ -307,4 +246,20 @@ bool Scene::operator==(const Scene & rhs) const
 {
 	if (SceneName == rhs.SceneName) return true;
 	return false;
+}
+
+void Scene::DestroyAllNonInitialEntities()
+{
+	auto EndIt = Entities.end();
+	for (auto it = Entities.begin(); it != EndIt; ++it)
+	{
+		if (!(*it)->IsInitialEntity())
+		{
+			b2Body* EntBody = (*it)->body;
+			if (EntBody) EntBody->GetWorld()->DestroyBody(EntBody);
+			it = Entities.erase(it);
+			it--;
+			EndIt = Entities.end();
+		}
+	}
 }

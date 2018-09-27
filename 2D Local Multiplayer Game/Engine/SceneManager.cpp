@@ -63,8 +63,12 @@ SceneManager::~SceneManager()
 void SceneManager::AddScene(std::shared_ptr<Scene> _Scene)
 {
 	if (Scenes.empty())
+	{
+		Scenes.push_back(_Scene);
 		_Scene->OnLoadScene();
-	Scenes.push_back(_Scene);
+	}
+	else
+		Scenes.push_back(_Scene);
 }
 
 /************************************************************
@@ -160,6 +164,14 @@ void SceneManager::RenderCurrentScene()
 {
 	Scenes[CurrentScene]->RenderScene();
 }
+
+std::shared_ptr<Scene> SceneManager::GetCurrentScene()
+{
+	if (Scenes.size() < CurrentScene || Scenes.empty())
+		return nullptr;
+	else
+		return Scenes[CurrentScene];
+};
 
 /************************************************************
 #--Description--#:  Retrieves static instance pointer to this class

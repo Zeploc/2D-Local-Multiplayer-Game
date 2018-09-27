@@ -61,20 +61,27 @@ public:
 	void Rotate(glm::vec3 Rotate); 
 	void SetScale(glm::vec3 _NewScale);
 
+
 	Utils::Transform transform;
 	Utils::EANCHOR EntityAnchor;
 	std::shared_ptr<Mesh> EntityMesh;
 	
 	int GetEntityValue() { return iEntityID; };
+	void SetInitialEntity(bool IsInitial) { bIsInitialEntity = IsInitial; };
+	bool IsInitialEntity() { return bIsInitialEntity; };
 
 	// Box2D Physics
 	b2Body* body = nullptr;
 	void SetupB2BoxBody(b2World& Box2DWorld, b2BodyType BodyType, bool bCanRotate = true, bool bHasFixture = true, float Density = 1.0f, float Friction = 0.3f);
 	void SetupB2CircleBody(b2World& Box2DWorld, b2BodyType BodyType, bool bCanRotate = true, bool bHasFixture = true, float Density = 1.0f, float Friction = 0.3f);
+
+	void SetBox2DTransform(glm::vec3 _Position, float _Rotation);
+
 	
 protected:
 	bool bActive = true;
 	bool bVisible = true;
+	bool bIsInitialEntity = false;
 
 	int iEntityID;
 

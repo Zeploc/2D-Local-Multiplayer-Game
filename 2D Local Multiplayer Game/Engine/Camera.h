@@ -46,10 +46,12 @@ public:
 	PROJECTIONMODE ReturnDimensionMode() { return m_ProjectionMode; };
 
 	void SetWindowScale(float _fNewScale);
+	float GetWindowScale() { return fWindowScale; }
 	void SetCameraForwardVector(glm::vec3 _Forward) {
 		cameraFront = _Forward;	};
 
 	glm::vec3 ScreenToWorldDirection(glm::vec2 _ScreenPosition);
+	glm::vec3 ScreenToWorldPosition2D(glm::vec2 _ScreenPosition);
 
 	// Getters
 	glm::vec3 GetCameraPosition() { return cameraPos; };

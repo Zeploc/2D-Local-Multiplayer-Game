@@ -48,6 +48,11 @@ public:
 	void Update();
 	void SetPosition(glm::vec2 _NewPosition);
 
+	void Pressed();
+	void Hovered();
+
+	bool HoverOverride = false;
+
 	bool bPressed = false;
 
 	static bool bButtonPressedThisFrame;
@@ -60,6 +65,7 @@ private:
 	GMVoidFunc ReleaseFuncCall = nullptr;
 
 	bool bHasText = false;
+
 
 	glm::vec4 btnColour;
 	glm::vec4 btnHighlightColour;

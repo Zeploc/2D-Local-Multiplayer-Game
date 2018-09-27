@@ -146,6 +146,7 @@ void Entity::Update()
 void Entity::OnDestroy()
 {
 	LogManager::GetInstance()->DisplayLogMessage("Entity with ID #" + std::to_string(iEntityID) + " destroyed!");
+	body->SetActive(false);
 }
 
 void Entity::Reset()
@@ -160,6 +161,9 @@ void Entity::Reset()
 	{
 		body->SetTransform(b2Vec2(transform.Position.x, transform.Position.y), (transform.Rotation.z / 180) * b2_pi);
 		body->SetAwake(true);
+		body->SetActive(bActive);
+		body->SetLinearVelocity(b2Vec2_zero);
+		body->SetAngularVelocity(0.0f);
 	}
 	// Reset Entity Mesh
 	EntityMesh->Reset();
@@ -220,6 +224,7 @@ void Entity::SetupB2BoxBody(b2World & Box2DWorld, b2BodyType BodyType, bool bCan
 		b2BodyDef bodyDef;
 		bodyDef.type = BodyType;
 		bodyDef.position.Set(transform.Position.x, transform.Position.y);
+		bodyDef.userData = &*this;
 		body = Box2DWorld.CreateBody(&bodyDef);
 		body->SetTransform(bodyDef.position, (transform.Rotation.z / 180) * b2_pi);
 		body->SetFixedRotation(!bCanRotate);
@@ -251,6 +256,7 @@ void Entity::SetupB2BoxBody(b2World & Box2DWorld, b2BodyType BodyType, bool bCan
 	}
 }
 
+
 void Entity::SetupB2CircleBody(b2World & Box2DWorld, b2BodyType BodyType, bool bCanRotate, bool bHasFixture, float Density, float Friction)
 {
 	if (EntityMesh)
@@ -259,6 +265,7 @@ void Entity::SetupB2CircleBody(b2World & Box2DWorld, b2BodyType BodyType, bool b
 		b2BodyDef bodyDef;
 		bodyDef.type = BodyType;
 		bodyDef.position.Set(transform.Position.x, transform.Position.y);
+		bodyDef.userData = &*this;
 		body = Box2DWorld.CreateBody(&bodyDef);
 		body->SetTransform(bodyDef.position, (transform.Rotation.z / 180) * b2_pi);
 		body->SetFixedRotation(!bCanRotate);
@@ -267,7 +274,7 @@ void Entity::SetupB2CircleBody(b2World & Box2DWorld, b2BodyType BodyType, bool b
 		b2CircleShape circleShape;
 		circleShape.m_radius = EntityMesh->m_fHeight / 2.0f;
 		circleShape.m_p = b2Vec2(0.0f, 0.0f);
-		
+
 		if (bHasFixture)
 		{
 			// Define the dynamic body fixture.
@@ -290,4 +297,10 @@ void Entity::SetupB2CircleBody(b2World & Box2DWorld, b2BodyType BodyType, bool b
 	{
 		LogManager::GetInstance()->DisplayLogMessage("Failed to add Box2D body to Entity #" + std::to_string(iEntityID) + ", Entity has no Mesh");
 	}
+}
+
+
+void Entity::SetBox2DTransform(glm::vec3 _Position, float _Rotation)
+{	
+	body->SetTransform(b2Vec2(_Position.x, _Position.y), (_Rotation / 180) * b2_pi);
 }
