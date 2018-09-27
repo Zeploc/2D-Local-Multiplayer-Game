@@ -46,67 +46,67 @@ Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10
 	std::shared_ptr<Entity> BottomPlatform = std::make_shared<Entity>(Entity({ { 0, -3.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(10.0f, 1.0f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
 	BottomPlatform->AddMesh(NewImage);
-	AddEntity(BottomPlatform);
+	AddEntity(BottomPlatform, true);
 	BottomPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
 	Box2DCollisionObjects.push_back(BottomPlatform->body);
 
 	std::shared_ptr<Entity> MiddlePlatform = std::make_shared<Entity>(Entity({ { 0, 1.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> MiddlePlatformImage = std::make_shared<Plane>(Plane(6.0f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
 	MiddlePlatform->AddMesh(MiddlePlatformImage);
-	AddEntity(MiddlePlatform);
+	AddEntity(MiddlePlatform, true);
 	MiddlePlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
 	Box2DCollisionObjects.push_back(MiddlePlatform->body);
 
 	std::shared_ptr<Entity> LeftPlatform = std::make_shared<Entity>(Entity({ { -5.0f, -1.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> LeftPlatformImage = std::make_shared<Plane>(Plane(3.0f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
 	LeftPlatform->AddMesh(LeftPlatformImage);
-	AddEntity(LeftPlatform);
+	AddEntity(LeftPlatform, true);
 	LeftPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
 	Box2DCollisionObjects.push_back(LeftPlatform->body);
 
 	std::shared_ptr<Entity> RightPlatform = std::make_shared<Entity>(Entity({ { 5.0f, -1.0f, 0 } ,{ 0, 0, 45 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> RightPlatformImage = std::make_shared<Plane>(Plane(3.0f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
 	RightPlatform->AddMesh(RightPlatformImage);
-	AddEntity(RightPlatform);
+	AddEntity(RightPlatform, true);
 	RightPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
 	Box2DCollisionObjects.push_back(RightPlatform->body);
 
 	CircleEntity = std::make_shared<Entity>(Entity({ { 5.0f, 2.0f, 0 } ,{ 0, 0, 45 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> CircleImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png"));
 	CircleEntity->AddMesh(CircleImage);
-	AddEntity(CircleEntity);
-	CircleEntity->SetupB2CircleBody(world, b2_dynamicBody, true, true, 10.0f);
+	//AddEntity(CircleEntity, true);
+	//CircleEntity->SetupB2CircleBody(world, b2_dynamicBody, true, true, 10.0f);
 	Box2DCollisionObjects.push_back(CircleEntity->body);
 
 	std::shared_ptr<Entity> DynamicBoxEntity = std::make_shared<Entity>(Entity({ { 0, 4, 0 } ,{ 0, 0, 20 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> TestImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.9f, 0.3f, 0.1f, 1.0f }, "Resources/Images/Box.png"));
 	DynamicBoxEntity->AddMesh(TestImage);
-	AddEntity(DynamicBoxEntity);
-	DynamicBoxEntity->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
+	//AddEntity(DynamicBoxEntity, true);
+	//DynamicBoxEntity->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
 	Box2DCollisionObjects.push_back(DynamicBoxEntity->body);
 
 	std::shared_ptr<Entity> DynamicBoxEntity2 = std::make_shared<Entity>(Entity({ { 4, 3, 0 } ,{ 0, 0, -10 },{ 1, 1, 1 } }, Utils::CENTER));
 	DynamicBoxEntity2->AddMesh(TestImage);
-	AddEntity(DynamicBoxEntity2);
-	DynamicBoxEntity2->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
+	//AddEntity(DynamicBoxEntity2, true);
+	//->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
 	Box2DCollisionObjects.push_back(DynamicBoxEntity2->body);
 
 	std::shared_ptr<Entity> DynamicBoxEntity3 = std::make_shared<Entity>(Entity({ { -1, -1, 0 } ,{ 0, 0, -10 },{ 1, 1, 1 } }, Utils::CENTER));
 	DynamicBoxEntity3->AddMesh(TestImage);
-	AddEntity(DynamicBoxEntity3);
-	DynamicBoxEntity3->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
+	//AddEntity(DynamicBoxEntity3, true);
+	//DynamicBoxEntity3->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
 	Box2DCollisionObjects.push_back(DynamicBoxEntity3->body);
 
 
 	std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player({ 0, -2, 0 }, 0));
-	AddEntity(PlayerEnt);
+	AddEntity(PlayerEnt, true);
 	PlayerEnt->SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
 	Box2DCollisionObjects.push_back(PlayerEnt->body);
 	Players.push_back(PlayerEnt);
 	PlayerEnt->body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
 
 	std::shared_ptr<Player> Player2Ent = std::make_shared<Player>(Player({ 4, 2, 0 }, 1));
-	AddEntity(Player2Ent);
+	AddEntity(Player2Ent, true);
 	Player2Ent->SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
 	Box2DCollisionObjects.push_back(Player2Ent->body);
 	Players.push_back(Player2Ent);
@@ -200,11 +200,11 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	{	
 		if (Player1->body->GetLinearVelocity().Length() > Player2->body->GetLinearVelocity().Length() && Player1->GetIsRolling() == true)
 		{
-			Player2->ApplyKnockback(glm::vec2(Player1->body->GetLinearVelocity().x, Player1->body->GetLinearVelocity().y));
+			Player2->ApplyKnockback(glm::vec2(Player1->body->GetLinearVelocity().x, Player1->body->GetLinearVelocity().y), false);
 		}
 		else if(Player2->GetIsRolling() == true)
 		{
-			Player1->ApplyKnockback((glm::vec2(Player2->body->GetLinearVelocity().x, Player2->body->GetLinearVelocity().y)));
+			Player1->ApplyKnockback((glm::vec2(Player2->body->GetLinearVelocity().x, Player2->body->GetLinearVelocity().y)), false);
 		}
 	}
 

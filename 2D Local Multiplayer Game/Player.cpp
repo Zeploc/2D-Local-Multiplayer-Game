@@ -165,15 +165,15 @@ void Player::Update()
 		// No outside forces applying
 		if (!OutsideForcesApplying)
 		{
-			// Trys to move sideways
-			if ((Direction.x > 0 && body->GetLinearVelocity().x < MaxSpeed) || (Direction.x < 0 && body->GetLinearVelocity().x > -MaxSpeed))
-			{
-				if (!bIsRollingMode)
-					body->ApplyForce(b2Vec2(Direction.x * ForceToApply - ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);
-				else
-					body->ApplyForce(b2Vec2(Direction.x * RollingAccelerateSpeed, 0.0f), body->GetWorldCenter(), true);
 
-				if (!bIsRollingMode) body->GetFixtureList()->SetFriction(0.0f);
+			if (bIsRollingMode)
+				body->ApplyForce(b2Vec2(Direction.x * RollingAccelerateSpeed, 0.0f), body->GetWorldCenter(), true);
+			// Trys to move sideways
+			else if ((Direction.x > 0 && body->GetLinearVelocity().x < MaxSpeed) || (Direction.x < 0 && body->GetLinearVelocity().x > -MaxSpeed))
+			{
+				body->ApplyForce(b2Vec2(Direction.x * ForceToApply - ForceToCounterCurrentVelocity, 0.0f), body->GetWorldCenter(), true);
+
+				body->GetFixtureList()->SetFriction(0.0f);
 			}
 			//// Trys to move left, and is not currently moving left
 			//else if ()
@@ -233,12 +233,24 @@ void Player::Reset()
 	KnockedBackTimer = 0.0f;
 }
 
-void Player::ApplyKnockback(glm::vec2 Direction)
+void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
 {
-	if (KnockbackPercentage <= 0.9) KnockbackPercentage += 0.1f;
-	if (Direction.y >= -0.1f && Direction.y <= 0.1f)
-		Direction.y = 0.5f;
-	Direction *= BaseKnockbackSize + KnockbackModifierSize * KnockbackPercentage;
+	if (Normalize)
+	{
+		Direction = glm::normalize(Direction);
+		Direction *= BaseKnockbackSize * KnockbackPercentage;
+
+		if (glm::normalize(Direction).y >= -0.1f && glm::normalize(Direction).y <= 0.1f)
+			Direction.y = 0.5f;
+	}
+	else
+	{
+		if (glm::normalize(Direction).y >= -0.1f && glm::normalize(Direction).y <= 0.1f)
+			Direction.y = abs(Direction.x) * 0.5;
+		Direction *= BaseRollKnockbackSize * KnockbackPercentage;
+	}
+	KnockbackPercentage += 0.1f;
+
 	std::cout << "Applying knockback to player " << m_iPlayerID << "by " << glm::to_string(Direction) << "\n";
 	body->ApplyForceToCenter(b2Vec2(Direction.x, Direction.y), true);
 	OutsideForcesApplying = true;
