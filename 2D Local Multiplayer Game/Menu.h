@@ -29,6 +29,15 @@ enum InputDirection
 	RIGHT
 };
 
+struct PlayerStatus
+{
+	bool IsPlaying = false;
+	bool IsReady = false;
+	std::shared_ptr<UIText> PlayerJoinedText;
+	std::shared_ptr<UIText> PlayerReadyText;
+	// Player asthetic chosen
+};
+
 class Menu : public Scene
 {
 public:
@@ -44,15 +53,20 @@ public:
 	virtual void Update() override;
 	virtual void OnLoadScene() override;
 
-	void SelectCurrentButton();
+	void PlayerControllerInput(int ID, enum InputController Input);
 	void ControllerInputAxis(InputDirection NewInput);
+	void CheckPlayersToStartTimer();
 
 	void SwitchScreens(MenuScreens NewScreen);
 
 private:
 	std::vector<std::shared_ptr<UIElement>> MenuElements;
 	std::vector<std::shared_ptr<UIElement>> PlayerSelectElements;
+	std::vector<PlayerStatus> vPlayerStatus;
 
 	std::shared_ptr<class UIButton> CurrentSelectedButton;
+
+	float StartTime = 3.0f;
+	std::shared_ptr<UIText> StartTimerText;
 };
 

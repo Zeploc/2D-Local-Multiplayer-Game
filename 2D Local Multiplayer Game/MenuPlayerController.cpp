@@ -35,10 +35,18 @@ void MenuPlayerController::Update()
 		if (PlayerController->IsConnected())
 		{
 			std::shared_ptr<Menu> MenuScene = std::dynamic_pointer_cast<Menu>(SceneManager::GetInstance()->GetCurrentScene());
-			if (PlayerController->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS)
+			for (int i = 0; i < 14; i++)
 			{
-				MenuScene->SelectCurrentButton();
+				if (PlayerController->ControllerButtons[i] == Input::INPUT_FIRST_PRESS)
+				{
+					MenuScene->PlayerControllerInput(ControllerID, InputController(i));
+				}
 			}
+
+			/*if (PlayerController->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS)
+			{
+				MenuScene->PlayerControllerInput(ControllerID, ;
+			}*/
 
 			float LThumbX = PlayerController->GetState().Gamepad.sThumbLX;			
 			if (abs(LThumbX) > 10000)

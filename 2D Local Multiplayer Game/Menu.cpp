@@ -19,6 +19,8 @@
 // Engine Includes //
 #include "Engine\UIButton.h"
 #include "Engine/SceneManager.h"
+#include "Engine/CXBOXController.h"
+#include "Engine/Time.h"
 
 // Local Includes //
 #include "LevelManager.h"
@@ -63,14 +65,33 @@ Menu::Menu() : Scene("Menu")
 
 
 	std::shared_ptr<UIText> PlayerTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Player Select", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
-	std::shared_ptr<UIButton> PlayBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100), Utils::BOTTOM_CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, PlayBtn));
-	PlayBtn->AddText("Play", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+	StartTimerText = std::make_shared<UIText>(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Starting in 3...", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER);
+	StartTimerText->SetActive(false);
+
+	for (int i = 0; i < 4; i++)
+	{
+		PlayerStatus NewPlayerStatus;
+		float XPos = Camera::GetInstance()->SCR_WIDTH / 2 - 450 + 300 * i;
+		std::shared_ptr<UIText> PlayerLabel(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 100), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Player " + std::to_string(i + 1), "Resources/Fonts/Roboto-Thin.ttf", 25, Utils::CENTER));
+		AddUIElement(PlayerLabel);
+		PlayerSelectElements.push_back(PlayerLabel);
+		std::shared_ptr<UIText> PlayerJoin(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Press Start to join", "Resources/Fonts/Roboto-Thin.ttf", 25, Utils::CENTER));
+		AddUIElement(PlayerJoin);
+		PlayerSelectElements.push_back(PlayerJoin);
+		std::shared_ptr<UIText> PlayerReady(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 100), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Ready", "Resources/Fonts/Roboto-Thin.ttf", 25, Utils::CENTER));
+		AddUIElement(PlayerReady);
+		PlayerSelectElements.push_back(PlayerReady);
+		PlayerReady->SetActive(false);
+
+		NewPlayerStatus.PlayerJoinedText = PlayerJoin;
+		NewPlayerStatus.PlayerReadyText = PlayerReady;
+		vPlayerStatus.push_back(NewPlayerStatus);
+	}
 
 	AddUIElement(PlayerTitle);
-	AddUIElement(PlayBtn);
-
+	AddUIElement(StartTimerText);
+	PlayerSelectElements.push_back(StartTimerText);
 	PlayerSelectElements.push_back(PlayerTitle);
-	PlayerSelectElements.push_back(PlayBtn);
 
 	SwitchScreens(Menu::MENU);
 
@@ -92,6 +113,15 @@ void Menu::Update()
 {
 	Scene::Update();
 
+	if (StartTimerText->IsActive())
+	{
+		StartTime -= Time::dTimeDelta;
+		StartTimerText->sText = "Starting in " + std::to_string((int)ceil(StartTime)) + "...";
+		if (StartTime <= 0)
+		{
+			LevelManager::GetInstance()->SwitchToLevel("Level");
+		}
+	}
 }
 
 void Menu::OnLoadScene()
@@ -100,10 +130,41 @@ void Menu::OnLoadScene()
 
 }
 
-void Menu::SelectCurrentButton()
+void Menu::PlayerControllerInput(int ID, InputController Input)
 {
-	std::cout << "Selecting current button\n";
-	CurrentSelectedButton->Pressed();
+	if (PlayerSelectElements[0]->IsActive())
+	{
+		if (Input == SPECIAL_BUTTON_RIGHT || (Input == BOTTOM_FACE_BUTTON && !vPlayerStatus[ID].IsPlaying))
+		{
+			vPlayerStatus[ID].IsPlaying = !vPlayerStatus[ID].IsPlaying;
+			if (vPlayerStatus[ID].IsPlaying)
+				vPlayerStatus[ID].PlayerJoinedText->sText = "Joined";
+			else
+			{
+				vPlayerStatus[ID].PlayerJoinedText->sText = "Press Start to join";
+				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
+				vPlayerStatus[ID].IsReady = false;
+			}
+		}
+		else if (Input == BOTTOM_FACE_BUTTON)
+		{
+			vPlayerStatus[ID].IsReady = !vPlayerStatus[ID].IsReady;
+			CheckPlayersToStartTimer();
+			if (vPlayerStatus[ID].IsReady)
+			{
+				vPlayerStatus[ID].PlayerReadyText->SetActive(true);
+
+			}
+			else
+				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
+		}
+	}
+	else if (Input == BOTTOM_FACE_BUTTON)
+	{
+		CurrentSelectedButton->Pressed();
+	}
+
+
 }
 
 void Menu::ControllerInputAxis(InputDirection NewInput)
@@ -139,6 +200,35 @@ void Menu::ControllerInputAxis(InputDirection NewInput)
 	}
 }
 
+void Menu::CheckPlayersToStartTimer()
+{
+	bool AllReady = true;
+	int NumPlayers = 0;
+	for (auto& PStat : vPlayerStatus)
+	{
+		if (PStat.IsPlaying)
+		{
+			NumPlayers++;
+			if (!PStat.IsReady)
+			{
+				AllReady = false;
+			}
+		}
+	}
+
+	if (AllReady && NumPlayers >= 2)
+	{
+		StartTime = 3;
+		StartTimerText->sText = "Starting in " + std::to_string((int)StartTime) + "...";
+		StartTimerText->SetActive(true);
+	}
+	else
+	{
+		StartTime = 3;
+		StartTimerText->SetActive(false);
+	}
+}
+
 void Menu::SwitchScreens(MenuScreens NewScreen)
 {
 	for (auto& UIElem : MenuElements)
@@ -166,6 +256,11 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 		{
 			UIElem->SetActive(true);
 		}
+		for (auto& PStat : vPlayerStatus)
+		{
+			PStat.PlayerReadyText->SetActive(false);
+		}
+		StartTimerText->SetActive(false);
 	}
 		break;
 	default:

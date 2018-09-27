@@ -81,7 +81,7 @@ void XBOXController::Update()
 			{
 				ControllerButtons[iCurrentButton] = Input::INPUT_FIRST_RELEASE;
 			}
-			else if (ControllerButtons[iCurrentButton] == Input::INPUT_FIRST_RELEASE)
+			else
 			{
 				ControllerButtons[iCurrentButton] = Input::INPUT_RELEASED;
 			}
@@ -108,7 +108,7 @@ void XBOXController::Update()
 			{
 				ControllerButtons[iCurrentButton] = Input::INPUT_FIRST_RELEASE;
 			}
-			else if (ControllerButtons[iCurrentButton] == Input::INPUT_FIRST_RELEASE)
+			else
 			{
 				ControllerButtons[iCurrentButton] = Input::INPUT_RELEASED;
 			}
