@@ -35,6 +35,7 @@ public:
 
 	void ApplyKnockback(glm::vec2 Direction);
 	void AttemptMelee();
+	bool GetIsRolling();
 
 private:
 	// Movement

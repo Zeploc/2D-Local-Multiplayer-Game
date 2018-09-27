@@ -68,6 +68,10 @@ void Player::Update()
 
 		if ((Input::GetInstance()->KeyState[(unsigned char)'g'] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[TOP_FACE_BUTTON] == Input::INPUT_FIRST_PRESS)
 		{
+			/*b2Filter NoCollisionFilter;
+			NoCollisionFilter.groupIndex = bIsRollingMode - 2;
+			body->GetFixtureList()->SetFilterData(NoCollisionFilter);*/
+
 			bIsRollingMode = !bIsRollingMode;
 
 			b2Fixture *fixtureA = body->GetFixtureList();
@@ -253,5 +257,10 @@ void Player::AttemptMelee()
 		//std::cout << "Hit Player " << Result.m_PlayerFixtureHits[i]->m_iPlayerID << std::endl;
 	}
 
+}
+
+bool Player::GetIsRolling()
+{
+	return bIsRollingMode;
 }
 

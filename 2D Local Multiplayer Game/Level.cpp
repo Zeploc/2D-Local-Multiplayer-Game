@@ -24,6 +24,7 @@
 #include "Engine\Sphere.h"
 #include "Engine\Input.h"
 #include "Engine\LogManager.h"
+#include "Engine\Time.h"
 //#include <Box2D/Dynamics/b2World.h>
 
 // Local Includes //
@@ -40,7 +41,7 @@ Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10
 {
 	// Not collide with bodys with a group index 0f -1
 	b2Filter NoPlayerCollisionFilter;
-	NoPlayerCollisionFilter.groupIndex = -1;
+	NoPlayerCollisionFilter.groupIndex = 0;
 	
 	std::shared_ptr<Entity> BottomPlatform = std::make_shared<Entity>(Entity({ { 0, -3.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(10.0f, 1.0f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
@@ -133,6 +134,8 @@ Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10
 	Camera::GetInstance()->SetWindowScale(CameraClosestZoom);
 
 	timeStep = 1.0f / 60.0f;
+
+	world.SetContactListener(&CustomContactListener);
 }
 
 
@@ -145,7 +148,7 @@ void Level::Update()
 {
 	Scene::Update();
 	
-	world.Step(timeStep, 6, 2);
+	world.Step(Time::dTimeDelta, 6, 2);
 
 	float RangeOutsideClosetView = 0.0f;
 
@@ -186,4 +189,49 @@ void Level::OnLoadScene()
 void BackToMenu()
 {
 	SceneManager::GetInstance()->SwitchScene("Menu");
+}
+
+void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entity> Collided)
+{
+	std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(Object);
+	std::shared_ptr<Player> Player2 = std::dynamic_pointer_cast<Player>(Collided);
+	
+	if (Player1 && Collided->body && Player2 && Collided->body)
+	{	
+		if (Player1->body->GetLinearVelocity().Length() > Player2->body->GetLinearVelocity().Length() && Player1->GetIsRolling() == true)
+		{
+			Player2->ApplyKnockback(glm::vec2(Player1->body->GetLinearVelocity().x, Player1->body->GetLinearVelocity().y));
+		}
+		else if(Player2->GetIsRolling() == true)
+		{
+			Player1->ApplyKnockback((glm::vec2(Player2->body->GetLinearVelocity().x, Player2->body->GetLinearVelocity().y)));
+		}
+	}
+
+}
+
+void PlayerContactListener::BeginContact(b2Contact * contact)
+{
+	void* bodyUserData1 = contact->GetFixtureA()->GetBody()->GetUserData();
+	void* bodyUserData2 = contact->GetFixtureB()->GetBody()->GetUserData();
+	if (bodyUserData1 && bodyUserData2)
+	{
+		Entity* IsEntity1 = reinterpret_cast<Entity*>(bodyUserData1);
+		Entity* IsEntity2 = reinterpret_cast<Entity*>(bodyUserData2);
+		if (IsEntity1 && IsEntity2 && IsEntity1->GetEntityValue() > -1 && IsEntity2->GetEntityValue() > -1)
+		{
+			Level::ApplyCollision(IsEntity1->shared_from_this(), IsEntity2->shared_from_this());
+			Level::ApplyCollision(IsEntity2->shared_from_this(), IsEntity1->shared_from_this());
+		}
+
+	}
+}
+
+void PlayerContactListener::PreSolve(b2Contact * contact, const b2Manifold * oldManifold)
+{
+
+}
+
+void PlayerContactListener::PostSolve(b2Contact * contact, const b2ContactImpulse * impulse)
+{
 }
