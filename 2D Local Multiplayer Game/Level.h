@@ -67,5 +67,8 @@ public:
 
 private:
 	PlayerContactListener CustomContactListener;
+
+	float FrameTime = 0;
+	int CurrentFrames = 0;
 };
 

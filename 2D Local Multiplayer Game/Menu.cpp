@@ -31,39 +31,44 @@
 
 // Prototpyes //
 void StartGameBtn();
+void ControlsScreenBtn();
+void CreditsScreenBtn();
 void ExitGameBtn();
-void OptionsScreenBtn();
 
 void PlayBtn();
 
 Menu::Menu() : Scene("Menu")
 {
-	// Add Title Elements
+	// Menu Elements
 	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Local Multiplayer Game", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
 	std::shared_ptr<UIButton> StartBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, StartGameBtn));
 	StartBtn->AddText("START GAME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
-	std::shared_ptr<UIButton> OptionsBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 80), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, OptionsScreenBtn));
-	OptionsBtn->AddText("OPTIONS", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
-	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, ExitGameBtn));
+	std::shared_ptr<UIButton> ControlsBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 80), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, ControlsScreenBtn));
+	ControlsBtn->AddText("CONTROLS", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+	std::shared_ptr<UIButton> CreditsBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, CreditsScreenBtn));
+	CreditsBtn->AddText("CREDITS", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 240), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, ExitGameBtn));
 	QuitBtn->AddText("QUIT GAME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH, Camera::GetInstance()->SCR_HEIGHT, "Resources/Images/Block.png", 2));
 	std::shared_ptr<UIImage> UIIMG(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 600, 100, "Resources/Box.png", 2));
-	// Add elements to scene UI elements
+	
 	AddUIElement(BackImage);
 	AddUITextElement(Title);
 	AddUIElement(StartBtn);
-	AddUIElement(OptionsBtn);
+	AddUIElement(ControlsBtn);
+	AddUIElement(CreditsBtn);
 	AddUIElement(QuitBtn);
 
 	MenuElements.push_back(Title);
 	MenuElements.push_back(StartBtn);
-	MenuElements.push_back(OptionsBtn);
+	MenuElements.push_back(ControlsBtn);
+	MenuElements.push_back(CreditsBtn);
 	MenuElements.push_back(QuitBtn);
 
 	CurrentSelectedButton = StartBtn;
 	CurrentSelectedButton->HoverOverride = true;
 
-
+	// Player Select Elements
 	std::shared_ptr<UIText> PlayerTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Player Select", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
 	StartTimerText = std::make_shared<UIText>(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Starting in 3...", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER);
 	StartTimerText->SetActive(false);
@@ -93,9 +98,22 @@ Menu::Menu() : Scene("Menu")
 	PlayerSelectElements.push_back(StartTimerText);
 	PlayerSelectElements.push_back(PlayerTitle);
 
+	// Controls Elements
+	std::shared_ptr<UIText> ControlsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Controls", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+
+	AddUIElement(ControlsTitle);
+	ControlsElements.push_back(ControlsTitle);
+
+	// Credits Elements
+	std::shared_ptr<UIText> CreditsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Credits", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+
+	AddUIElement(CreditsTitle);
+	CreditsElements.push_back(CreditsTitle);
+
+	// Setting Screen
 	SwitchScreens(Menu::MENU);
 
-
+	// Adding Menu Controllers
 	for (int i = 0; i < 4; i++)
 	{
 		std::shared_ptr<MenuPlayerController> NewMenuPlayer = std::make_shared<MenuPlayerController>(i);
@@ -132,7 +150,14 @@ void Menu::OnLoadScene()
 
 void Menu::PlayerControllerInput(int ID, InputController Input)
 {
-	if (PlayerSelectElements[0]->IsActive())
+	if (Input == RIGHT_FACE_BUTTON)
+	{
+		if (PlayerSelectElements[0]->IsActive() || ControlsElements[0]->IsActive() || CreditsElements[0]->IsActive())
+		{
+			SwitchScreens(MENU);
+		}
+	}
+	else if (PlayerSelectElements[0]->IsActive())
 	{
 		if (Input == SPECIAL_BUTTON_RIGHT || (Input == BOTTOM_FACE_BUTTON && !vPlayerStatus[ID].IsPlaying))
 		{
@@ -163,8 +188,6 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 	{
 		CurrentSelectedButton->Pressed();
 	}
-
-
 }
 
 void Menu::ControllerInputAxis(InputDirection NewInput)
@@ -229,6 +252,18 @@ void Menu::CheckPlayersToStartTimer()
 	}
 }
 
+void Menu::ResetPlayerSelectScreen()
+{
+	for (auto& PStat : vPlayerStatus)
+	{
+		PStat.PlayerReadyText->SetActive(false);
+		PStat.IsPlaying = false;
+		PStat.IsReady = false;
+		PStat.PlayerJoinedText->sText = "Press Start to join";
+	}
+	StartTimerText->SetActive(false);
+}
+
 void Menu::SwitchScreens(MenuScreens NewScreen)
 {
 	for (auto& UIElem : MenuElements)
@@ -236,6 +271,14 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 		UIElem->SetActive(false);
 	}
 	for (auto& UIElem : PlayerSelectElements)
+	{
+		UIElem->SetActive(false);
+	}
+	for (auto& UIElem : ControlsElements)
+	{
+		UIElem->SetActive(false);
+	}
+	for (auto& UIElem : CreditsElements)
 	{
 		UIElem->SetActive(false);
 	}
@@ -252,17 +295,34 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 		break;
 	case Menu::PLAYERSELECT:
 	{
+		if (SkipPlayerSelect)
+		{
+			LevelManager::GetInstance()->SwitchToLevel("Level");
+			break;
+		}
 		for (auto& UIElem : PlayerSelectElements)
 		{
 			UIElem->SetActive(true);
 		}
-		for (auto& PStat : vPlayerStatus)
-		{
-			PStat.PlayerReadyText->SetActive(false);
-		}
-		StartTimerText->SetActive(false);
+		ResetPlayerSelectScreen();
 	}
-		break;
+	break;
+	case Menu::CONTROLS:
+	{
+		for (auto& UIElem : ControlsElements)
+		{
+			UIElem->SetActive(true);
+		}
+	}
+	break;
+	case Menu::CREDITS:
+	{
+		for (auto& UIElem : CreditsElements)
+		{
+			UIElem->SetActive(true);
+		}
+	}
+	break;
 	default:
 		break;
 	}
@@ -282,8 +342,22 @@ void ExitGameBtn()
 	glutLeaveMainLoop();
 }
 
-void OptionsScreenBtn()
+void ControlsScreenBtn()
 {
+	std::shared_ptr<Menu> MenuScene = std::dynamic_pointer_cast<Menu>(SceneManager::GetInstance()->GetCurrentScene());
+	if (MenuScene)
+	{
+		MenuScene->SwitchScreens(Menu::CONTROLS);
+	}
+}
+
+void CreditsScreenBtn()
+{
+	std::shared_ptr<Menu> MenuScene = std::dynamic_pointer_cast<Menu>(SceneManager::GetInstance()->GetCurrentScene());
+	if (MenuScene)
+	{
+		MenuScene->SwitchScreens(Menu::CREDITS);
+	}
 }
 
 void PlayBtn()

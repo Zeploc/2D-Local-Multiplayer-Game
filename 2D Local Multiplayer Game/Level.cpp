@@ -33,7 +33,6 @@
 // Library Includes //
 #include <iostream>
 
-
 // Prototypes
 void BackToMenu();
 
@@ -147,8 +146,18 @@ Level::~Level()
 void Level::Update()
 {
 	Scene::Update();
+
+	//world.Step(Time::dTimeDelta, 6, 2);
+	world.Step(timeStep, 6, 2);
 	
-	world.Step(Time::dTimeDelta, 6, 2);
+	FrameTime += Time::dTimeDelta;
+	CurrentFrames++;
+	if (FrameTime >= 1)
+	{
+		std::cout << "Frame count: " << CurrentFrames << std::endl;
+		FrameTime = 0.0f;
+		CurrentFrames = 0;
+	}
 
 	float RangeOutsideClosetView = 0.0f;
 

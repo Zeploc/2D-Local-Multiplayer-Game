@@ -55,6 +55,7 @@ void Player::Update()
 {
 	Entity::Update();
 
+	float TimeStepRate = 60.0f;// (60 / Time::dTimeDelta) / 60.0f;
 	if (body)
 	{
 		CheckGroundRay Result;
@@ -145,7 +146,7 @@ void Player::Update()
 		
 	if (CanJump && (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[32] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1)))
 	{
-		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().y * body->GetMass() * 60.0f;
+		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().y * body->GetMass() * TimeStepRate;
 		body->ApplyForce(b2Vec2(0, fJumpForce - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
 		CanJump = false;
 	}
@@ -157,8 +158,8 @@ void Player::Update()
 	
 	if (body)
 	{
-		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().x * body->GetMass() * 60.0f;
-		float ForceToApply = MaxSpeed * body->GetMass() * 60.0f;
+		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().x * body->GetMass() * TimeStepRate;
+		float ForceToApply = MaxSpeed * body->GetMass() * TimeStepRate;
 
 
 		//if (bIsRollingMode)
@@ -222,7 +223,7 @@ void Player::Update()
 			if (!bIsRollingMode) body->GetFixtureList()->SetFriction(NormalFriction);
 			else  body->GetFixtureList()->SetFriction(RollingFriction);
 		}		
-		if (m_iPlayerID == 1) std::cout << "Velocity " << body->GetLinearVelocity().x << ", " << body->GetLinearVelocity().y << " with friction " << body->GetFixtureList()->GetFriction() << std::endl;
+		//if (m_iPlayerID == 1) std::cout << "Velocity " << body->GetLinearVelocity().x << ", " << body->GetLinearVelocity().y << " with friction " << body->GetFixtureList()->GetFriction() << std::endl;
 	}
 }
 
