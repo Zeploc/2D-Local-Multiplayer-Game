@@ -159,7 +159,7 @@
       <Filter>Game\Players</Filter>
     </ClCompile>
     <ClCompile Include="PlayerController.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Game\Players</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -278,7 +278,7 @@
       <Filter>Game\Players</Filter>
     </ClInclude>
     <ClInclude Include="PlayerController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Game\Players</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,8 +19,19 @@
 #include "Engine\Scene.h"
 #include "Engine\LogManager.h"
 #include <Box2D.h>
+#include "Engine\CXBOXController.h"
 
 #include <map>
+
+enum Gamemode
+{
+	DROPOUT,
+	BOMB_SURVIVAL	
+};
+
+std::string GetGamemodeString(Gamemode _gamemode);
+Gamemode GetRandomGamemode();
+
 
 class PlayerContactListener : public b2ContactListener
 {
@@ -39,7 +50,7 @@ public:
 class Level : public Scene
 {
 public:
-	Level(std::string sSceneName);
+	Level(std::string sSceneName, Gamemode LevelGM);
 	~Level();
 
 	virtual void Update() override;
@@ -47,7 +58,10 @@ public:
 
 	static void ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entity> Collided);
 	void PlayerKnockedOut(int PlayerID);
-	void GameComplete();
+	void OnGameComplete();
+	void ShowEndScreen();
+	void GamemodeProcess();
+	void PControllerInput(InputController _ControllerInput);
 
 	std::map<int, std::shared_ptr<class Player>> Players;
 	std::map<int, std::shared_ptr<class PlayerController>> PlayerControllers;
@@ -71,6 +85,9 @@ public:
 	float PlayerFalloutYPosition = -7.0f;
 
 	bool GamePaused = false;
+	bool GameIsComplete = false;
+
+	Gamemode CurrentGamemode;
 
 private:
 	PlayerContactListener CustomContactListener;

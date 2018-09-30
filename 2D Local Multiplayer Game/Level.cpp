@@ -31,6 +31,7 @@
 #include "Player.h"
 #include "PlayerController.h"
 #include "GameManager.h"
+#include "LevelManager.h"
 
 // Library Includes //
 #include <iostream>
@@ -38,9 +39,10 @@
 // Prototypes
 void BackToMenu();
 
-Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10.0f))
+Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), world(b2Vec2(0.0f, -10.0f))
 {
-	
+	CurrentGamemode = LevelGM;
+
 	std::shared_ptr<Entity> BottomPlatform = std::make_shared<Entity>(Entity({ { 0, -3.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(10.0f, 1.0f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
 	BottomPlatform->AddMesh(NewImage);
@@ -122,7 +124,6 @@ Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10
 	world.SetContactListener(&CustomContactListener);
 }
 
-
 Level::~Level()
 {
 
@@ -143,6 +144,8 @@ void Level::Update()
 	//world.Step(Time::dTimeDelta, 6, 2);
 	world.Step(timeStep, 6, 2);
 	
+	GamemodeProcess();
+
 	FrameTime += Time::dTimeDelta;
 	CurrentFrames++;
 	if (FrameTime >= 1)
@@ -187,6 +190,7 @@ void Level::Update()
 void Level::OnLoadScene()
 {
 	Scene::OnLoadScene();
+	LevelManager::GetInstance()->RemoveExcessLevel();
 	glm::vec3 SpawnPosition = { -2, -2, 0 };
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
 	{
@@ -228,18 +232,71 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 
 void Level::PlayerKnockedOut(int PlayerID)
 {
-	// Assign score/place
+	/// Assign score/place
 	GameManager::GetInstance()->vPlayerInfo[PlayerID].CurrentGamePlace = Players.size(); 
 	if (Players.size() <= 1)
 	{
-		GameComplete();
+		OnGameComplete();
 	}
 }
 
-void Level::GameComplete()
+void Level::OnGameComplete()
 {
-	// Display end screen
 	GamePaused = true;
+	GameIsComplete = true;
+	ShowEndScreen();
+}
+
+void Level::ShowEndScreen()
+{
+	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
+	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Game Complete", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
+	AddUIElement(BackImage);
+	AddUIElement(Title);
+
+	/// Have players stats, get from game manager, display each position, and each score
+	/// Generate random new gamemode
+	/// Display next gamemode (GetGamemodeString())
+		
+}
+
+void Level::GamemodeProcess()
+{
+	switch (CurrentGamemode)
+	{
+	case DROPOUT:
+	{
+
+	}
+		break;
+	case BOMB_SURVIVAL:
+	{
+
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+void Level::PControllerInput(InputController _ControllerInput)
+{
+	if (GamePaused)
+	{
+		// Check if players presses start button, tell level (check if paused) and act accordingly
+		if (_ControllerInput == SPECIAL_BUTTON_RIGHT)
+		{
+			if (GameIsComplete)
+			{
+				// next random round
+				LevelManager::GetInstance()->NewRound(GetRandomGamemode());
+			}
+			else
+			{
+				// unpause
+			}
+		}
+	}
 }
 
 void PlayerContactListener::BeginContact(b2Contact * contact)
@@ -266,4 +323,23 @@ void PlayerContactListener::PreSolve(b2Contact * contact, const b2Manifold * old
 
 void PlayerContactListener::PostSolve(b2Contact * contact, const b2ContactImpulse * impulse)
 {
+}
+
+std::string GetGamemodeString(Gamemode _gamemode)
+{
+	switch (_gamemode)
+	{
+		case DROPOUT:
+			return "Dropout";
+		case BOMB_SURVIVAL:
+			return "Bomb Survival";
+	}
+	return "NONE";
+}
+
+Gamemode GetRandomGamemode()
+{
+	int RandGamemode = rand() % 2;
+	std::cout << GetGamemodeString(Gamemode(RandGamemode)) << std::endl;
+	return Gamemode(RandGamemode);
 }

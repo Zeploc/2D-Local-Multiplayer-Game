@@ -35,6 +35,10 @@ public:
 	void Init();
 	
 	void SwitchToLevel(std::string sLevel);
+	std::shared_ptr<class Level> GetCurrentActiveLevel();
+
+	void NewRound(enum Gamemode NewGamemode);
+	void RemoveExcessLevel();
 	
 	// Singleton
 public:

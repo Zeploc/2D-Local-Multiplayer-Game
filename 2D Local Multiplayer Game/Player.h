@@ -6,7 +6,7 @@
 //
 // (c) 2005 - 2018 Media Design School
 //
-// File Name		:    Camera.h
+// File Name		:    Player.h
 // Description		:    Header file outlining the Class
 // Author			:    Alex Coultas
 // Mail				:    alex.cou7417@mediadesign.school.nz

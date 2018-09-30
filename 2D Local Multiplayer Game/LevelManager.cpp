@@ -58,13 +58,49 @@ void LevelManager::Init()
 {
 	std::shared_ptr<Menu> MenuScene = std::shared_ptr<Menu>(new Menu());
 	SceneManager::GetInstance()->AddScene(MenuScene);
-	std::shared_ptr<Level> LevelScene = std::shared_ptr<Level>(new Level("Level"));
-	SceneManager::GetInstance()->AddScene(LevelScene);
 }
 
 void LevelManager::SwitchToLevel(std::string sLevel)
 {
 	SceneManager::GetInstance()->SwitchScene(sLevel);
+}
+
+/************************************************************
+#--Description--#:  Retreive current level
+#--Author--#: 		Alex Coultas
+#--Parameters--#:	NA
+#--Return--#: 		Returns current level pointer
+************************************************************/
+std::shared_ptr<Level> LevelManager::GetCurrentActiveLevel()
+{
+	std::shared_ptr<Scene> CurrentScene = SceneManager::GetInstance()->GetCurrentScene();
+	if (CurrentScene)
+		return std::dynamic_pointer_cast<Level>(CurrentScene);
+	return nullptr;
+}
+
+void LevelManager::RemoveExcessLevel()
+{
+	std::shared_ptr<Scene> CurrentScene = SceneManager::GetInstance()->GetCurrentScene();
+	for (auto& Scene : SceneManager::GetInstance()->Scenes)
+	{
+		std::shared_ptr<Level> IsLevel = std::dynamic_pointer_cast<Level>(Scene);
+		if (IsLevel && Scene != CurrentScene) // Is level and not current scene
+		{
+			SceneManager::GetInstance()->RemoveScene(Scene); // remove old level scene
+			return;
+		}
+	}
+}
+
+void LevelManager::NewRound(Gamemode NewGamemode)
+{
+	// Make new level from gamemode
+	std::string NewSceneName = "Level " + SceneManager::GetInstance()->Scenes.size();
+	std::shared_ptr<Level> LevelScene = std::shared_ptr<Level>(new Level(NewSceneName, NewGamemode));
+	// Add and switch to level
+	SceneManager::GetInstance()->AddScene(LevelScene);
+	SceneManager::GetInstance()->SwitchScene(NewSceneName);
 }
 
 /************************************************************

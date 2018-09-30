@@ -26,6 +26,7 @@
 #include "LevelManager.h"
 #include "MenuPlayerController.h"
 #include "GameManager.h"
+#include "Level.h"
 
 // TEMP
 #include <iostream>
@@ -35,8 +36,6 @@ void SelectPlayersBtn();
 void ControlsScreenBtn();
 void CreditsScreenBtn();
 void ExitGameBtn();
-
-void PlayBtn();
 
 Menu::Menu() : Scene("Menu")
 {
@@ -277,7 +276,7 @@ void Menu::StartGame()
 			GameManager::GetInstance()->vPlayerInfo.insert(std::pair<int, PlayerInfo>(i, NewPlayerInfo)); // Add to map
 		}
 	}
-	LevelManager::GetInstance()->SwitchToLevel("Level"); // Load level
+	LevelManager::GetInstance()->NewRound(GetRandomGamemode()); // New level
 }
 
 void Menu::SwitchScreens(MenuScreens NewScreen)
@@ -313,7 +312,7 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 	{
 		if (SkipPlayerSelect)
 		{
-			LevelManager::GetInstance()->SwitchToLevel("Level");
+			LevelManager::GetInstance()->NewRound(GetRandomGamemode()); // New level
 			break;
 		}
 		for (auto& UIElem : PlayerSelectElements)
@@ -374,9 +373,4 @@ void CreditsScreenBtn()
 	{
 		MenuScene->SwitchScreens(Menu::CREDITS);
 	}
-}
-
-void PlayBtn()
-{
-	LevelManager::GetInstance()->SwitchToLevel("Level");
 }
