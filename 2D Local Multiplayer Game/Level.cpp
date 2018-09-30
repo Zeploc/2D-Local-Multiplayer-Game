@@ -29,6 +29,8 @@
 
 // Local Includes //
 #include "Player.h"
+#include "PlayerController.h"
+#include "GameManager.h"
 
 // Library Includes //
 #include <iostream>
@@ -38,9 +40,6 @@ void BackToMenu();
 
 Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10.0f))
 {
-	// Not collide with bodys with a group index 0f -1
-	b2Filter NoPlayerCollisionFilter;
-	NoPlayerCollisionFilter.groupIndex = 0;
 	
 	std::shared_ptr<Entity> BottomPlatform = std::make_shared<Entity>(Entity({ { 0, -3.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(10.0f, 1.0f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
@@ -95,21 +94,7 @@ Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10
 	//AddEntity(DynamicBoxEntity3, true);
 	//DynamicBoxEntity3->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
 	Box2DCollisionObjects.push_back(DynamicBoxEntity3->body);
-
-
-	std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player({ 0, -2, 0 }, 0));
-	AddEntity(PlayerEnt, true);
-	PlayerEnt->SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
-	Box2DCollisionObjects.push_back(PlayerEnt->body);
-	Players.push_back(PlayerEnt);
-	PlayerEnt->body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
-
-	std::shared_ptr<Player> Player2Ent = std::make_shared<Player>(Player({ 4, 2, 0 }, 1));
-	AddEntity(Player2Ent, true);
-	Player2Ent->SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
-	Box2DCollisionObjects.push_back(Player2Ent->body);
-	Players.push_back(Player2Ent);
-	Player2Ent->body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
+	
 
 	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(10, Camera::GetInstance()->SCR_HEIGHT - 10), Utils::BOTTOM_LEFT, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, BackToMenu));
 	QuitBtn->AddText("Back to Menu", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
@@ -126,7 +111,7 @@ Level::Level(std::string sSceneName) : Scene(sSceneName), world(b2Vec2(0.0f, -10
 
 	std::shared_ptr<UIText> KnockbackPercentage4(new UIText(glm::vec2(1200, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
 	AddUIElement(KnockbackPercentage4);
-	//KnockbackPercentage1->DrawUIElement();
+
 	//bIsPersistant = true;	
 	world.SetGravity(b2Vec2(0.0f, -gravity));
 
@@ -145,6 +130,14 @@ Level::~Level()
 
 void Level::Update()
 {
+	if (GamePaused)
+	{
+		for (auto& PController : PlayerControllers)
+		{
+			PController.second->Update();
+		}
+		return;
+	}
 	Scene::Update();
 
 	//world.Step(Time::dTimeDelta, 6, 2);
@@ -170,17 +163,19 @@ void Level::Update()
 
 	for (auto it = Players.begin(); it != Endit;)
 	{
-		if ((*it)->transform.Position.x < -CameraCloseRange || (*it)->transform.Position.x > CameraCloseRange)
+		if ((*it).second->transform.Position.x < -CameraCloseRange || (*it).second->transform.Position.x > CameraCloseRange)
 		{
-			float PDist = abs((*it)->transform.Position.x) - CameraCloseRange;
+			float PDist = abs((*it).second->transform.Position.x) - CameraCloseRange;
 			if (PDist > RangeOutsideClosetView) RangeOutsideClosetView = PDist;
 		}
 		// Check if they've fallen out
-		if ((*it)->transform.Position.y < PlayerFalloutYPosition)
+		if ((*it).second->transform.Position.y < PlayerFalloutYPosition)
 		{
-			DestroyEntity(*it);
+			int PlayerId = (*it).first;
+			DestroyEntity((*it).second);
 			it = Players.erase(it);
 			Endit = Players.end();
+			PlayerKnockedOut(PlayerId);
 			continue;
 		}
 		++it;
@@ -192,7 +187,20 @@ void Level::Update()
 void Level::OnLoadScene()
 {
 	Scene::OnLoadScene();
-
+	glm::vec3 SpawnPosition = { -2, -2, 0 };
+	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
+	{
+		// Add player
+		std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player(SpawnPosition, player.second.PlayerID));
+		AddEntity(PlayerEnt, true);
+		PlayerEnt->Init(world);
+		Players.insert(std::pair<int, std::shared_ptr<Player>>(player.second.PlayerID, PlayerEnt));
+		SpawnPosition.x += 1;
+		// Add Player Controller
+		std::shared_ptr<PlayerController> newPlayerController = std::make_shared<PlayerController>(PlayerController(player.second.PlayerID));
+		PlayerControllers.insert(std::pair<int, std::shared_ptr<PlayerController>>(player.second.PlayerID, newPlayerController));
+		AddEntity(newPlayerController);
+	}		
 }
 
 void BackToMenu()
@@ -216,7 +224,22 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 			Player1->ApplyKnockback((glm::vec2(Player2->body->GetLinearVelocity().x, Player2->body->GetLinearVelocity().y)), false);
 		}
 	}
+}
 
+void Level::PlayerKnockedOut(int PlayerID)
+{
+	// Assign score/place
+	GameManager::GetInstance()->vPlayerInfo[PlayerID].CurrentGamePlace = Players.size(); 
+	if (Players.size() <= 1)
+	{
+		GameComplete();
+	}
+}
+
+void Level::GameComplete()
+{
+	// Display end screen
+	GamePaused = true;
 }
 
 void PlayerContactListener::BeginContact(b2Contact * contact)

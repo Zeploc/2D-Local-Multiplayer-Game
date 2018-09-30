@@ -59,6 +59,8 @@ public:
 	void ControllerInputAxis(InputDirection NewInput);
 	void CheckPlayersToStartTimer();
 	void ResetPlayerSelectScreen();
+	
+	void StartGame();
 
 	void SwitchScreens(MenuScreens NewScreen);
 
@@ -67,9 +69,10 @@ private:
 	std::vector<std::shared_ptr<UIElement>> PlayerSelectElements;
 	std::vector<std::shared_ptr<UIElement>> ControlsElements;
 	std::vector<std::shared_ptr<UIElement>> CreditsElements;
+	std::shared_ptr<class UIButton> CurrentSelectedButton;
+
 	std::vector<PlayerStatus> vPlayerStatus;
 
-	std::shared_ptr<class UIButton> CurrentSelectedButton;
 
 	float StartTime = 3.0f;
 	std::shared_ptr<UIText> StartTimerText;

@@ -29,6 +29,7 @@ public:
 
 	Player(glm::vec3 StartPosition, int PlayerID);
 	~Player();
+	void Init(b2World& world);
 	
 	virtual void Update() override;
 	virtual void Reset();
@@ -36,6 +37,9 @@ public:
 	void ApplyKnockback(glm::vec2 Direction, bool Normalize = true);
 	void AttemptMelee();
 	bool GetIsRolling();
+	int GetID() {
+		return m_iPlayerID;
+	};
 
 private:
 	// Movement
@@ -112,10 +116,10 @@ public:
 		std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
 		for (auto& player : LevelRef->Players)
 		{
-			if (fixture->GetBody() == player->body && player != OwningPlayer)
+			if (fixture->GetBody() == player.second->body && player.second != OwningPlayer)
 			{
 				// Push to vector result
-				m_PlayerFixtureHits.push_back(player);
+				m_PlayerFixtureHits.push_back(player.second);
 			}
 		}
 		return fraction;

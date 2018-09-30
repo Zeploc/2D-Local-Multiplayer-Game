@@ -168,12 +168,14 @@
     <ClCompile Include="Engine\UIText.cpp" />
     <ClCompile Include="Engine\UITextField.cpp" />
     <ClCompile Include="Engine\Utils.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MenuPlayerController.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Camera.h" />
@@ -208,11 +210,13 @@
     <ClInclude Include="Engine\UIText.h" />
     <ClInclude Include="Engine\UITextField.h" />
     <ClInclude Include="Engine\Utils.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuPlayerController.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerController.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

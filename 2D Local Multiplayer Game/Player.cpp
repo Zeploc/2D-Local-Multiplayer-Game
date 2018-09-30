@@ -29,7 +29,7 @@
 #include <glm\gtx\string_cast.hpp>
 
 
-Player::Player(glm::vec3 StartPosition, int PlayerID)
+Player::Player(glm::vec3 StartPosition, int PlayerID) // Will also take the type of player (asthetic)
 	: Entity({ StartPosition , {0, 0, 0}, {1, 1, 1} }, Utils::CENTER)
 {
 	std::shared_ptr<Plane> NewImage;
@@ -49,6 +49,16 @@ Player::Player(glm::vec3 StartPosition, int PlayerID)
 Player::~Player()
 {
 
+}
+
+void Player::Init(b2World& world)
+{
+	// Not collide with bodys with a group index 0f -1
+	b2Filter NoPlayerCollisionFilter;
+	NoPlayerCollisionFilter.groupIndex = 0;
+
+	SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
+	body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
 }
 
 void Player::Update()

@@ -20,6 +20,8 @@
 #include "Engine\LogManager.h"
 #include <Box2D.h>
 
+#include <map>
+
 class PlayerContactListener : public b2ContactListener
 {
 public:
@@ -44,8 +46,11 @@ public:
 	virtual void OnLoadScene() override;
 
 	static void ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entity> Collided);
-	
-	std::vector<std::shared_ptr<class Player>> Players;
+	void PlayerKnockedOut(int PlayerID);
+	void GameComplete();
+
+	std::map<int, std::shared_ptr<class Player>> Players;
+	std::map<int, std::shared_ptr<class PlayerController>> PlayerControllers;
 
 	std::vector<b2Body*> Box2DCollisionObjects;
 
@@ -65,10 +70,13 @@ public:
 
 	float PlayerFalloutYPosition = -7.0f;
 
+	bool GamePaused = false;
+
 private:
 	PlayerContactListener CustomContactListener;
 
 	float FrameTime = 0;
 	int CurrentFrames = 0;
+
 };
 

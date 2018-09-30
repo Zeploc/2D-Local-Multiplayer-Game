@@ -25,12 +25,13 @@
 // Local Includes //
 #include "LevelManager.h"
 #include "MenuPlayerController.h"
+#include "GameManager.h"
 
 // TEMP
 #include <iostream>
 
 // Prototpyes //
-void StartGameBtn();
+void SelectPlayersBtn();
 void ControlsScreenBtn();
 void CreditsScreenBtn();
 void ExitGameBtn();
@@ -41,7 +42,7 @@ Menu::Menu() : Scene("Menu")
 {
 	// Menu Elements
 	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Local Multiplayer Game", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
-	std::shared_ptr<UIButton> StartBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, StartGameBtn));
+	std::shared_ptr<UIButton> StartBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, SelectPlayersBtn));
 	StartBtn->AddText("START GAME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	std::shared_ptr<UIButton> ControlsBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 80), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, ControlsScreenBtn));
 	ControlsBtn->AddText("CONTROLS", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
@@ -137,7 +138,7 @@ void Menu::Update()
 		StartTimerText->sText = "Starting in " + std::to_string((int)ceil(StartTime)) + "...";
 		if (StartTime <= 0)
 		{
-			LevelManager::GetInstance()->SwitchToLevel("Level");
+			StartGame();
 		}
 	}
 }
@@ -264,6 +265,21 @@ void Menu::ResetPlayerSelectScreen()
 	StartTimerText->SetActive(false);
 }
 
+void Menu::StartGame()
+{
+	GameManager::GetInstance()->RemovePlayers(); // Restart Players map
+	for (int i = 0; i < vPlayerStatus.size(); i++)
+	{
+		if (vPlayerStatus[i].IsPlaying && vPlayerStatus[i].IsReady) // Add all readied players
+		{
+			PlayerInfo NewPlayerInfo;
+			NewPlayerInfo.PlayerID = i; // Set player ID
+			GameManager::GetInstance()->vPlayerInfo.insert(std::pair<int, PlayerInfo>(i, NewPlayerInfo)); // Add to map
+		}
+	}
+	LevelManager::GetInstance()->SwitchToLevel("Level"); // Load level
+}
+
 void Menu::SwitchScreens(MenuScreens NewScreen)
 {
 	for (auto& UIElem : MenuElements)
@@ -328,7 +344,7 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 	}
 }
 
-void StartGameBtn()
+void SelectPlayersBtn()
 {
 	std::shared_ptr<Menu> MenuScene = std::dynamic_pointer_cast<Menu>(SceneManager::GetInstance()->GetCurrentScene());
 	if (MenuScene)
