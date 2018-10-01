@@ -37,6 +37,9 @@ public:
 	void ApplyKnockback(glm::vec2 Direction, bool Normalize = true);
 	void AttemptMelee();
 	bool GetIsRolling();
+	void EquipWeapon(std::shared_ptr<class Weapon> NewWeapon);
+	void DropCurrentWeapon();
+
 	int GetID() {
 		return m_iPlayerID;
 	};
@@ -69,6 +72,8 @@ private:
 	const char* BallImage = "Resources/Images/OfficeBall.png";
 
 	int m_iPlayerID = -1;
+
+	std::shared_ptr<class Weapon> CurrentWeapon;
 };
 
 class CheckGroundRay : public b2RayCastCallback

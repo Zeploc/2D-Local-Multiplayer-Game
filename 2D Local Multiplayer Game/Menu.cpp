@@ -100,16 +100,24 @@ Menu::Menu() : Scene("Menu")
 
 	// Controls Elements
 	std::shared_ptr<UIText> ControlsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Controls", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIImage> ControlsImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7, "Resources/Images/Controls.png", 1));
+	std::shared_ptr<UIText> BToBack(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100.0f), 0, glm::vec4(0.7, 0.7, 0.7, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER));
 
 	AddUIElement(ControlsTitle);
+	AddUIElement(ControlsImage);
+	AddUIElement(BToBack);
 	ControlsElements.push_back(ControlsTitle);
+	ControlsElements.push_back(ControlsImage);
+	ControlsElements.push_back(BToBack);
 
 	// Credits Elements
 	std::shared_ptr<UIText> CreditsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Credits", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
-
+	
 	AddUIElement(CreditsTitle);
 	CreditsElements.push_back(CreditsTitle);
+	CreditsElements.push_back(BToBack);
 
+	PlayerSelectElements.push_back(BToBack);
 	// Setting Screen
 	SwitchScreens(Menu::MENU);
 

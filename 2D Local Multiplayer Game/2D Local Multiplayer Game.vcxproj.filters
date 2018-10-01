@@ -45,6 +45,9 @@
     <Filter Include="Game\Players">
       <UniqueIdentifier>{8dd71471-2ae2-483a-bce6-c848e8325a74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Weapons">
+      <UniqueIdentifier>{3c1c3840-28e2-430c-86a0-896d92b985ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -160,6 +163,12 @@
     </ClCompile>
     <ClCompile Include="PlayerController.cpp">
       <Filter>Game\Players</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="MachineGun.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -279,6 +288,12 @@
     </ClInclude>
     <ClInclude Include="PlayerController.h">
       <Filter>Game\Players</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineGun.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

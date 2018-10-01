@@ -61,6 +61,9 @@ public:
 	void OnGameComplete();
 	void ShowEndScreen();
 	void GamemodeProcess();
+	void RandomWeaponsSpawnCycle();
+	void SpawnRandomWeapon();
+
 	void PControllerInput(InputController _ControllerInput);
 
 	std::map<int, std::shared_ptr<class Player>> Players;
@@ -69,6 +72,7 @@ public:
 	std::vector<b2Body*> Box2DCollisionObjects;
 
 	std::shared_ptr<Entity> CircleEntity;
+	std::shared_ptr<class MachineGun> NewWeapon;
 
 	b2World world;
 	float gravity = 15.0f;
@@ -94,6 +98,15 @@ private:
 
 	float FrameTime = 0;
 	int CurrentFrames = 0;
+
+	// Weapon system
+	float WeaponSpawnTime = 0.0f;
+
+	float MinWeaponSpawnTime = 4.0f;
+	float MaxWeaponSpawnTime = 20.0f;
+
+	glm::vec2 MinPosition = { -6, -2 };
+	glm::vec2 MaxPosition = { 5.5, 3 };
 
 };
 

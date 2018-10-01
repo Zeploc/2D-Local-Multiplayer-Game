@@ -32,6 +32,7 @@
 #include "PlayerController.h"
 #include "GameManager.h"
 #include "LevelManager.h"
+#include "MachineGun.h"
 
 // Library Includes //
 #include <iostream>
@@ -97,7 +98,6 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	//DynamicBoxEntity3->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
 	Box2DCollisionObjects.push_back(DynamicBoxEntity3->body);
 	
-
 	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(10, Camera::GetInstance()->SCR_HEIGHT - 10), Utils::BOTTOM_LEFT, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, BackToMenu));
 	QuitBtn->AddText("Back to Menu", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	AddUIElement(QuitBtn);
@@ -144,6 +144,7 @@ void Level::Update()
 	//world.Step(Time::dTimeDelta, 6, 2);
 	world.Step(timeStep, 6, 2);
 	
+	RandomWeaponsSpawnCycle();
 	GamemodeProcess();
 
 	FrameTime += Time::dTimeDelta;
@@ -161,7 +162,9 @@ void Level::Update()
 
 	if (Input::GetInstance()->KeyState[(unsigned char)'l'] == Input::INPUT_FIRST_PRESS)
 	{
-		CircleEntity->body->SetAngularVelocity(20);
+		NewWeapon = std::make_shared<MachineGun>(MachineGun({ 0, 0 }, Utils::CENTER));
+		AddEntity(NewWeapon);
+		Players[0]->EquipWeapon(NewWeapon);
 	}
 
 	for (auto it = Players.begin(); it != Endit;)
@@ -276,6 +279,54 @@ void Level::GamemodeProcess()
 		break;
 	default:
 		break;
+	}
+}
+
+void Level::SpawnRandomWeapon()
+{
+	WeaponType NewWeaponType = WeaponType(rand() % 5);
+
+	glm::vec2 RandomPos = { 0, 0 };
+	RandomPos.x = rand() % int((MaxPosition.x - MinPosition.x) * 1000);
+	RandomPos.x /= 1000.0f;
+	RandomPos.x += MinPosition.x;
+	RandomPos.y = rand() % int((MaxPosition.y - MinPosition.y) * 1000);
+	RandomPos.y /= 1000.0f;
+	RandomPos.y += MinPosition.y;
+
+	std::shared_ptr<class Weapon> NewWeapon;
+	switch (NewWeaponType)
+	{
+	case ROCKET_LAUNCHER:
+		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+		break;
+	case MACHINE_GUN:
+		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+		break;
+	case GRENADE_LAUNCHER:
+		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+		break;
+	case SNIPER:
+		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+		break;
+	case SHOTGUN:
+		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+		break;
+	default:
+		break;
+	}
+	AddEntity(NewWeapon);
+}
+
+void Level::RandomWeaponsSpawnCycle()
+{
+	WeaponSpawnTime -= Time::dTimeDelta;
+	if (WeaponSpawnTime <= 0.0f)
+	{
+		int RangeSize = (MaxWeaponSpawnTime - MinWeaponSpawnTime) * 1000;
+		WeaponSpawnTime = (rand() % RangeSize) / 1000 + MinWeaponSpawnTime;
+		SpawnRandomWeapon();
+		std::cout << "New random time " << WeaponSpawnTime << std::endl;
 	}
 }
 

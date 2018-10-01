@@ -24,6 +24,7 @@
 
 // Local Includes //
 #include "Level.h"
+#include "Weapon.h"
 
 #include <iostream>
 #include <glm\gtx\string_cast.hpp>
@@ -165,6 +166,11 @@ void Player::Update()
 	{
 		AttemptMelee();
 	}
+
+	if ((Input::GetInstance()->KeyState[(unsigned char)'e'] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS)
+	{
+		DropCurrentWeapon();
+	}
 	
 	if (body)
 	{
@@ -285,5 +291,17 @@ void Player::AttemptMelee()
 bool Player::GetIsRolling()
 {
 	return bIsRollingMode;
+}
+
+void Player::EquipWeapon(std::shared_ptr<class Weapon> NewWeapon)
+{
+	NewWeapon->AddToPlayer(std::dynamic_pointer_cast<Player>(this->shared_from_this()));
+	CurrentWeapon = NewWeapon;
+}
+
+void Player::DropCurrentWeapon()
+{
+	if (CurrentWeapon) CurrentWeapon->RemovePlayer();
+	CurrentWeapon = nullptr;
 }
 
