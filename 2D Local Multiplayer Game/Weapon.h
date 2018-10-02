@@ -33,6 +33,7 @@ public:
 
 	virtual void Fire();
 	virtual void Update();
+	void Init(b2World & _world);
 
 	void AddToPlayer(std::shared_ptr<class Player> NewOwner);
 	void RemovePlayer();
@@ -44,6 +45,9 @@ public:
 
 private:
 	WeaponType CurrentWeapon;
+	float Timer = 0.0;
+	float CooldownTime = 1.0;
+	
 
 	std::shared_ptr<class Player> CurrentPlayer;
 };

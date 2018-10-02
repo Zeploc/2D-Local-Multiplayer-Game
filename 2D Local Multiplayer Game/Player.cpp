@@ -295,6 +295,10 @@ bool Player::GetIsRolling()
 
 void Player::EquipWeapon(std::shared_ptr<class Weapon> NewWeapon)
 {
+	if(CurrentWeapon)
+	{
+		return;
+	}
 	NewWeapon->AddToPlayer(std::dynamic_pointer_cast<Player>(this->shared_from_this()));
 	CurrentWeapon = NewWeapon;
 }

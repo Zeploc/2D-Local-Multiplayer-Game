@@ -140,6 +140,8 @@ void Level::Update()
 	{
 		NewWeapon = std::make_shared<MachineGun>(MachineGun({ 0, 0 }, Utils::CENTER));
 		AddEntity(NewWeapon);
+		NewWeapon->Init(world);
+		
 		Players[0]->EquipWeapon(NewWeapon);
 	}
 
@@ -198,7 +200,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(Object);
 	std::shared_ptr<Player> Player2 = std::dynamic_pointer_cast<Player>(Collided);
 	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
-	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Object);
+	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Collided);
 	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
 
 	if (Player1 && Collided->body && Player2 && Collided->body)
@@ -223,13 +225,14 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 
 		int PlayerId = Player1->GetID();
 		DestroyEntity(Player1);
+		Players.erase(PlayerId);
 		PlayerKnockedOut(PlayerId);
 	}
 	else if (Player1 && Collided->body && SpeedyGun) // OR if a bullet is the first object
 	{
 		std::cout << "Gun Collision" << std::endl;
-		//std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(IsEntity2->shared_from_this());
-		//Player1->EquipWeapon(SpeedyGun);
+		Player1->EquipWeapon(SpeedyGun);
+		
 	}
 }
 
@@ -316,6 +319,7 @@ void Level::SpawnRandomWeapon()
 		break;
 	}
 	AddEntity(NewWeapon);
+	NewWeapon->Init(world);
 }
 
 void Level::RunCollisionResponses()

@@ -17,6 +17,7 @@
 
 // Engine Includes //
 #include "Engine\Plane.h"
+#include "Engine/Time.h"
 
 // This Includes //
 #include "Player.h"
@@ -69,15 +70,41 @@ void Weapon::Update()
 	{
 		transform.Position = glm::vec3(glm::vec2(CurrentPlayer->transform.Position) + HoldingOffset, transform.Position.z);
 		transform.Scale.x = CurrentPlayer->transform.Scale.x;
+		SetBox2DTransform(transform.Position, 0);
 	}
+	if (Timer > 0)
+	{
+		Timer -= Time::dTimeDelta;
+
+		if (Timer <= 0)
+		{
+			body->SetActive(true);
+		}
+	}
+	
 }
 
 void Weapon::AddToPlayer(std::shared_ptr<class Player> NewOwner)
 {
 	CurrentPlayer = NewOwner;
+	body->SetActive(false);
 }
 
 void Weapon::RemovePlayer()
 {
 	CurrentPlayer = nullptr;
+	Timer = CooldownTime;
+	
+}
+
+void Weapon::Init(b2World & _world)
+{
+	SetupB2BoxBody(_world, b2_staticBody, false);
+	//body->SetActive(false);
+
+	// Not collide with bodys with a group index 0f -1
+	b2Filter NoPlayerCollisionFilter;
+	NoPlayerCollisionFilter.groupIndex = -1;
+
+	body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
 }
