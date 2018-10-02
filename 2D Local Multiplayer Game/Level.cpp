@@ -30,6 +30,7 @@
 // Local Includes //
 #include "Player.h"
 #include "PlayerController.h"
+#include "SpikeHazard.h"
 #include "GameManager.h"
 #include "LevelManager.h"
 #include "MachineGun.h"
@@ -98,6 +99,11 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	//DynamicBoxEntity3->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
 	Box2DCollisionObjects.push_back(DynamicBoxEntity3->body);
 	
+
+	std::shared_ptr<SpikeHazard> SpikeHazzard1 = std::make_shared<SpikeHazard>(SpikeHazard({ { -2, 1, 0 } ,{ 0, 0, -10 },{ 1, 1, 1 } }, Utils::CENTER));
+	SpikeHazzard1->Init(world);
+	AddEntity(SpikeHazzard1, true);
+
 	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(10, Camera::GetInstance()->SCR_HEIGHT - 10), Utils::BOTTOM_LEFT, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, BackToMenu));
 	QuitBtn->AddText("Back to Menu", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	AddUIElement(QuitBtn);
@@ -362,8 +368,14 @@ void PlayerContactListener::BeginContact(b2Contact * contact)
 		{
 			Level::ApplyCollision(IsEntity1->shared_from_this(), IsEntity2->shared_from_this());
 			Level::ApplyCollision(IsEntity2->shared_from_this(), IsEntity1->shared_from_this());
-		}
 
+			SpikeHazard* Spike = dynamic_cast<SpikeHazard*>(IsEntity1);
+			if (Spike && IsEntity2->body)
+			{
+				Spike->Update();
+				SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity(IsEntity2->shared_from_this());
+			}
+		}
 	}
 }
 
