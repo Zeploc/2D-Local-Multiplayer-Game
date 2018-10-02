@@ -174,7 +174,7 @@ void Level::OnLoadScene()
 	Scene::OnLoadScene();
 	LevelManager::GetInstance()->RemoveExcessLevel();
 	LevelManager::GetInstance()->AddRandomMapForGamemode(std::dynamic_pointer_cast<Level>(this->shared_from_this()));
-	glm::vec3 SpawnPosition = { -2, -2, 0 };
+	glm::vec3 SpawnPosition = { -1, 2, 0 };
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
 	{
 		// Add player
@@ -415,7 +415,23 @@ void PlayerContactListener::BeginContact(b2Contact * contact)
 
 void PlayerContactListener::PreSolve(b2Contact * contact, const b2Manifold * oldManifold)
 {
+	void* bodyUserData1 = contact->GetFixtureA()->GetBody()->GetUserData();
+	void* bodyUserData2 = contact->GetFixtureB()->GetBody()->GetUserData();
+	if (bodyUserData1 && bodyUserData2)
+	{
+		Entity* IsEntity1 = reinterpret_cast<Entity*>(bodyUserData1);
+		Entity* IsEntity2 = reinterpret_cast<Entity*>(bodyUserData2);
 
+		if (IsEntity1 && IsEntity2 && IsEntity1->GetEntityValue() > -1 && IsEntity2->GetEntityValue() > -1)
+		{
+			std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(IsEntity1->shared_from_this());
+			std::shared_ptr<Weapon> SpeedyGun2 = std::dynamic_pointer_cast<Weapon>(IsEntity2->shared_from_this());
+			if (SpeedyGun || SpeedyGun2)
+			{
+				contact->SetEnabled(false);
+			}
+		}
+	}
 }
 
 void PlayerContactListener::PostSolve(b2Contact * contact, const b2ContactImpulse * impulse)

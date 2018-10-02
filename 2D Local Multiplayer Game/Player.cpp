@@ -56,7 +56,8 @@ void Player::Init(b2World& world)
 {
 	// Not collide with bodys with a group index 0f -1
 	b2Filter NoPlayerCollisionFilter;
-	NoPlayerCollisionFilter.groupIndex = 0;
+	NoPlayerCollisionFilter.categoryBits = 0x004;// .groupIndex = -1;
+	NoPlayerCollisionFilter.maskBits = 0xFFFF & ~0x004; // Collide with everything but other players
 
 	SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
 	body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);

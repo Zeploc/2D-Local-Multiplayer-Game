@@ -68,9 +68,9 @@ void Weapon::Update()
 
 	if (CurrentPlayer)
 	{
-		transform.Position = glm::vec3(glm::vec2(CurrentPlayer->transform.Position) + HoldingOffset, transform.Position.z);
+		transform.Position = glm::vec3(glm::vec2(CurrentPlayer->transform.Position) + HoldingOffset, 2);
 		transform.Scale.x = CurrentPlayer->transform.Scale.x;
-		SetBox2DTransform(transform.Position, 0);
+		SetBox2DTransform(transform.Position, transform.Rotation.z);
 	}
 	if (Timer > 0)
 	{
@@ -104,7 +104,8 @@ void Weapon::Init(b2World & _world)
 
 	// Not collide with bodys with a group index 0f -1
 	b2Filter NoPlayerCollisionFilter;
-	NoPlayerCollisionFilter.groupIndex = -1;
+	NoPlayerCollisionFilter.categoryBits = 0x002;// .groupIndex = -1;
+	NoPlayerCollisionFilter.maskBits = 0xFFFF & ~0x002; // Collide with everything but itselves
 
 	body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
 }

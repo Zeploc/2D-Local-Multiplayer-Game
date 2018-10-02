@@ -28,7 +28,7 @@ public:
 	void Respawn();
 
 private:
-	float FallDelay = 1.0f;
+	float FallDelay = 1.5f;
 	float RespawnTime = 2.0f;
 
 	bool IsHit = false;
