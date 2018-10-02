@@ -38,7 +38,7 @@
 
 // Library Includes //
 #include <iostream>
-
+#include <glm\gtx\string_cast.hpp>
 // Prototypes
 void BackToMenu();
 
@@ -146,7 +146,7 @@ void Level::Update()
 	}
 
 	float RangeOutsideClosetView = 0.0f;
-
+	
 	auto Endit = Players.end();
 
 	if (Input::GetInstance()->KeyState[(unsigned char)'l'] == Input::INPUT_FIRST_PRESS)
@@ -172,6 +172,7 @@ void Level::Update()
 			Endit = Players.end();
 			PlayerKnockedOut(PlayerId);
 			continue;
+			
 		}
 		++it;
 	}
@@ -375,22 +376,52 @@ void Level::PControllerInput(InputController _ControllerInput)
 
 void PlayerContactListener::BeginContact(b2Contact * contact)
 {
+	std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
 	void* bodyUserData1 = contact->GetFixtureA()->GetBody()->GetUserData();
 	void* bodyUserData2 = contact->GetFixtureB()->GetBody()->GetUserData();
 	if (bodyUserData1 && bodyUserData2)
 	{
 		Entity* IsEntity1 = reinterpret_cast<Entity*>(bodyUserData1);
 		Entity* IsEntity2 = reinterpret_cast<Entity*>(bodyUserData2);
+
 		if (IsEntity1 && IsEntity2 && IsEntity1->GetEntityValue() > -1 && IsEntity2->GetEntityValue() > -1)
 		{
 			Level::ApplyCollision(IsEntity1->shared_from_this(), IsEntity2->shared_from_this());
 			Level::ApplyCollision(IsEntity2->shared_from_this(), IsEntity1->shared_from_this());
 
+			Weapon* SpeedyGun = dynamic_cast<Weapon*>(IsEntity1);
 			SpikeHazard* Spike = dynamic_cast<SpikeHazard*>(IsEntity1);
+			Player* Player1 = dynamic_cast<Player*>(IsEntity2);
+			
 			if (Spike && IsEntity2->body)
 			{
-				Spike->Update();
-				SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity(IsEntity2->shared_from_this());
+				std::cout << "Collided with Spike" << std::endl;
+				SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity((Player1->shared_from_this()));		
+				LevelRef->PlayerKnockedOut(Player1->GetID());
+
+				auto Endit = LevelRef->Players.end();
+				for (auto it = LevelRef->Players.begin(); it != Endit;)
+				{
+					if ((*it).first == Player1->GetID())
+					{
+						int PlayerId = (*it).first;
+						LevelRef->DestroyEntity((*it).second);
+						it = LevelRef->Players.erase(it);
+						Endit = LevelRef->Players.end();
+						LevelRef->PlayerKnockedOut(PlayerId);
+						continue;
+
+					}
+					++it;
+				}
+				
+			}
+			if (SpeedyGun && IsEntity2->body)
+			{
+				std::cout << "Gun Collision" << std::endl;
+				std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(IsEntity2->shared_from_this());
+				//Player1->EquipWeapon(SpeedyGun);
+				
 			}
 		}
 	}
