@@ -20,6 +20,7 @@
 // Local Includes //
 #include "Menu.h"
 #include "Level.h"
+#include "DropoutBlock.h"
 
 // Engine Includes //
 #include "Engine\SceneManager.h"
@@ -84,19 +85,73 @@ void LevelManager::RemoveExcessLevel()
 	std::shared_ptr<Scene> CurrentScene = SceneManager::GetInstance()->GetCurrentScene();
 	for (auto& Scene : SceneManager::GetInstance()->Scenes)
 	{
-		std::shared_ptr<Level> IsLevel = std::dynamic_pointer_cast<Level>(Scene);
-		if (IsLevel && Scene != CurrentScene) // Is level and not current scene
+		std::shared_ptr<Level> IsLevel = std::dynamic_pointer_cast<Level>(Scene.second);
+		if (IsLevel && Scene.second != CurrentScene) // Is level and not current scene
 		{
-			SceneManager::GetInstance()->RemoveScene(Scene); // remove old level scene
+			SceneManager::GetInstance()->RemoveScene(Scene.second); // remove old level scene
 			return;
 		}
 	}
 }
 
+void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToAddTo)
+{
+	int RandomMap = 0;// rand() % 2;
+	switch (LevelToAddTo->CurrentGamemode)
+	{
+	case DROPOUT:
+	{
+		if (RandomMap == 0)
+		{
+			LevelToAddTo->AddDropoutBlock({ -6.5, -3.5 }, 4);
+			LevelToAddTo->AddDropoutBlock({ 5, -3.5 }, 4);
+			LevelToAddTo->AddDropoutBlock({ -2.5, -2.5 }, 11);
+			LevelToAddTo->AddDropoutBlock({ -5.5, -0.5 }, 5);
+			LevelToAddTo->AddDropoutBlock({ 3.5,- 0.5 }, 5);
+			LevelToAddTo->AddDropoutBlock({ -1, 1 }, 5);
+			LevelToAddTo->AddDropoutBlock({ -7, 1.5 }, 2);
+			LevelToAddTo->AddDropoutBlock({ 6.5, 1.5 }, 2);
+			LevelToAddTo->AddDropoutBlock({ -4, 2.5 }, 4);
+			LevelToAddTo->AddDropoutBlock({ 2.5, 2.5 }, 4);
+
+		}
+		else
+		{
+
+		}
+	}
+	break;
+	case BOMB_SURVIVAL:
+	{
+		if (RandomMap == 0)
+		{
+			LevelToAddTo->AddBlock({ 0, -3 }, 10);
+			LevelToAddTo->AddBlock({ 0, 1 }, 6);
+			LevelToAddTo->AddBlock({ -5, -1 }, 3);
+			LevelToAddTo->AddBlock({ 5, -1 }, 3);
+		}
+		else
+		{
+
+		}
+	}
+	break;
+	default:
+		break;
+	}
+}
+
+
 void LevelManager::NewRound(Gamemode NewGamemode)
 {
 	// Make new level from gamemode
-	std::string NewSceneName = "Level " + SceneManager::GetInstance()->Scenes.size();
+	int LevelID = 0;
+	std::string NewSceneName = "Level " + std::to_string(LevelID);
+	while (SceneManager::GetInstance()->Scenes.count(NewSceneName) > 0)
+	{
+		LevelID++;
+		NewSceneName = "Level " + std::to_string(LevelID);
+	}
 	std::shared_ptr<Level> LevelScene = std::shared_ptr<Level>(new Level(NewSceneName, NewGamemode));
 	// Add and switch to level
 	SceneManager::GetInstance()->AddScene(LevelScene);

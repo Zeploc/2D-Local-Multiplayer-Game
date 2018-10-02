@@ -19,11 +19,15 @@
 #include "Engine/CXBOXController.h"
 #include "Engine/Input.h"
 
+// Local Includes //
+#include "Level.h"
 
-PlayerController::PlayerController(int PlayerID)
+
+PlayerController::PlayerController(int PlayerID, std::shared_ptr<Level> LevelRef)
 	: Entity({ {0, 0, 0} ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER)
 {
 	ControllerID = PlayerID;
+	CurrentLevel = LevelRef;
 }
 
 
@@ -46,7 +50,7 @@ void PlayerController::Update()
 			{
 				if (Controller->ControllerButtons[i] == Input::INPUT_FIRST_PRESS)
 				{
-					/// Get level manager > get current level > pccontrollerinput - pass in input
+					CurrentLevel->PControllerInput(InputController(i));
 				}
 			}
 		}

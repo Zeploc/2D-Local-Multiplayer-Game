@@ -64,6 +64,11 @@ public:
 	void RandomWeaponsSpawnCycle();
 	void SpawnRandomWeapon();
 
+	void TogglePause();
+
+	void AddDropoutBlock(glm::vec2 Pos, int TileCount = 1, const char* ImagePath = "Resources/Images/Box.png");
+	void AddBlock(glm::vec2 Pos, float Width = 0.5f, float Height = 0.5f, const char* ImagePath = "Resources/Images/Box.png");
+
 	void PControllerInput(InputController _ControllerInput);
 
 	std::map<int, std::shared_ptr<class Player>> Players;
@@ -82,7 +87,7 @@ public:
 	int32 positionIterations = 2;
 
 	float CameraCloseRange = 5;
-	float CameraClosestZoom = 180.0f;
+	float CameraClosestZoom = 170.0f;
 	float CameraFurthestZoom = 120.0f; // Smaller is further
 	float CameraZoomOutMultiplyer = 15.0f;
 
@@ -108,5 +113,6 @@ private:
 	glm::vec2 MinPosition = { -6, -2 };
 	glm::vec2 MaxPosition = { 5.5, 3 };
 
+	std::vector<std::shared_ptr<UIElement>> PauseElements;
 };
 

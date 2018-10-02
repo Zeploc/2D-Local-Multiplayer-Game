@@ -19,12 +19,14 @@
 class PlayerController : public Entity
 {
 public:
-	PlayerController(int PlayerID);
+	PlayerController(int PlayerID, std::shared_ptr<class Level> LevelRef);
 	~PlayerController();
 
 	virtual void Update() override;
 
 private:
 	int ControllerID = -1;
+
+	std::shared_ptr<class Level> CurrentLevel;
 };
 

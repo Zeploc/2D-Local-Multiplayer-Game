@@ -49,8 +49,8 @@ SceneManager::~SceneManager()
 {
 	for (auto it : Scenes)
 	{
-		it->DeleteScene();
-		it = nullptr;
+		it.second->DeleteScene();
+		it.second = nullptr;
 	}
 }
 
@@ -64,11 +64,13 @@ void SceneManager::AddScene(std::shared_ptr<Scene> _Scene)
 {
 	if (Scenes.empty())
 	{
-		Scenes.push_back(_Scene);
+		Scenes.insert(std::pair<std::string, std::shared_ptr<Scene>>(_Scene->SceneName, _Scene));
 		_Scene->OnLoadScene();
+		CurrentScene = _Scene->SceneName;
+		SceneToSwitch = CurrentScene;
 	}
 	else
-		Scenes.push_back(_Scene);
+		Scenes.insert(std::pair<std::string, std::shared_ptr<Scene>>(_Scene->SceneName, _Scene));
 }
 
 /************************************************************
@@ -79,15 +81,14 @@ void SceneManager::AddScene(std::shared_ptr<Scene> _Scene)
 ************************************************************/
 void SceneManager::RemoveScene(std::string SceneName)
 {
-	for (auto it = Scenes.begin(); it != Scenes.end(); ++it)
+	if (Scenes.count(SceneName) == 0)
 	{
-		if ((*it)->SceneName == SceneName)
-		{
-			(*it)->DeleteScene();
-			Scenes.erase(it);
-			return;
-		}
+		// Scene Doesn't exist
+		LogManager::GetInstance()->DisplayLogMessage("Could not find scene " + SceneName);
+		return;
 	}
+	Scenes[SceneName]->DeleteScene();
+	Scenes.erase(SceneName);
 }
 
 /************************************************************
@@ -100,9 +101,9 @@ void SceneManager::RemoveScene(std::shared_ptr<Scene> _Scene)
 {
 	for (auto it = Scenes.begin(); it != Scenes.end(); ++it)
 	{
-		if ((*it) == _Scene)
+		if ((*it).second == _Scene)
 		{
-			(*it)->DeleteScene();
+			(*it).second->DeleteScene();
 			Scenes.erase(it);
 			return;
 		}
@@ -118,22 +119,22 @@ void SceneManager::RemoveScene(std::shared_ptr<Scene> _Scene)
 ************************************************************/
 void SceneManager::SwitchScene(std::string SceneName, bool _bInstant)
 {
-	for (unsigned int i = 0; i < Scenes.size(); i++)
+	if (Scenes.count(SceneName) == 0)
 	{
-		if (Scenes[i]->SceneName == SceneName)
-		{
-			if (_bInstant)
-			{
-				CurrentScene = i;
-				Scenes[SceneToSwitch]->OnLoadScene();
-				LogManager::GetInstance()->DisplayLogMessage("Switching to Scene \"" + Scenes[SceneToSwitch]->SceneName + "\"");
-			}
-			else
-				SceneToSwitch = i;
-			return;
-		}
+		// Scene Doesn't exist
+		LogManager::GetInstance()->DisplayLogMessage("Could not find scene " + SceneName);
+		return;
 	}
-	LogManager::GetInstance()->DisplayLogMessage("Could not find scene " + SceneName);
+
+	if (_bInstant)
+	{
+		CurrentScene = SceneName;
+		LogManager::GetInstance()->DisplayLogMessage("Switching to Scene \"" + Scenes[CurrentScene]->SceneName + "\"");
+		Scenes[CurrentScene]->OnLoadScene();
+	}
+	else
+		SceneToSwitch = SceneName;
+
 }
 
 /************************************************************
@@ -149,8 +150,8 @@ void SceneManager::UpdateCurrentScene()
 	if (SceneToSwitch != CurrentScene)
 	{
 		CurrentScene = SceneToSwitch;
-		Scenes[SceneToSwitch]->OnLoadScene();
 		LogManager::GetInstance()->DisplayLogMessage("Switching to Scene \"" + Scenes[SceneToSwitch]->SceneName + "\"");
+		Scenes[SceneToSwitch]->OnLoadScene();
 	}
 }
 
@@ -167,7 +168,7 @@ void SceneManager::RenderCurrentScene()
 
 std::shared_ptr<Scene> SceneManager::GetCurrentScene()
 {
-	if (Scenes.size() < CurrentScene || Scenes.empty())
+	if (Scenes.empty())
 		return nullptr;
 	else
 		return Scenes[CurrentScene];

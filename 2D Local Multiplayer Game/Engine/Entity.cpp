@@ -302,5 +302,5 @@ void Entity::SetupB2CircleBody(b2World & Box2DWorld, b2BodyType BodyType, bool b
 
 void Entity::SetBox2DTransform(glm::vec3 _Position, float _Rotation)
 {	
-	body->SetTransform(b2Vec2(_Position.x, _Position.y), (_Rotation / 180) * b2_pi);
+	if (body) body->SetTransform(b2Vec2(_Position.x, _Position.y), (_Rotation / 180) * b2_pi);
 }

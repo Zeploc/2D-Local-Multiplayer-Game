@@ -112,6 +112,7 @@ void Mesh::Reset()
 	LightProperties = MeshInitialState.LightProperties;
 	bIsLit = MeshInitialState.bIsLit;
 	bReflection = MeshInitialState.bReflection;
+	Rebind();
 	// Reset Mesh Collision Bounds
 	if (MeshCollisionBounds) MeshCollisionBounds->Reset();
 }

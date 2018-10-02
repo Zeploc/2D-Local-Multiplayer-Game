@@ -170,10 +170,13 @@
     <ClCompile Include="Weapon.cpp">
       <Filter>Game\Weapons</Filter>
     </ClCompile>
-    <ClCompile Include="MachineGun.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SpikeHazard.cpp">
+      <Filter>Game\Hazards</Filter>
+    </ClCompile>
+    <ClCompile Include="MachineGun.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="DropoutBlock.cpp">
       <Filter>Game\Hazards</Filter>
     </ClCompile>
   </ItemGroup>
@@ -298,10 +301,13 @@
     <ClInclude Include="Weapon.h">
       <Filter>Game\Weapons</Filter>
     </ClInclude>
-    <ClInclude Include="MachineGun.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SpikeHazard.h">
+      <Filter>Game\Hazards</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineGun.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="DropoutBlock.h">
       <Filter>Game\Hazards</Filter>
     </ClInclude>
   </ItemGroup>

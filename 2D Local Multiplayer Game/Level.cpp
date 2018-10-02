@@ -34,6 +34,7 @@
 #include "GameManager.h"
 #include "LevelManager.h"
 #include "MachineGun.h"
+#include "DropoutBlock.h"
 
 // Library Includes //
 #include <iostream>
@@ -45,33 +46,15 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 {
 	CurrentGamemode = LevelGM;
 
-	std::shared_ptr<Entity> BottomPlatform = std::make_shared<Entity>(Entity({ { 0, -3.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(10.0f, 1.0f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
-	BottomPlatform->AddMesh(NewImage);
-	AddEntity(BottomPlatform, true);
-	BottomPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
-	Box2DCollisionObjects.push_back(BottomPlatform->body);
-
-	std::shared_ptr<Entity> MiddlePlatform = std::make_shared<Entity>(Entity({ { 0, 1.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> MiddlePlatformImage = std::make_shared<Plane>(Plane(6.0f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
-	MiddlePlatform->AddMesh(MiddlePlatformImage);
-	AddEntity(MiddlePlatform, true);
-	MiddlePlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
-	Box2DCollisionObjects.push_back(MiddlePlatform->body);
-
-	std::shared_ptr<Entity> LeftPlatform = std::make_shared<Entity>(Entity({ { -5.0f, -1.0f, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> LeftPlatformImage = std::make_shared<Plane>(Plane(3.0f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
-	LeftPlatform->AddMesh(LeftPlatformImage);
-	AddEntity(LeftPlatform, true);
-	LeftPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
-	Box2DCollisionObjects.push_back(LeftPlatform->body);
-
-	std::shared_ptr<Entity> RightPlatform = std::make_shared<Entity>(Entity({ { 5.0f, -1.0f, 0 } ,{ 0, 0, 45 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> RightPlatformImage = std::make_shared<Plane>(Plane(3.0f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
-	RightPlatform->AddMesh(RightPlatformImage);
-	AddEntity(RightPlatform, true);
-	RightPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
-	Box2DCollisionObjects.push_back(RightPlatform->body);
+	// Pause Screen elements
+	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
+	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Paused", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
+	AddUIElement(BackImage);
+	AddUIElement(Title);
+	PauseElements.push_back(BackImage);
+	PauseElements.push_back(Title);
+	BackImage->SetActive(false);
+	Title->SetActive(false);
 
 	CircleEntity = std::make_shared<Entity>(Entity({ { 5.0f, 2.0f, 0 } ,{ 0, 0, 45 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> CircleImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png"));
@@ -103,10 +86,10 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	std::shared_ptr<SpikeHazard> SpikeHazzard1 = std::make_shared<SpikeHazard>(SpikeHazard({ { -2, 1, 0 } ,{ 0, 0, -10 },{ 1, 1, 1 } }, Utils::CENTER));
 	SpikeHazzard1->Init(world);
 	AddEntity(SpikeHazzard1, true);
-
+	
 	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(10, Camera::GetInstance()->SCR_HEIGHT - 10), Utils::BOTTOM_LEFT, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, BackToMenu));
 	QuitBtn->AddText("Back to Menu", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
-	AddUIElement(QuitBtn);
+	//AddUIElement(QuitBtn);
 
 	std::shared_ptr<UIText> KnockbackPercentage1(new UIText(glm::vec2(50, Camera::GetInstance()->SCR_HEIGHT -40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
 	AddUIElement(KnockbackPercentage1);
@@ -200,6 +183,7 @@ void Level::OnLoadScene()
 {
 	Scene::OnLoadScene();
 	LevelManager::GetInstance()->RemoveExcessLevel();
+	LevelManager::GetInstance()->AddRandomMapForGamemode(std::dynamic_pointer_cast<Level>(this->shared_from_this()));
 	glm::vec3 SpawnPosition = { -2, -2, 0 };
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
 	{
@@ -210,7 +194,7 @@ void Level::OnLoadScene()
 		Players.insert(std::pair<int, std::shared_ptr<Player>>(player.second.PlayerID, PlayerEnt));
 		SpawnPosition.x += 1;
 		// Add Player Controller
-		std::shared_ptr<PlayerController> newPlayerController = std::make_shared<PlayerController>(PlayerController(player.second.PlayerID));
+		std::shared_ptr<PlayerController> newPlayerController = std::make_shared<PlayerController>(PlayerController(player.second.PlayerID, std::dynamic_pointer_cast<Level>(this->shared_from_this())));
 		PlayerControllers.insert(std::pair<int, std::shared_ptr<PlayerController>>(player.second.PlayerID, newPlayerController));
 		AddEntity(newPlayerController);
 	}		
@@ -225,6 +209,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 {
 	std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(Object);
 	std::shared_ptr<Player> Player2 = std::dynamic_pointer_cast<Player>(Collided);
+	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
 	
 	if (Player1 && Collided->body && Player2 && Collided->body)
 	{	
@@ -236,6 +221,10 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 		{
 			Player1->ApplyKnockback((glm::vec2(Player2->body->GetLinearVelocity().x, Player2->body->GetLinearVelocity().y)), false);
 		}
+	}
+	else if (Player1 && Collided->body && DropBlock) // OR if a bullet is the first object
+	{
+		DropBlock->BlockHit();
 	}
 }
 
@@ -324,6 +313,36 @@ void Level::SpawnRandomWeapon()
 	AddEntity(NewWeapon);
 }
 
+void Level::TogglePause()
+{
+	GamePaused = !GamePaused;
+	for (auto& PauseElement : PauseElements)
+	{
+		PauseElement->SetActive(GamePaused);
+	}
+}
+
+void Level::AddDropoutBlock(glm::vec2 Pos, int TileCount, const char * ImagePath)
+{
+	for (int i = 0; i < TileCount; i++)
+	{
+		std::shared_ptr<DropoutBlock> FallBlock = std::make_shared<DropoutBlock>(DropoutBlock(Pos, Utils::CENTER, ImagePath));
+		FallBlock->Init(world);
+		AddEntity(FallBlock, true);
+		Pos.x += 0.5;
+	}
+}
+
+void Level::AddBlock(glm::vec2 Pos, float Width, float Height, const char * ImagePath)
+{
+	std::shared_ptr<Entity> NewPlatform = std::make_shared<Entity>(Entity({ { Pos, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
+	std::shared_ptr<Plane> NewPlatformImage = std::make_shared<Plane>(Plane(Width, Height, { 0.5f, 0.7f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
+	NewPlatform->AddMesh(NewPlatformImage);
+	AddEntity(NewPlatform, true);
+	NewPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
+	Box2DCollisionObjects.push_back(NewPlatform->body);
+}
+
 void Level::RandomWeaponsSpawnCycle()
 {
 	WeaponSpawnTime -= Time::dTimeDelta;
@@ -338,20 +357,18 @@ void Level::RandomWeaponsSpawnCycle()
 
 void Level::PControllerInput(InputController _ControllerInput)
 {
-	if (GamePaused)
+	// Check if players presses start button, tell level (check if paused) and act accordingly
+	if (_ControllerInput == SPECIAL_BUTTON_RIGHT)
 	{
-		// Check if players presses start button, tell level (check if paused) and act accordingly
-		if (_ControllerInput == SPECIAL_BUTTON_RIGHT)
+		if (GameIsComplete)
 		{
-			if (GameIsComplete)
-			{
-				// next random round
-				LevelManager::GetInstance()->NewRound(GetRandomGamemode());
-			}
-			else
-			{
-				// unpause
-			}
+			// next random round
+			LevelManager::GetInstance()->NewRound(GetRandomGamemode());
+		}
+		else
+		{
+			TogglePause();
+			// unpause
 		}
 	}
 }

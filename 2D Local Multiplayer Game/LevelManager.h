@@ -39,6 +39,8 @@ public:
 
 	void NewRound(enum Gamemode NewGamemode);
 	void RemoveExcessLevel();
+	void AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToAddTo);
+
 	
 	// Singleton
 public:

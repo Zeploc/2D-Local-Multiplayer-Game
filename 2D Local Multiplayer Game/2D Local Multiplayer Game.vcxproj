@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DropoutBlock.cpp" />
     <ClCompile Include="Engine\Camera.cpp" />
     <ClCompile Include="Engine\CollisionBounds.cpp" />
     <ClCompile Include="Engine\Cube.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DropoutBlock.h" />
     <ClInclude Include="Engine\Camera.h" />
     <ClInclude Include="Engine\CollisionBounds.h" />
     <ClInclude Include="Engine\Cube.h" />

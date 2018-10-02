@@ -13,7 +13,7 @@
 //
 
 // Library Includes //
-#include <vector>
+#include <map>
 #include <memory>
 
 class Scene;
@@ -23,7 +23,7 @@ class SceneManager
 {
 public:
 
-	std::vector<std::shared_ptr<Scene>> Scenes;
+	std::map<std::string, std::shared_ptr<Scene>> Scenes;
 
 	void AddScene(std::shared_ptr<Scene> _Scene);
 	void RemoveScene(std::string SceneName);
@@ -34,8 +34,8 @@ public:
 	void RenderCurrentScene();
 	std::shared_ptr<Scene> GetCurrentScene();
 
-	int CurrentScene = 0;
-	int SceneToSwitch = 0;
+	std::string CurrentScene = "";
+	std::string SceneToSwitch = "";
 
 	// Singleton
 public:
