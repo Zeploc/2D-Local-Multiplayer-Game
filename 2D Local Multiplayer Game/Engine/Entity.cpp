@@ -146,7 +146,7 @@ void Entity::Update()
 void Entity::OnDestroy()
 {
 	LogManager::GetInstance()->DisplayLogMessage("Entity with ID #" + std::to_string(iEntityID) + " destroyed!");
-	body->SetActive(false);
+	if (body) body->SetActive(false);
 }
 
 void Entity::Reset()

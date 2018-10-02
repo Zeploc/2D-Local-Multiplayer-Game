@@ -29,6 +29,14 @@ enum Gamemode
 	BOMB_SURVIVAL	
 };
 
+struct ContactInfo
+{
+	std::shared_ptr<Entity> Object1 = nullptr;
+	std::shared_ptr<Entity> Object2 = nullptr;
+	b2Vec2 Object1Velocity = b2Vec2_zero;
+	b2Vec2 Object2Velocity = b2Vec2_zero;
+};
+
 std::string GetGamemodeString(Gamemode _gamemode);
 Gamemode GetRandomGamemode();
 
@@ -56,13 +64,14 @@ public:
 	virtual void Update() override;
 	virtual void OnLoadScene() override;
 
-	static void ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entity> Collided);
+	void ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entity> Collided);
 	void PlayerKnockedOut(int PlayerID);
 	void OnGameComplete();
 	void ShowEndScreen();
 	void GamemodeProcess();
 	void RandomWeaponsSpawnCycle();
 	void SpawnRandomWeapon();
+	void RunCollisionResponses();
 
 	void TogglePause();
 
@@ -74,7 +83,7 @@ public:
 	std::map<int, std::shared_ptr<class Player>> Players;
 	std::map<int, std::shared_ptr<class PlayerController>> PlayerControllers;
 
-	std::vector<b2Body*> Box2DCollisionObjects;
+	std::vector<ContactInfo> AllContacts;
 
 	std::shared_ptr<Entity> CircleEntity;
 	std::shared_ptr<class MachineGun> NewWeapon;

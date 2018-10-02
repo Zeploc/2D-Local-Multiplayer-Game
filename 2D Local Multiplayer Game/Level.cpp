@@ -61,27 +61,13 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	CircleEntity->AddMesh(CircleImage);
 	//AddEntity(CircleEntity, true);
 	//CircleEntity->SetupB2CircleBody(world, b2_dynamicBody, true, true, 10.0f);
-	Box2DCollisionObjects.push_back(CircleEntity->body);
 
 	std::shared_ptr<Entity> DynamicBoxEntity = std::make_shared<Entity>(Entity({ { 0, 4, 0 } ,{ 0, 0, 20 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> TestImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.9f, 0.3f, 0.1f, 1.0f }, "Resources/Images/Box.png"));
 	DynamicBoxEntity->AddMesh(TestImage);
 	//AddEntity(DynamicBoxEntity, true);
 	//DynamicBoxEntity->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
-	Box2DCollisionObjects.push_back(DynamicBoxEntity->body);
-
-	std::shared_ptr<Entity> DynamicBoxEntity2 = std::make_shared<Entity>(Entity({ { 4, 3, 0 } ,{ 0, 0, -10 },{ 1, 1, 1 } }, Utils::CENTER));
-	DynamicBoxEntity2->AddMesh(TestImage);
-	//AddEntity(DynamicBoxEntity2, true);
-	//->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
-	Box2DCollisionObjects.push_back(DynamicBoxEntity2->body);
-
-	std::shared_ptr<Entity> DynamicBoxEntity3 = std::make_shared<Entity>(Entity({ { -1, -1, 0 } ,{ 0, 0, -10 },{ 1, 1, 1 } }, Utils::CENTER));
-	DynamicBoxEntity3->AddMesh(TestImage);
-	//AddEntity(DynamicBoxEntity3, true);
-	//DynamicBoxEntity3->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
-	Box2DCollisionObjects.push_back(DynamicBoxEntity3->body);
-	
+		
 
 	std::shared_ptr<SpikeHazard> SpikeHazzard1 = std::make_shared<SpikeHazard>(SpikeHazard({ { -2, 1, 0 } ,{ 0, 0, -10 },{ 1, 1, 1 } }, Utils::CENTER));
 	SpikeHazzard1->Init(world);
@@ -133,6 +119,7 @@ void Level::Update()
 	//world.Step(Time::dTimeDelta, 6, 2);
 	world.Step(timeStep, 6, 2);
 	
+	RunCollisionResponses();
 	RandomWeaponsSpawnCycle();
 	GamemodeProcess();
 
@@ -211,7 +198,9 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(Object);
 	std::shared_ptr<Player> Player2 = std::dynamic_pointer_cast<Player>(Collided);
 	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
-	
+	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Object);
+	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
+
 	if (Player1 && Collided->body && Player2 && Collided->body)
 	{	
 		if (Player1->body->GetLinearVelocity().Length() > Player2->body->GetLinearVelocity().Length() && Player1->GetIsRolling() == true)
@@ -226,6 +215,21 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	else if (Player1 && Collided->body && DropBlock) // OR if a bullet is the first object
 	{
 		DropBlock->BlockHit();
+	}
+	else if (Player1 && Collided->body && Spike) // OR if a bullet is the first object
+	{
+		std::cout << "Collided with Spike" << std::endl;
+		//SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity((Player1->shared_from_this()));		
+
+		int PlayerId = Player1->GetID();
+		DestroyEntity(Player1);
+		PlayerKnockedOut(PlayerId);
+	}
+	else if (Player1 && Collided->body && SpeedyGun) // OR if a bullet is the first object
+	{
+		std::cout << "Gun Collision" << std::endl;
+		//std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(IsEntity2->shared_from_this());
+		//Player1->EquipWeapon(SpeedyGun);
 	}
 }
 
@@ -314,6 +318,16 @@ void Level::SpawnRandomWeapon()
 	AddEntity(NewWeapon);
 }
 
+void Level::RunCollisionResponses()
+{
+	for (auto& ColInfo : AllContacts)
+	{
+		ApplyCollision(ColInfo.Object1, ColInfo.Object2);
+		ApplyCollision(ColInfo.Object2, ColInfo.Object1);
+	}
+	AllContacts.clear();
+}
+
 void Level::TogglePause()
 {
 	GamePaused = !GamePaused;
@@ -341,7 +355,6 @@ void Level::AddBlock(glm::vec2 Pos, float Width, float Height, const char * Imag
 	NewPlatform->AddMesh(NewPlatformImage);
 	AddEntity(NewPlatform, true);
 	NewPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
-	Box2DCollisionObjects.push_back(NewPlatform->body);
 }
 
 void Level::RandomWeaponsSpawnCycle()
@@ -386,43 +399,12 @@ void PlayerContactListener::BeginContact(b2Contact * contact)
 
 		if (IsEntity1 && IsEntity2 && IsEntity1->GetEntityValue() > -1 && IsEntity2->GetEntityValue() > -1)
 		{
-			Level::ApplyCollision(IsEntity1->shared_from_this(), IsEntity2->shared_from_this());
-			Level::ApplyCollision(IsEntity2->shared_from_this(), IsEntity1->shared_from_this());
-
-			Weapon* SpeedyGun = dynamic_cast<Weapon*>(IsEntity1);
-			SpikeHazard* Spike = dynamic_cast<SpikeHazard*>(IsEntity1);
-			Player* Player1 = dynamic_cast<Player*>(IsEntity2);
-			
-			if (Spike && IsEntity2->body)
-			{
-				std::cout << "Collided with Spike" << std::endl;
-				SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity((Player1->shared_from_this()));		
-				LevelRef->PlayerKnockedOut(Player1->GetID());
-
-				auto Endit = LevelRef->Players.end();
-				for (auto it = LevelRef->Players.begin(); it != Endit;)
-				{
-					if ((*it).first == Player1->GetID())
-					{
-						int PlayerId = (*it).first;
-						LevelRef->DestroyEntity((*it).second);
-						it = LevelRef->Players.erase(it);
-						Endit = LevelRef->Players.end();
-						LevelRef->PlayerKnockedOut(PlayerId);
-						continue;
-
-					}
-					++it;
-				}
-				
-			}
-			if (SpeedyGun && IsEntity2->body)
-			{
-				std::cout << "Gun Collision" << std::endl;
-				std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(IsEntity2->shared_from_this());
-				//Player1->EquipWeapon(SpeedyGun);
-				
-			}
+			ContactInfo NewContactInfo;
+			NewContactInfo.Object1 = IsEntity1->shared_from_this();
+			NewContactInfo.Object2 = IsEntity2->shared_from_this();
+			NewContactInfo.Object1Velocity = IsEntity1->body->GetLinearVelocity();
+			NewContactInfo.Object2Velocity = IsEntity2->body->GetLinearVelocity();
+			LevelRef->AllContacts.push_back(NewContactInfo);
 		}
 	}
 }
