@@ -109,10 +109,7 @@ public:
 
 private:
 	PlayerContactListener CustomContactListener;
-
-	float FrameTime = 0;
-	int CurrentFrames = 0;
-
+	
 	// Weapon system
 	float WeaponSpawnTime = 0.0f;
 

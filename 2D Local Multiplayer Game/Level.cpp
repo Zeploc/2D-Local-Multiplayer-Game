@@ -123,14 +123,7 @@ void Level::Update()
 	RandomWeaponsSpawnCycle();
 	GamemodeProcess();
 
-	FrameTime += Time::dTimeDelta;
-	CurrentFrames++;
-	if (FrameTime >= 1)
-	{
-		std::cout << "Frame count: " << CurrentFrames << std::endl;
-		FrameTime = 0.0f;
-		CurrentFrames = 0;
-	}
+	//std::cout << "Frame count: " << Time::dFPS << std::endl;
 
 	float RangeOutsideClosetView = 0.0f;
 	
