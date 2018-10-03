@@ -35,6 +35,7 @@
 #include "LevelManager.h"
 #include "MachineGun.h"
 #include "DropoutBlock.h"
+#include "Bomb.h"
 
 // Library Includes //
 #include <iostream>
@@ -276,6 +277,20 @@ void Level::GamemodeProcess()
 	default:
 		break;
 	}
+}
+
+void Level::SpawnBomb()
+{
+	glm::vec2 RandomPos = { 0.0f, 0.0f };
+	RandomPos.x = rand() % int((MaxPosition.x - MinPosition.x) * 1000);
+	RandomPos.x /= 1000.0f;
+	RandomPos.x += MinPosition.x;
+	RandomPos.y = MaxPosition.y;
+
+	std::shared_ptr<class Bomb> NewBombu;
+	NewBombu = std::make_shared<Bomb>(Bomb(RandomPos, Utils::CENTER));
+	AddEntity(NewBombu);
+	NewBombu->Init(world);
 }
 
 void Level::SpawnRandomWeapon()

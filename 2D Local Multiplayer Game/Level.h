@@ -72,6 +72,7 @@ public:
 	void RandomWeaponsSpawnCycle();
 	void SpawnRandomWeapon();
 	void RunCollisionResponses();
+	void SpawnBomb();
 
 	void TogglePause();
 
