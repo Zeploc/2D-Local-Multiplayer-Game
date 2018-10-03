@@ -114,10 +114,10 @@ void Player::Update()
 				EntityMesh->Rebind();
 			}
 
-			// Not collide with bodys with a group index 0f -1
-			b2Filter NoPlayerCollisionFilter;
-			NoPlayerCollisionFilter.groupIndex = -1;
-			fixtureDef.filter = NoPlayerCollisionFilter;
+			//// Not collide with bodys with a group index 0f -1
+			//b2Filter NoPlayerCollisionFilter;
+			//NoPlayerCollisionFilter.groupIndex = -1;
+			//fixtureDef.filter = NoPlayerCollisionFilter;
 			// Set the box density to be non-zero, so it will be dynamic.
 			fixtureDef.density = 5.0f;
 			
@@ -181,7 +181,7 @@ void Player::Update()
 
 		//if (bIsRollingMode)
 		// No outside forces applying
-		if (!OutsideForcesApplying)
+		if (!OutsideForcesApplying || bIsRollingMode)
 		{
 
 			if (bIsRollingMode)
