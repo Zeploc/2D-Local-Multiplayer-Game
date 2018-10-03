@@ -73,6 +73,7 @@ public:
 	void SpawnRandomWeapon();
 	void RunCollisionResponses();
 	void SpawnBomb();
+	void RandomSpawnBomb();
 
 	void TogglePause();
 
@@ -116,6 +117,10 @@ private:
 
 	float MinWeaponSpawnTime = 4.0f;
 	float MaxWeaponSpawnTime = 20.0f;
+
+	float BombSpawnTime = 5.0f;
+	float MinBombSpawnTime = 2.0f;
+	float MaxBombSpawnTime = 5.0f;
 
 	glm::vec2 MinPosition = { -6, -2 };
 	glm::vec2 MaxPosition = { 5.5, 3 };

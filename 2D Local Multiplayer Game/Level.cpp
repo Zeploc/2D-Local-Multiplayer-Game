@@ -282,7 +282,7 @@ void Level::GamemodeProcess()
 	case BOMB_SURVIVAL:
 	{
 		/// Add random spawning of bombs
-
+		RandomSpawnBomb();
 	}
 		break;
 	default:
@@ -302,6 +302,18 @@ void Level::SpawnBomb()
 	NewBombu = std::make_shared<Bomb>(Bomb(RandomPos, Utils::CENTER));
 	AddEntity(NewBombu);
 	NewBombu->Init(world);
+}
+
+void Level::RandomSpawnBomb()
+{
+	BombSpawnTime -= Time::dTimeDelta;
+	if (BombSpawnTime <= 0.0f)
+	{
+		int RangeSize = (MaxBombSpawnTime - MinBombSpawnTime) * 1000;
+		BombSpawnTime = (rand() % RangeSize) / 1000 + MinBombSpawnTime;
+		SpawnBomb();
+		std::cout << "New random time " << BombSpawnTime << std::endl;
+	}
 }
 
 void Level::SpawnRandomWeapon()
@@ -339,7 +351,6 @@ void Level::SpawnRandomWeapon()
 	}
 	AddEntity(NewWeapon);
 	NewWeapon->Init(world);
-	SpawnBomb();
 }
 
 void Level::RunCollisionResponses()
