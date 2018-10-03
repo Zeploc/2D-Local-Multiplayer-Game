@@ -20,7 +20,7 @@ Bomb::Bomb(glm::vec2 Position, Utils::EANCHOR _Anchor)
 
 Bomb::~Bomb()
 {
-
+	
 }
 
 void Bomb::Update()

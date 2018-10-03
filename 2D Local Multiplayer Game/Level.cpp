@@ -196,6 +196,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
 	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Collided);
 	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
+	std::shared_ptr<Bomb> Bombuu = std::dynamic_pointer_cast<Bomb>(Collided);
 
 	if (Player1 && Collided->body && Player2 && Collided->body)
 	{	
@@ -216,6 +217,15 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	{
 		std::cout << "Collided with Spike" << std::endl;
 		//SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity((Player1->shared_from_this()));		
+
+		int PlayerId = Player1->GetID();
+		DestroyEntity(Player1);
+		Players.erase(PlayerId);
+		PlayerKnockedOut(PlayerId);
+	}
+	else if (Player1 && Collided->body && Bombuu)
+	{
+		std::cout << "Collision with bomb" << std::endl;
 
 		int PlayerId = Player1->GetID();
 		DestroyEntity(Player1);
@@ -272,6 +282,7 @@ void Level::GamemodeProcess()
 	case BOMB_SURVIVAL:
 	{
 		/// Add random spawning of bombs
+
 	}
 		break;
 	default:
@@ -328,6 +339,7 @@ void Level::SpawnRandomWeapon()
 	}
 	AddEntity(NewWeapon);
 	NewWeapon->Init(world);
+	SpawnBomb();
 }
 
 void Level::RunCollisionResponses()
