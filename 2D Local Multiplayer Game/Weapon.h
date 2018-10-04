@@ -31,9 +31,10 @@ public:
 	Weapon(glm::vec2 Position, Utils::EANCHOR _Anchor, WeaponType _Weapon);
 	~Weapon();
 
-	virtual void Fire();
+	virtual void Fire() = 0;
 	virtual void Update();
 	void Init(b2World & _world);
+	
 
 	void AddToPlayer(std::shared_ptr<class Player> NewOwner);
 	void RemovePlayer();
@@ -43,11 +44,10 @@ public:
 
 	glm::vec2 HoldingOffset = { 0, -0.1 };
 
-private:
+protected:
 	WeaponType CurrentWeapon;
 	float Timer = 0.0;
 	float CooldownTime = 1.0;
-	
 
 	std::shared_ptr<class Player> CurrentPlayer;
 };
