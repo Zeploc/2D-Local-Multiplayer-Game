@@ -33,9 +33,34 @@
 Player::Player(glm::vec3 StartPosition, int PlayerID) // Will also take the type of player (asthetic)
 	: Entity({ StartPosition , {0, 0, 0}, {1, 1, 1} }, Utils::CENTER)
 {
-	std::shared_ptr<Plane> NewImage;
-	if (PlayerID == 1) NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, NormalImage));
-	else NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 1.0f, 1.0f, 1.0f, 1.0f }, "Resources/Images/Box.png"));
+	glm::vec4 Colour = { 1.0f, 1.0f, 1.0f, 1.0f };
+	switch (PlayerID)
+	{
+	case 0:
+	{
+		Colour = { 1.0, 0.5, 0.7, 1.0 };
+		break;
+	}
+	case 1:
+	{
+		Colour = { 0.3, 0.9, 0.4, 1.0 };
+		break;
+	}
+	case 2:
+	{
+		Colour = { 0.5, 0.7, 2.0, 1.0 };
+		break;
+	}
+	case 3:
+	{
+		Colour = { 1.0, 0.9, 0.0, 1.0 };
+		break;
+	}
+	default:
+		break;
+	}
+	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, Colour, NormalImage));
+
 	AddMesh(NewImage);
 	NewImage->bCullFace = false;
 	m_iPlayerID = PlayerID;
@@ -159,7 +184,9 @@ void Player::Update()
 	if (CanJump && (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[32] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1)))
 	{
 		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().y * body->GetMass() * TimeStepRate;
-		body->ApplyForce(b2Vec2(0, fJumpForce - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
+		if (bIsRollingMode) body->ApplyForce(b2Vec2(0, RollingJumpForce - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
+		else body->ApplyForce(b2Vec2(0, fJumpForce - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
+		
 		CanJump = false;
 	}
 

@@ -34,6 +34,12 @@ GameManager::GameManager()
 	PlayerInfo Player2;
 	Player2.PlayerID = 1;
 	vPlayerInfo.insert(std::pair<int, PlayerInfo>(1, Player2));
+	PlayerInfo Player3;
+	Player3.PlayerID = 2;
+	vPlayerInfo.insert(std::pair<int, PlayerInfo>(2, Player3));
+	PlayerInfo Player4;
+	Player4.PlayerID = 3;
+	vPlayerInfo.insert(std::pair<int, PlayerInfo>(3, Player4));
 }
 
 

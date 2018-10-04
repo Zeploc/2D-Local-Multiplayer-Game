@@ -61,9 +61,10 @@ private:
 	bool CanJump = true;
 	float KnockedBackTimer = 0.0f;
 
+	float RollingJumpForce = 500.0f;
 	float RollingFriction = 0.7f;
 	float RollingAngularDamping = 2.5f;
-	float RollingAccelerateSpeed = 15.0f;
+	float RollingAccelerateSpeed = 12.0f;
 	bool bIsRollingMode = false;
 	b2CircleShape circleShape;
 	b2PolygonShape boxShape;
