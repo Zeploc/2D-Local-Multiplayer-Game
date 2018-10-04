@@ -25,6 +25,7 @@
 #include "Engine\Input.h"
 #include "Engine\LogManager.h"
 #include "Engine\Time.h"
+#include "Engine\SoundManager.h"
 //#include <Box2D/Dynamics/b2World.h>
 
 // Local Includes //
@@ -50,6 +51,8 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 {
 	CurrentGamemode = LevelGM;
 
+	SoundManager::GetInstance()->AddChannel("CPlayerDeath");
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "FallingToYourDeath");
 	// Pause Screen elements
 	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
 	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Paused", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
@@ -154,6 +157,7 @@ void Level::Update()
 			it = Players.erase(it);
 			Endit = Players.end();
 			PlayerKnockedOut(PlayerId);
+			SoundManager::GetInstance()->PlayAudio("FallingToYourDeath", "CPlayerDeath");
 			continue;
 			
 		}
