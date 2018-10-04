@@ -179,6 +179,9 @@
     <ClCompile Include="DropoutBlock.cpp">
       <Filter>Game\Hazards</Filter>
     </ClCompile>
+    <ClCompile Include="Bomb.cpp">
+      <Filter>Game\Hazards</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Camera.h">
@@ -308,6 +311,9 @@
       <Filter>Game\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="DropoutBlock.h">
+      <Filter>Game\Hazards</Filter>
+    </ClInclude>
+    <ClInclude Include="Bomb.h">
       <Filter>Game\Hazards</Filter>
     </ClInclude>
   </ItemGroup>

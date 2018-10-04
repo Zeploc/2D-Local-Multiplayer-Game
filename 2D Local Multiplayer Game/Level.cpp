@@ -36,6 +36,7 @@
 #include "MachineGun.h"
 #include "DropoutBlock.h"
 #include "Menu.h"
+#include "Bomb.h"
 
 // Library Includes //
 #include <iostream>
@@ -212,6 +213,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
 	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Collided);
 	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
+	std::shared_ptr<Bomb> Bombuu = std::dynamic_pointer_cast<Bomb>(Collided);
 
 	if (Player1 && Collided->body && Player2 && Collided->body)
 	{	
@@ -232,6 +234,15 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	{
 		std::cout << "Collided with Spike" << std::endl;
 		//SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity((Player1->shared_from_this()));		
+
+		int PlayerId = Player1->GetID();
+		DestroyEntity(Player1);
+		Players.erase(PlayerId);
+		PlayerKnockedOut(PlayerId);
+	}
+	else if (Player1 && Collided->body && Bombuu)
+	{
+		std::cout << "Collision with bomb" << std::endl;
 
 		int PlayerId = Player1->GetID();
 		DestroyEntity(Player1);
@@ -288,10 +299,37 @@ void Level::GamemodeProcess()
 	case BOMB_SURVIVAL:
 	{
 		/// Add random spawning of bombs
+		RandomSpawnBomb();
 	}
 		break;
 	default:
 		break;
+	}
+}
+
+void Level::SpawnBomb()
+{
+	glm::vec2 RandomPos = { 0.0f, 0.0f };
+	RandomPos.x = rand() % int((MaxPosition.x - MinPosition.x) * 1000);
+	RandomPos.x /= 1000.0f;
+	RandomPos.x += MinPosition.x;
+	RandomPos.y = MaxPosition.y;
+
+	std::shared_ptr<class Bomb> NewBombu;
+	NewBombu = std::make_shared<Bomb>(Bomb(RandomPos, Utils::CENTER));
+	AddEntity(NewBombu);
+	NewBombu->Init(world);
+}
+
+void Level::RandomSpawnBomb()
+{
+	BombSpawnTime -= Time::dTimeDelta;
+	if (BombSpawnTime <= 0.0f)
+	{
+		int RangeSize = (MaxBombSpawnTime - MinBombSpawnTime) * 1000;
+		BombSpawnTime = (rand() % RangeSize) / 1000 + MinBombSpawnTime;
+		SpawnBomb();
+		std::cout << "New random time " << BombSpawnTime << std::endl;
 	}
 }
 
