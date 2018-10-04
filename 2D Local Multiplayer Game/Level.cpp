@@ -283,7 +283,7 @@ void Level::PlayerKnockedOut(int PlayerID)
 {
 	/// Assign score/place
 	GameManager::GetInstance()->vPlayerInfo[PlayerID].KnockbackText->sText = "KNOCKED";
-	GameManager::GetInstance()->vPlayerInfo[PlayerID].CurrentGamePlace = Players.size(); 
+	GameManager::GetInstance()->vPlayerInfo[PlayerID].CurrentGamePlace = Players.size() + 1; 
 	if (Players.size() <= 1)
 	{
 		OnGameComplete();
@@ -305,6 +305,67 @@ void Level::ShowEndScreen()
 	AddUIElement(Title);
 
 	/// Have players stats, get from game manager, display each position, and each score
+	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
+	{
+		// Add player
+		glm::vec4 PlayerColour = { 0.8, 0.1, 0.1, 1.0 };
+		switch (player.first)
+		{
+		case 1:
+		{
+			PlayerColour = { 0.2, 0.7, 0.1, 1.0 };
+			break;
+		}
+		case 2:
+		{
+			PlayerColour = { 0.2, 0.3, 1.0, 1.0 };
+			break;
+		}
+		case 3:
+		{
+			PlayerColour = { 1.0, 0.7, 0.0, 1.0 };
+			break;
+		}
+		}
+		std::string PlaceMessage = "NONE";
+		switch (player.second.CurrentGamePlace)
+		{
+		case 1:
+		{
+			PlaceMessage = "1st";
+			player.second.CurrentScore += 400;
+			break;
+		}
+		case 2:
+		{
+			PlaceMessage = "2nd";
+			player.second.CurrentScore += 300;
+			break;
+		}
+		case 3:
+		{
+			PlaceMessage = "3rd";
+			player.second.CurrentScore += 200;
+			break;
+		}
+		case 4:
+		{
+			PlaceMessage = "4th";
+			player.second.CurrentScore += 100;
+			break;
+		}
+		default:
+			PlaceMessage = "1st";
+			player.second.CurrentScore += 400;
+			break;
+		}
+		std::shared_ptr<UIText> PlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT/2), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		AddUIElement(PlayerPlacement);
+		std::shared_ptr<UIText> PlayerScore(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 100.0f), Utils::CENTER, PlayerColour, std::to_string(player.second.CurrentScore), "Resources/Fonts/Roboto-Medium.ttf", 35, Utils::CENTER));
+		AddUIElement(PlayerScore);
+	}
+	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 220.0f), Utils::CENTER, { 0.4f,0.4f,0.4f, 1.0f }, "Press start to go to next round", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
+	AddUIElement(StartToContinue);
 	/// Generate random new gamemode
 	/// Display next gamemode (GetGamemodeString())
 		
