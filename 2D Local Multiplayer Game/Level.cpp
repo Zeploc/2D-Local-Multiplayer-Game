@@ -203,6 +203,7 @@ void Level::OnLoadScene()
 		PlayerControllers.insert(std::pair<int, std::shared_ptr<PlayerController>>(player.second.PlayerID, newPlayerController));
 		AddEntity(newPlayerController);
 		player.second.KnockbackText = KnockbackPercentage;
+		player.second.CurrentGamePlace = 0;
 	}
 
 
