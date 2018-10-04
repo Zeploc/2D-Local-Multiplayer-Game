@@ -18,9 +18,12 @@
 // Engine Includes //
 #include "Engine\Plane.h"
 #include "Engine/Time.h"
+#include "Engine\SceneManager.h"
+
 
 // This Includes //
 #include "Player.h"
+#include "Bullet.h"
 
 Weapon::Weapon(glm::vec2 Position, Utils::EANCHOR _Anchor, WeaponType _Weapon)
 	: Entity({ glm::vec3(Position, 2) ,{ 0, 0, 0 },{ 1, 1, 1 } }, _Anchor)
@@ -57,10 +60,11 @@ Weapon::~Weapon()
 
 }
 
-void Weapon::Fire()
-{
+//void Weapon::Fire()
+//{
 
-}
+//
+//}
 
 void Weapon::Update()
 {
@@ -71,6 +75,7 @@ void Weapon::Update()
 		transform.Position = glm::vec3(glm::vec2(CurrentPlayer->transform.Position) + HoldingOffset, 2);
 		transform.Scale.x = CurrentPlayer->transform.Scale.x;
 		SetBox2DTransform(transform.Position, transform.Rotation.z);
+
 	}
 	if (Timer > 0)
 	{

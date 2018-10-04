@@ -35,6 +35,7 @@
 #include "LevelManager.h"
 #include "MachineGun.h"
 #include "DropoutBlock.h"
+#include "Bullet.h"
 
 // Library Includes //
 #include <iostream>
@@ -195,6 +196,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
 	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Collided);
 	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
+	std::shared_ptr<Bullet> BigOldMetalKiller = std::dynamic_pointer_cast<Bullet>(Collided);
 
 	if (Player1 && Collided->body && Player2 && Collided->body)
 	{	
@@ -225,6 +227,19 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	{
 		std::cout << "Gun Collision" << std::endl;
 		Player1->EquipWeapon(SpeedyGun);
+		
+	}
+
+	if (Collided->body && BigOldMetalKiller)
+	{
+		if (Player1 && Player1 != BigOldMetalKiller->GetCurrentPlayer())
+		{
+			Player1->ApplyKnockback(glm::vec2(BigOldMetalKiller->body->GetLinearVelocity().x, BigOldMetalKiller->body->GetLinearVelocity().y), true);
+		}
+		if (Player1 != BigOldMetalKiller->GetCurrentPlayer())
+		{
+			DestroyEntity(BigOldMetalKiller);
+		}
 		
 	}
 }
@@ -420,6 +435,13 @@ void PlayerContactListener::PreSolve(b2Contact * contact, const b2Manifold * old
 			std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(IsEntity1->shared_from_this());
 			std::shared_ptr<Weapon> SpeedyGun2 = std::dynamic_pointer_cast<Weapon>(IsEntity2->shared_from_this());
 			if (SpeedyGun || SpeedyGun2)
+			{
+				contact->SetEnabled(false);
+			}
+
+			std::shared_ptr<Bullet> SpeedyBullet = std::dynamic_pointer_cast<Bullet>(IsEntity1->shared_from_this());
+			std::shared_ptr<Bullet> SpeedyBullet2 = std::dynamic_pointer_cast<Bullet>(IsEntity2->shared_from_this());
+			if (SpeedyBullet || SpeedyBullet)
 			{
 				contact->SetEnabled(false);
 			}

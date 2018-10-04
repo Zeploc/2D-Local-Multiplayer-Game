@@ -39,7 +39,7 @@ public:
 	bool GetIsRolling();
 	void EquipWeapon(std::shared_ptr<class Weapon> NewWeapon);
 	void DropCurrentWeapon();
-
+	void Fire();
 	int GetID() {
 		return m_iPlayerID;
 	};

@@ -216,7 +216,7 @@ void Entity::SetScale(glm::vec3 _NewScale)
 	transform.Scale = _NewScale;
 }
 
-void Entity::SetupB2BoxBody(b2World & Box2DWorld, b2BodyType BodyType, bool bCanRotate, bool bHasFixture, float Density, float Friction)
+void Entity::SetupB2BoxBody(b2World & Box2DWorld, b2BodyType BodyType, bool bCanRotate, bool bHasFixture, float Density, float Friction, bool IsBullet)
 {
 	if (EntityMesh)
 	{
@@ -228,7 +228,8 @@ void Entity::SetupB2BoxBody(b2World & Box2DWorld, b2BodyType BodyType, bool bCan
 		body = Box2DWorld.CreateBody(&bodyDef);
 		body->SetTransform(bodyDef.position, (transform.Rotation.z / 180) * b2_pi);
 		body->SetFixedRotation(!bCanRotate);
-
+		bodyDef.bullet = true;
+		
 		// Define another box shape for our dynamic body.
 		b2PolygonShape dynamicBox;
 		dynamicBox.SetAsBox(EntityMesh->m_fWidth / 2.0f, EntityMesh->m_fHeight / 2.0f);

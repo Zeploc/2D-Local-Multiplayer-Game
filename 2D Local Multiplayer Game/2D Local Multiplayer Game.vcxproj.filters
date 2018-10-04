@@ -179,6 +179,9 @@
     <ClCompile Include="DropoutBlock.cpp">
       <Filter>Game\Hazards</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Camera.h">
@@ -309,6 +312,9 @@
     </ClInclude>
     <ClInclude Include="DropoutBlock.h">
       <Filter>Game\Hazards</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

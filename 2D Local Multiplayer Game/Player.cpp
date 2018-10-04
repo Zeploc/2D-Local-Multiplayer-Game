@@ -172,6 +172,11 @@ void Player::Update()
 	{
 		DropCurrentWeapon();
 	}
+
+	if ((Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) && CurrentWeapon != NULL || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUTTON] == Input::INPUT_FIRST_PRESS && CurrentWeapon != NULL)
+	{
+		Fire();
+	}
 	
 	if (body)
 	{
@@ -308,5 +313,10 @@ void Player::DropCurrentWeapon()
 {
 	if (CurrentWeapon) CurrentWeapon->RemovePlayer();
 	CurrentWeapon = nullptr;
+}
+
+void Player::Fire()
+{
+	CurrentWeapon->Fire();
 }
 
