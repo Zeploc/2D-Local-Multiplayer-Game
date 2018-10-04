@@ -21,6 +21,7 @@ struct PlayerInfo
 	int PlayerID = -1;
 	int CurrentScore = 0;
 	int CurrentGamePlace = 0;
+	std::shared_ptr<class UIText> KnockbackText;
 	// current player image/type/asthetic
 };
 

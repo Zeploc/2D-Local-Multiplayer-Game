@@ -87,6 +87,7 @@ public:
 
 	std::map<int, std::shared_ptr<class Player>> Players;
 	std::map<int, std::shared_ptr<class PlayerController>> PlayerControllers;
+	std::map<int, std::shared_ptr<UIText>> KnockbackTexts;
 
 	std::vector<ContactInfo> AllContacts;
 

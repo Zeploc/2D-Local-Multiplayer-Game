@@ -89,18 +89,6 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	//SpikeHazzard1->Init(world);
 	//AddEntity(SpikeHazzard1, true);
 	
-	std::shared_ptr<UIText> KnockbackPercentage1(new UIText(glm::vec2(50, Camera::GetInstance()->SCR_HEIGHT -40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
-	AddUIElement(KnockbackPercentage1);
-
-	std::shared_ptr<UIText> KnockbackPercentage2(new UIText(glm::vec2(400, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
-	AddUIElement(KnockbackPercentage2);
-
-	std::shared_ptr<UIText> KnockbackPercentage3(new UIText(glm::vec2(800, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
-	AddUIElement(KnockbackPercentage3);
-
-	std::shared_ptr<UIText> KnockbackPercentage4(new UIText(glm::vec2(1200, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
-	AddUIElement(KnockbackPercentage4);
-
 	//bIsPersistant = true;	
 	world.SetGravity(b2Vec2(0.0f, -gravity));
 
@@ -183,6 +171,27 @@ void Level::OnLoadScene()
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
 	{
 		// Add player
+		glm::vec4 KnockbackColour = { 0.8, 0.1, 0.1, 1.0 };
+		switch (player.first)
+		{
+		case 1:
+		{
+			KnockbackColour = { 0.2, 0.7, 0.1, 1.0 };
+			break;
+		}
+		case 2:
+		{
+			KnockbackColour = { 0.2, 0.3, 1.0, 1.0 };
+			break;
+		}
+		case 3:
+		{
+			KnockbackColour = { 1.0, 0.7, 0.0, 1.0 };
+			break;
+		}
+		}
+		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(120 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, KnockbackColour, "100", "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		AddUIElement(KnockbackPercentage);
 		std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player(SpawnPosition, player.second.PlayerID));
 		AddEntity(PlayerEnt, true);
 		PlayerEnt->Init(world);
@@ -192,7 +201,10 @@ void Level::OnLoadScene()
 		std::shared_ptr<PlayerController> newPlayerController = std::make_shared<PlayerController>(PlayerController(player.second.PlayerID, std::dynamic_pointer_cast<Level>(this->shared_from_this())));
 		PlayerControllers.insert(std::pair<int, std::shared_ptr<PlayerController>>(player.second.PlayerID, newPlayerController));
 		AddEntity(newPlayerController);
+		player.second.KnockbackText = KnockbackPercentage;
 	}
+
+
 }
 
 void BackToMenu()
@@ -260,6 +272,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 void Level::PlayerKnockedOut(int PlayerID)
 {
 	/// Assign score/place
+	GameManager::GetInstance()->vPlayerInfo[PlayerID].KnockbackText->sText = "KNOCKED";
 	GameManager::GetInstance()->vPlayerInfo[PlayerID].CurrentGamePlace = Players.size(); 
 	if (Players.size() <= 1)
 	{

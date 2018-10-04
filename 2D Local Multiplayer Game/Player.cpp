@@ -25,6 +25,7 @@
 // Local Includes //
 #include "Level.h"
 #include "Weapon.h"
+#include "GameManager.h"
 
 #include <iostream>
 #include <glm\gtx\string_cast.hpp>
@@ -300,6 +301,7 @@ void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
 	body->ApplyForceToCenter(b2Vec2(Direction.x, Direction.y), true);
 	OutsideForcesApplying = true;
 	KnockedBackTimer = KnockBackControlTime;
+	GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].KnockbackText->sText = std::to_string(int(KnockbackPercentage * 100));
 }
 
 void Player::AttemptMelee()
