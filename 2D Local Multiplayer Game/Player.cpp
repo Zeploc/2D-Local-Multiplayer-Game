@@ -21,6 +21,7 @@
 #include "Engine\Time.h"
 #include "Engine\SceneManager.h"
 #include "Engine\CXBOXController.h"
+#include "Engine/SoundManager.h"
 
 // Local Includes //
 #include "Level.h"
@@ -87,6 +88,9 @@ void Player::Init(b2World& world)
 
 	SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
 	body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
+
+	SoundManager::GetInstance()->AddChannel("CPlayerKnock");
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Hit.wav", false, "KnockbackSound");
 }
 
 void Player::Update()
@@ -281,6 +285,7 @@ void Player::Reset()
 
 void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
 {
+	SoundManager::GetInstance()->PlayAudio("KnockbackSound", "CPlayerKnock");
 	if (Normalize)
 	{
 		Direction = glm::normalize(Direction);

@@ -21,6 +21,7 @@
 #include "Engine/SceneManager.h"
 #include "Engine/CXBOXController.h"
 #include "Engine/Time.h"
+#include "Engine/SoundManager.h"
 
 // Local Includes //
 #include "LevelManager.h"
@@ -64,6 +65,12 @@ Menu::Menu() : Scene("Menu")
 	MenuElements.push_back(ControlsBtn);
 	MenuElements.push_back(CreditsBtn);
 	MenuElements.push_back(QuitBtn);
+
+	StartBtn->SetPressSound("Resources/Sounds/menu-click.wav");
+	ControlsBtn->SetPressSound("Resources/Sounds/menu-click.wav");
+	CreditsBtn->SetPressSound("Resources/Sounds/menu-click.wav");
+	QuitBtn->SetPressSound("Resources/Sounds/menu-click.wav");
+	SoundManager::GetInstance()->SetChannelVolume("UIC", 0.1);
 
 	CurrentSelectedButton = StartBtn;
 	CurrentSelectedButton->HoverOverride = true;
