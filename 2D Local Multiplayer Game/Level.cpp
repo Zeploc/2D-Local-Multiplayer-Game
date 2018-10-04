@@ -35,12 +35,14 @@
 #include "LevelManager.h"
 #include "MachineGun.h"
 #include "DropoutBlock.h"
+#include "Menu.h"
 
 // Library Includes //
 #include <iostream>
 #include <glm\gtx\string_cast.hpp>
 // Prototypes
 void BackToMenu();
+void Resume();
 
 Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), world(b2Vec2(0.0f, -10.0f))
 {
@@ -49,12 +51,25 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	// Pause Screen elements
 	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
 	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Paused", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
+	std::shared_ptr<UIButton> ResumeBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 80), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, Resume));
+	ResumeBtn->AddText("RESUME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, BackToMenu));
+	QuitBtn->AddText("QUIT", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+
 	AddUIElement(BackImage);
 	AddUIElement(Title);
+	AddUIElement(ResumeBtn);
+	AddUIElement(QuitBtn);
 	PauseElements.push_back(BackImage);
 	PauseElements.push_back(Title);
+	PauseElements.push_back(ResumeBtn);
+	PauseElements.push_back(QuitBtn);
 	BackImage->SetActive(false);
 	Title->SetActive(false);
+	ResumeBtn->SetActive(false);
+	QuitBtn->SetActive(false);
+	CurrentSelectedButton = ResumeBtn;
+	CurrentSelectedButton->HoverOverride = true;
 
 	CircleEntity = std::make_shared<Entity>(Entity({ { 5.0f, 2.0f, 0 } ,{ 0, 0, 45 },{ 1, 1, 1 } }, Utils::CENTER));
 	std::shared_ptr<Plane> CircleImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png"));
@@ -73,10 +88,6 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	//SpikeHazzard1->Init(world);
 	//AddEntity(SpikeHazzard1, true);
 	
-	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(10, Camera::GetInstance()->SCR_HEIGHT - 10), Utils::BOTTOM_LEFT, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, BackToMenu));
-	QuitBtn->AddText("Back to Menu", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
-	//AddUIElement(QuitBtn);
-
 	std::shared_ptr<UIText> KnockbackPercentage1(new UIText(glm::vec2(50, Camera::GetInstance()->SCR_HEIGHT -40), Utils::BOTTOM_CENTER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), "100", "Resources/Fonts/Roboto-Medium.ttf", 50, Utils::CENTER));
 	AddUIElement(KnockbackPercentage1);
 
@@ -180,12 +191,18 @@ void Level::OnLoadScene()
 		std::shared_ptr<PlayerController> newPlayerController = std::make_shared<PlayerController>(PlayerController(player.second.PlayerID, std::dynamic_pointer_cast<Level>(this->shared_from_this())));
 		PlayerControllers.insert(std::pair<int, std::shared_ptr<PlayerController>>(player.second.PlayerID, newPlayerController));
 		AddEntity(newPlayerController);
-	}		
+	}
 }
 
 void BackToMenu()
 {
 	SceneManager::GetInstance()->SwitchScene("Menu");
+}
+
+void Resume()
+{
+	std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
+	LevelRef->TogglePause();
 }
 
 void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entity> Collided)
@@ -380,6 +397,49 @@ void Level::PControllerInput(InputController _ControllerInput)
 		{
 			TogglePause();
 			// unpause
+		}
+	}
+	else if (_ControllerInput == BOTTOM_FACE_BUTTON)
+	{
+		if (CurrentSelectedButton->IsActive())
+		{
+			CurrentSelectedButton->Pressed();
+		}
+	}
+}
+
+void Level::ControllerInputAxis(InputDirection NewInput)
+{
+	if (!CurrentSelectedButton->IsActive()) return;
+	CurrentSelectedButton->HoverOverride = false;
+	CurrentSelectedButton->Update();
+
+	for (int i = 0; i < PauseElements.size(); i++)
+	{
+		if (PauseElements[i] == CurrentSelectedButton)
+		{
+			CurrentSelectedButton = nullptr;
+			while (CurrentSelectedButton == nullptr)
+			{
+				if (NewInput == DOWN || NewInput == RIGHT)
+				{
+					i++;
+					if (i >= PauseElements.size()) i = 0;
+				}
+				else
+				{
+					i--;
+					if (i < 0) i = PauseElements.size() - 1;
+				}
+				std::shared_ptr<UIButton> IsButton = std::dynamic_pointer_cast<UIButton>(PauseElements[i]);
+				if (IsButton)
+				{
+					CurrentSelectedButton = IsButton;
+					CurrentSelectedButton->HoverOverride = true;
+					CurrentSelectedButton->Update();
+				}
+			}
+			break;
 		}
 	}
 }

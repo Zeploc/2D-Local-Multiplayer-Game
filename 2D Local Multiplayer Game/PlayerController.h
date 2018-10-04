@@ -27,6 +27,8 @@ public:
 private:
 	int ControllerID = -1;
 
+	glm::vec2 CurrentDirection = { 0, 0 };
+
 	std::shared_ptr<class Level> CurrentLevel;
 };
 

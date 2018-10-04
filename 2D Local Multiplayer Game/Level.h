@@ -23,6 +23,8 @@
 
 #include <map>
 
+enum InputDirection;
+
 enum Gamemode
 {
 	DROPOUT,
@@ -79,6 +81,7 @@ public:
 	void AddBlock(glm::vec2 Pos, float Width = 0.5f, float Height = 0.5f, const char* ImagePath = "Resources/Images/Box.png");
 
 	void PControllerInput(InputController _ControllerInput);
+	void ControllerInputAxis(InputDirection NewInput);
 
 	std::map<int, std::shared_ptr<class Player>> Players;
 	std::map<int, std::shared_ptr<class PlayerController>> PlayerControllers;
@@ -120,5 +123,6 @@ private:
 	glm::vec2 MaxPosition = { 5.5, 3 };
 
 	std::vector<std::shared_ptr<UIElement>> PauseElements;
+	std::shared_ptr<class UIButton> CurrentSelectedButton;
 };
 

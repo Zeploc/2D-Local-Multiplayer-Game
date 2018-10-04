@@ -18,9 +18,11 @@
 // Engine Includes //
 #include "Engine/CXBOXController.h"
 #include "Engine/Input.h"
+#include "Engine/SceneManager.h"
 
 // Local Includes //
 #include "Level.h"
+#include "Menu.h"
 
 
 PlayerController::PlayerController(int PlayerID, std::shared_ptr<Level> LevelRef)
@@ -40,6 +42,7 @@ void PlayerController::Update()
 {
 	Entity::Update();
 
+	std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
 	if (ControllerID < 0) return;
 	XBOXController* Controller = Input::GetInstance()->Players[ControllerID];
 	if (Controller)
@@ -53,6 +56,39 @@ void PlayerController::Update()
 					CurrentLevel->PControllerInput(InputController(i));
 				}
 			}
+			float LThumbX = Controller->GetState().Gamepad.sThumbLX;
+			if (abs(LThumbX) > 10000)
+			{
+				if (CurrentDirection.x < 1 && LThumbX > 10000)
+				{
+					CurrentDirection.x = 1;
+					LevelRef->ControllerInputAxis(RIGHT);
+				}
+				else if (CurrentDirection.x > -1 && LThumbX < -10000)
+				{
+					CurrentDirection.x = -1;
+					LevelRef->ControllerInputAxis(LEFT);
+				}
+			}
+			else
+				CurrentDirection.x = 0;
+
+			float LThumbY = Controller->GetState().Gamepad.sThumbLY;
+			if (abs(LThumbY) > 10000)
+			{
+				if (CurrentDirection.y < 1 && LThumbY > 10000)
+				{
+					CurrentDirection.y = 1;
+					LevelRef->ControllerInputAxis(UP);
+				}
+				else if (CurrentDirection.y > -1 && LThumbY < -10000)
+				{
+					CurrentDirection.y = -1;
+					LevelRef->ControllerInputAxis(DOWN);
+				}
+			}
+			else
+				CurrentDirection.y = 0;
 		}
 	}
 }

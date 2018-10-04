@@ -117,9 +117,10 @@ Menu::Menu() : Scene("Menu")
 	CreditsElements.push_back(CreditsTitle);
 	CreditsElements.push_back(BToBack);
 
-	PlayerSelectElements.push_back(BToBack);
-	// Setting Screen
-	SwitchScreens(Menu::MENU);
+	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50.0f), 0, glm::vec4(0.7, 0.7, 0.7, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER));
+	AddUIElement(BToBackPlayerSelect);
+
+	PlayerSelectElements.push_back(BToBackPlayerSelect);
 
 	// Adding Menu Controllers
 	for (int i = 0; i < 4; i++)
@@ -154,6 +155,8 @@ void Menu::OnLoadScene()
 {
 	Scene::OnLoadScene();
 
+	// Setting Screen
+	SwitchScreens(Menu::MENU);
 }
 
 void Menu::PlayerControllerInput(int ID, InputController Input)
