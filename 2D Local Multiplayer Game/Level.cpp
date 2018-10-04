@@ -256,10 +256,20 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	{
 		std::cout << "Collision with bomb" << std::endl;
 
+		glm::vec2 Direction = glm::vec2(Player1->transform.Position.x - Bombuu->transform.Position.x, Player1->transform.Position.y - Bombuu->transform.Position.y);
+		
+		Player1->ApplyKnockback((glm::vec2(Direction.x * 20, Direction.y * 20)), false);
+
+		DestroyEntity(Bombuu);
+		
+
+		/*
 		int PlayerId = Player1->GetID();
 		DestroyEntity(Player1);
 		Players.erase(PlayerId);
 		PlayerKnockedOut(PlayerId);
+		DestroyEntity(Bombuu);
+		*/
 	}
 	else if (Player1 && Collided->body && SpeedyGun) // OR if a bullet is the first object
 	{

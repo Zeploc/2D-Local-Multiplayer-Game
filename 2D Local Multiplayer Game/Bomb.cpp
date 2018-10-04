@@ -23,12 +23,17 @@ Bomb::~Bomb()
 	
 }
 
+bool Bomb::Explosion()
+{
+	return bExploded;
+}
+
 void Bomb::Update()
 {
 	Entity::Update();
 	if (CurrentTimer > ExplosionTime)
 	{
-		
+		bExploded = true;
 	}
 	else
 	{

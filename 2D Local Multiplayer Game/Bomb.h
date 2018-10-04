@@ -10,9 +10,11 @@ public:
 
 	virtual void Update() override;
 	void Init(b2World& world);
-
+	bool Explosion();
 
 private:
+
+	bool bExploded = false;
 
 	float ExplosionTime = 3.0f;
 	float CurrentTimer = 0.0f;
