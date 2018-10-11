@@ -19,7 +19,9 @@
 enum PlayerSkin
 {
 	OfficeBall,
-	SmexyHexy
+	SmexyHexy,
+	GuyAngle,
+	Rhombage
 };
 
 struct PlayerInfo

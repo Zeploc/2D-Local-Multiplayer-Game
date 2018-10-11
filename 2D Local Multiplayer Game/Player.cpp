@@ -77,6 +77,18 @@ Player::Player(glm::vec3 StartPosition, int PlayerID) // Will also take the type
 		BallImage = "Resources/Images/SmexyBall.png";
 		break;
 	}
+	case GuyAngle:
+	{
+		NormalImage = "Resources/Images/Guyangle.png";
+		BallImage = "Resources/Images/GuyBall.png";
+		break;
+	}
+	case Rhombage:
+	{
+		NormalImage = "Resources/Images/Rhombage.png";
+		BallImage = "Resources/Images/Rhomball.png";
+		break;
+	}
 	default:
 		break;
 	}

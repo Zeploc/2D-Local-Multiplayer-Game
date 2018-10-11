@@ -512,9 +512,11 @@ void Level::AddBlock(glm::vec2 Pos, float Width, float Height, Utils::EANCHOR an
 		Pos.x += 0.25;
 	else if (anchor == Utils::TOP_CENTER)
 		Pos.y += 0.25;
-
+	int DrawMode = 1;
+	if (Height / Width > 1)
+		DrawMode = 2;
 	std::shared_ptr<Entity> NewPlatform = std::make_shared<Entity>(Entity({ { Pos, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, anchor));
-	std::shared_ptr<Plane> NewPlatformImage = std::make_shared<Plane>(Plane(Width, Height, { 0.5f, 0.7f, 0.9f, 1.0f }, "Resources/Images/Platform.png", 1, false));
+	std::shared_ptr<Plane> NewPlatformImage = std::make_shared<Plane>(Plane(Width, Height, { 0.5f, 0.7f, 0.9f, 1.0f }, "Resources/Images/Platform.png", DrawMode, false));
 	NewPlatform->AddMesh(NewPlatformImage);
 	AddEntity(NewPlatform, true);
 	NewPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);

@@ -214,8 +214,8 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 			//vPlayerStatus[ID].CurrentSkin = PlayerSkin((int)vPlayerStatus[ID].CurrentSkin + Dir);
 			int CurrentSkin = (int)vPlayerStatus[ID].CurrentSkin;
 			CurrentSkin += Dir;
-			if (CurrentSkin < 0) CurrentSkin = 1;
-			else if (CurrentSkin > 1) CurrentSkin = 0;
+			if (CurrentSkin < 0) CurrentSkin = 3;
+			else if (CurrentSkin > 3) CurrentSkin = 0;
 			vPlayerStatus[ID].CurrentSkin = PlayerSkin(CurrentSkin);
 			const char* NewImage = "Resources/Images/office-square.png";
 			switch (vPlayerStatus[ID].CurrentSkin)
@@ -230,13 +230,23 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 				NewImage = "Resources/Images/SmexyHexy.png";
 				break;
 			}
+			case GuyAngle:
+			{
+				NewImage = "Resources/Images/Guyangle.png";
+				break;
+			}
+			case Rhombage:
+			{
+				NewImage = "Resources/Images/Rhombage.png";
+				break;
+			}
 			default:
 				std::cout << "nah man\n";
 				break;
 			}
 			glm::vec2 Pos = vPlayerStatus[ID].PlayerImage->GetPosition();
 			DestroyUIElement(vPlayerStatus[ID].PlayerImage);
-			vPlayerStatus[ID].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 200, 200, NewImage, 1));
+			vPlayerStatus[ID].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 200, 200, NewImage, 2));
 			AddUIElement(vPlayerStatus[ID].PlayerImage);
 			PlayerSelectElements.push_back(vPlayerStatus[ID].PlayerImage);
 		}
