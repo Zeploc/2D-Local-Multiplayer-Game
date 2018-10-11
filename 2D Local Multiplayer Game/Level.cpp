@@ -507,7 +507,7 @@ void Level::AddDropoutBlock(glm::vec2 Pos, int TileCount, const char * ImagePath
 void Level::AddBlock(glm::vec2 Pos, float Width, float Height, const char * ImagePath)
 {
 	std::shared_ptr<Entity> NewPlatform = std::make_shared<Entity>(Entity({ { Pos, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> NewPlatformImage = std::make_shared<Plane>(Plane(Width, Height, { 0.5f, 0.7f, 0.9f, 1.0f }, "Resources/Images/Box.png", 1, false));
+	std::shared_ptr<Plane> NewPlatformImage = std::make_shared<Plane>(Plane(Width, Height, { 0.5f, 0.7f, 0.9f, 1.0f }, "Resources/Images/Platform.png", 1, false));
 	NewPlatform->AddMesh(NewPlatformImage);
 	AddEntity(NewPlatform, true);
 	NewPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);

@@ -79,8 +79,8 @@ public:
 
 	void TogglePause();
 
-	void AddDropoutBlock(glm::vec2 Pos, int TileCount = 1, const char* ImagePath = "Resources/Images/Box.png");
-	void AddBlock(glm::vec2 Pos, float Width = 0.5f, float Height = 0.5f, const char* ImagePath = "Resources/Images/Box.png");
+	void AddDropoutBlock(glm::vec2 Pos, int TileCount = 1, const char* ImagePath = "Resources/Images/Fallout.png");
+	void AddBlock(glm::vec2 Pos, float Width = 0.5f, float Height = 0.5f, const char* ImagePath = "Resources/Images/Platform.png");
 	void AddSpike(glm::vec2 Pos);
 
 	void PControllerInput(InputController _ControllerInput);
