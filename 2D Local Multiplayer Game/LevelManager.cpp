@@ -96,7 +96,7 @@ void LevelManager::RemoveExcessLevel()
 
 void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToAddTo)
 {
-	int RandomMap = 0;// rand() % 2;
+	int RandomMap = rand() % 2;
 	switch (LevelToAddTo->CurrentGamemode)
 	{
 	case DROPOUT:
@@ -135,6 +135,44 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 		}
 		else
 		{
+			// Layer 1
+			LevelToAddTo->AddBlock({ -7, 4 }, 6, 0.5, Utils::CENTER_LEFT);
+			LevelToAddTo->AddBlock({ 7, 4 }, 6, 0.5, Utils::CENTER_RIGHT);
+			LevelToAddTo->AddBlock({ -5.5, 3.5 }, 0.5, 0.5, Utils::CENTER_LEFT);
+			LevelToAddTo->AddBlock({ 5.5, 3.5 }, 0.5, 0.5, Utils::CENTER_RIGHT);
+
+			LevelToAddTo->AddBlock({ 0, 3.5 }, 0.5, 1.0, Utils::TOP_CENTER);
+
+			// Layer 2
+			LevelToAddTo->AddBlock({ -7, 2 }, 3.5, 0.5, Utils::CENTER_LEFT);
+			LevelToAddTo->AddBlock({ 7, 2 }, 3.5, 0.5, Utils::CENTER_RIGHT);
+			LevelToAddTo->AddBlock({ -7, 1.5 }, 0.5, 1.0, Utils::TOP_CENTER);
+			LevelToAddTo->AddBlock({ 7, 1.5 }, 0.5, 1.0, Utils::TOP_CENTER);
+
+			LevelToAddTo->AddBlock({ 0, 1 }, 3.5, 0.5, Utils::CENTER);
+
+			// Layer 3
+			LevelToAddTo->AddBlock({ -7, -0.5 }, 2, 0.5, Utils::CENTER_LEFT);
+			LevelToAddTo->AddBlock({ 7, -0.5 }, 2, 0.5, Utils::CENTER_RIGHT);
+			LevelToAddTo->AddBlock({ -7, -1 }, 0.5, 1.5, Utils::TOP_CENTER);
+			LevelToAddTo->AddBlock({ 7, -1 }, 0.5, 1.5, Utils::TOP_CENTER);
+
+			LevelToAddTo->AddBlock({ -3, -0.5 }, 1, 0.5, Utils::CENTER_LEFT);
+			LevelToAddTo->AddBlock({ 3, -0.5 }, 1, 0.5, Utils::CENTER_RIGHT);
+			LevelToAddTo->AddBlock({ -2.5, -1.0 }, 2, 0.5, Utils::CENTER_LEFT);
+			LevelToAddTo->AddBlock({ 2.5, -1.0 }, 2, 0.5, Utils::CENTER_RIGHT);
+
+			// Layer 4
+			LevelToAddTo->AddBlock({ -7, -3.5 }, 2.5, 0.5, Utils::CENTER_LEFT);
+			LevelToAddTo->AddBlock({ 7, -3.5 }, 2.5, 0.5, Utils::CENTER_RIGHT);
+
+			LevelToAddTo->AddBlock({ -2.5, -3.0 }, 2, 0.5, Utils::CENTER_LEFT);
+			LevelToAddTo->AddBlock({ 2.5, -3.0 }, 2, 0.5, Utils::CENTER_RIGHT);
+			LevelToAddTo->AddBlock({ -3, -3.5 }, 1, 0.5, Utils::CENTER_LEFT);
+			LevelToAddTo->AddBlock({ 3, -3.5 }, 1, 0.5, Utils::CENTER_RIGHT);
+
+			LevelToAddTo->AddBlock({ 0, -4 }, 0.5, 0.5, Utils::CENTER);
+
 
 		}
 	}

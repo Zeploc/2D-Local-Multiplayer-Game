@@ -131,8 +131,9 @@ void Entity::Update()
 {
 	if (body)
 	{
+		glm::vec2 AnchoredPos = Utils::GetAncoredPosition2D(transform.Position, { EntityMesh->m_fWidth, EntityMesh->m_fHeight }, EntityAnchor);
 		b2Vec2 BodyPosition = body->GetPosition();
-		transform.Position = glm::vec3(BodyPosition.x, BodyPosition.y, 0.0f);
+		transform.Position = Utils::GetOriginalPosition2DFromAnchor({ BodyPosition.x, BodyPosition.y }, { EntityMesh->m_fWidth, EntityMesh->m_fHeight }, EntityAnchor);
 		transform.Rotation.z = (body->GetAngle() / b2_pi) * 180;
 	}
 }
@@ -159,7 +160,9 @@ void Entity::Reset()
 	transform = EntityInitialState.transform;
 	if (body)
 	{
-		body->SetTransform(b2Vec2(transform.Position.x, transform.Position.y), (transform.Rotation.z / 180) * b2_pi);
+		glm::vec2 AnchoredPos = Utils::GetAncoredPosition2D(transform.Position, { EntityMesh->m_fWidth, EntityMesh->m_fHeight }, EntityAnchor);
+
+		body->SetTransform(b2Vec2(AnchoredPos.x, AnchoredPos.y), (transform.Rotation.z / 180) * b2_pi);
 		body->SetAwake(true);
 		body->SetActive(bActive);
 		body->SetLinearVelocity(b2Vec2_zero);
@@ -220,10 +223,11 @@ void Entity::SetupB2BoxBody(b2World & Box2DWorld, b2BodyType BodyType, bool bCan
 {
 	if (EntityMesh)
 	{
+		glm::vec2 AnchoredPos = Utils::GetAncoredPosition2D(transform.Position, { EntityMesh->m_fWidth, EntityMesh->m_fHeight }, EntityAnchor);
 		// Define the dynamic body. We set its position and call the body factory.
 		b2BodyDef bodyDef;
 		bodyDef.type = BodyType;
-		bodyDef.position.Set(transform.Position.x, transform.Position.y);
+		bodyDef.position.Set(AnchoredPos.x, AnchoredPos.y);
 		bodyDef.userData = &*this;
 		body = Box2DWorld.CreateBody(&bodyDef);
 		body->SetTransform(bodyDef.position, (transform.Rotation.z / 180) * b2_pi);
