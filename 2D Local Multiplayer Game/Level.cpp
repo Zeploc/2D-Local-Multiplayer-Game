@@ -513,6 +513,13 @@ void Level::AddBlock(glm::vec2 Pos, float Width, float Height, const char * Imag
 	NewPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
 }
 
+void Level::AddSpike(glm::vec2 Pos)
+{
+	std::shared_ptr<SpikeHazard> SpikeHazzard = std::make_shared<SpikeHazard>(SpikeHazard({ {Pos, 3} ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
+	SpikeHazzard->Init(world);
+	AddEntity(SpikeHazzard, true);
+}
+
 void Level::RandomWeaponsSpawnCycle()
 {
 	WeaponSpawnTime -= Time::dTimeDelta;

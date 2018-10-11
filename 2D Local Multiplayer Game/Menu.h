@@ -29,12 +29,15 @@ enum InputDirection
 	RIGHT
 };
 
+
 struct PlayerStatus
 {
 	bool IsPlaying = false;
 	bool IsReady = false;
 	std::shared_ptr<UIText> PlayerJoinedText;
 	std::shared_ptr<UIText> PlayerReadyText;
+	std::shared_ptr<class UIImage> PlayerImage;
+	enum PlayerSkin CurrentSkin;
 	// Player asthetic chosen
 };
 

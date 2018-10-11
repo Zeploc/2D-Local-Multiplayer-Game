@@ -36,7 +36,7 @@ Player::Player(glm::vec3 StartPosition, int PlayerID) // Will also take the type
 	: Entity({ StartPosition , {0, 0, 0}, {1, 1, 1} }, Utils::CENTER)
 {
 	glm::vec4 Colour = { 1.0f, 1.0f, 1.0f, 1.0f };
-	switch (PlayerID)
+	/*switch (PlayerID)
 	{
 	case 0:
 	{
@@ -60,12 +60,31 @@ Player::Player(glm::vec3 StartPosition, int PlayerID) // Will also take the type
 	}
 	default:
 		break;
+	}*/
+	m_iPlayerID = PlayerID;
+
+	switch (GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].Skin)
+	{
+	case OfficeBall:
+	{
+		NormalImage = "Resources/Images/office-square.png";
+		BallImage = "Resources/Images/OfficeBall.png";
+		break;
 	}
+	case SmexyHexy:
+	{
+		NormalImage = "Resources/Images/SmexyHexy.png";
+		BallImage = "Resources/Images/SmexyBall.png";
+		break;
+	}
+	default:
+		break;
+	}
+
 	std::shared_ptr<Plane> NewImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, Colour, NormalImage));
 
 	AddMesh(NewImage);
 	NewImage->bCullFace = false;
-	m_iPlayerID = PlayerID;
 
 	// Define another Circle shape for our dynamic body.
 	circleShape.m_radius = EntityMesh->m_fHeight / 2.0f;
@@ -82,12 +101,12 @@ Player::~Player()
 void Player::Init(b2World& world)
 {
 	// Not collide with bodys with a group index 0f -1
-	b2Filter NoPlayerCollisionFilter;
-	NoPlayerCollisionFilter.categoryBits = 0x004;// .groupIndex = -1;
-	NoPlayerCollisionFilter.maskBits = 0xFFFF & ~0x004; // Collide with everything but other players
+	//b2Filter NoPlayerCollisionFilter;
+	//NoPlayerCollisionFilter.categoryBits = 0x004;// .groupIndex = -1;
+	//NoPlayerCollisionFilter.maskBits = 0xFFFF & ~0x004; // Collide with everything but other players
 
 	SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
-	body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
+	//body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
 
 	SoundManager::GetInstance()->AddChannel("CPlayerKnock");
 	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Hit.wav", false, "KnockbackSound");
