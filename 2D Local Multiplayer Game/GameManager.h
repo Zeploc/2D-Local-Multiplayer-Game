@@ -16,12 +16,19 @@
 #include <memory>
 #include <map>
 
+enum PlayerSkin
+{
+	OfficeBall,
+	SmexyHexy
+};
+
 struct PlayerInfo
 {
 	int PlayerID = -1;
 	int CurrentScore = 0;
 	int CurrentGamePlace = 0;
 	std::shared_ptr<class UIText> KnockbackText;
+	PlayerSkin Skin;
 	// current player image/type/asthetic
 };
 

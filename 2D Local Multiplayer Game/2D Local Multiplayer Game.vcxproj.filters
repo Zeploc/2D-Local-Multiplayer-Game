@@ -183,7 +183,7 @@
       <Filter>Game\Hazards</Filter>
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Game\Weapons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -320,7 +320,7 @@
       <Filter>Game\Hazards</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.h">
-      <Filter>Header Files</Filter>
+      <Filter>Game\Weapons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

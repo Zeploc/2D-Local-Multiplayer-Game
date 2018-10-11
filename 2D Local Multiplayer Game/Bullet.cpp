@@ -15,7 +15,7 @@ Bullet::Bullet(Utils::Transform _Transform, Utils::EANCHOR _Anchor, std::shared_
 	const char* Texture = "Resources/Images/Block.png";
 	float Width = 0.2f;
 	float Height = 0.1f;
-	glm::vec4 UVCoords = glm::vec4{ 1,1,1,1 };
+	glm::vec4 UVCoords = glm::vec4{ 1, 1, 1, 1 };
 	CurrentPlayer = _CurrentPlayer;
 	std::shared_ptr<Plane> BulletPlane = std::make_shared<Plane>(Plane(Width, Height, { 0.1f, 1.0f, 1.0f, 1.0f }, Texture, UVCoords));
 	AddMesh(BulletPlane);

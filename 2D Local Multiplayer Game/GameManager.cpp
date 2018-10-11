@@ -30,15 +30,19 @@ GameManager::GameManager()
 	// Initial Default
 	PlayerInfo Player1;
 	Player1.PlayerID = 0;
+	Player1.Skin = OfficeBall;
 	vPlayerInfo.insert(std::pair<int, PlayerInfo>(0, Player1));
 	PlayerInfo Player2;
 	Player2.PlayerID = 1;
+	Player2.Skin = SmexyHexy;
 	vPlayerInfo.insert(std::pair<int, PlayerInfo>(1, Player2));
 	PlayerInfo Player3;
 	Player3.PlayerID = 2;
+	Player3.Skin = SmexyHexy;
 	vPlayerInfo.insert(std::pair<int, PlayerInfo>(2, Player3));
 	PlayerInfo Player4;
 	Player4.PlayerID = 3;
+	Player4.Skin = OfficeBall;
 	vPlayerInfo.insert(std::pair<int, PlayerInfo>(3, Player4));
 }
 

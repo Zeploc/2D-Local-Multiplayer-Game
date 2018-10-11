@@ -13,10 +13,10 @@
 SpikeHazard::SpikeHazard(Utils::Transform _Transform, Utils::EANCHOR _Anchor)
 	: Entity(_Transform,_Anchor)
 {
-	const char* Texture = "Resources/Images/Block.png";
-	float Width = 1.0f;
-	float Height = 1.0f;
-	glm::vec4 UVCoords = glm::vec4{ 1,1,1,1 };
+	const char* Texture = "Resources/Images/Spikes.png";
+	float Width = 0.5f;
+	float Height = 0.5f;
+	glm::vec4 UVCoords = glm::vec4{ 0, 1, 0, 1 };
 
 	std::shared_ptr<Plane> SpikePlane = std::make_shared<Plane>(Plane(Width, Height, { 1.0f, 1.0f, 1.0f, 1.0f }, Texture, UVCoords));
 	AddMesh(SpikePlane);

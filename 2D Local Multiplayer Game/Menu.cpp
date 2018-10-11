@@ -84,19 +84,24 @@ Menu::Menu() : Scene("Menu")
 	{
 		PlayerStatus NewPlayerStatus;
 		float XPos = Camera::GetInstance()->SCR_WIDTH / 2 - 450 + 300 * i;
-		std::shared_ptr<UIText> PlayerLabel(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 100), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Player " + std::to_string(i + 1), "Resources/Fonts/Roboto-Thin.ttf", 25, Utils::CENTER));
+		std::shared_ptr<UIText> PlayerLabel(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 150), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Player " + std::to_string(i + 1), "Resources/Fonts/Roboto-Regular.ttf", 25, Utils::CENTER));
 		AddUIElement(PlayerLabel);
 		PlayerSelectElements.push_back(PlayerLabel);
-		std::shared_ptr<UIText> PlayerJoin(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Press Start to join", "Resources/Fonts/Roboto-Thin.ttf", 25, Utils::CENTER));
+		std::shared_ptr<UIText> PlayerJoin(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 100), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Press Start to join", "Resources/Fonts/Roboto-Thin.ttf", 25, Utils::CENTER));
 		AddUIElement(PlayerJoin);
 		PlayerSelectElements.push_back(PlayerJoin);
-		std::shared_ptr<UIText> PlayerReady(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 100), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Ready", "Resources/Fonts/Roboto-Thin.ttf", 25, Utils::CENTER));
+		std::shared_ptr<UIText> PlayerReady(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 200), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Ready", "Resources/Fonts/Roboto-Bold.ttf", 25, Utils::CENTER));
 		AddUIElement(PlayerReady);
 		PlayerSelectElements.push_back(PlayerReady);
+		std::shared_ptr<UIImage> PlayerImage(new UIImage(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 50), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 200, 200, "Resources/Images/office-square.png", 1));
+		AddUIElement(PlayerImage);
+		PlayerSelectElements.push_back(PlayerImage);
 		PlayerReady->SetActive(false);
 
 		NewPlayerStatus.PlayerJoinedText = PlayerJoin;
 		NewPlayerStatus.PlayerReadyText = PlayerReady;
+		NewPlayerStatus.PlayerImage = PlayerImage;
+		NewPlayerStatus.CurrentSkin = OfficeBall;
 		vPlayerStatus.push_back(NewPlayerStatus);
 	}
 
@@ -140,7 +145,6 @@ Menu::Menu() : Scene("Menu")
 	}
 }
 
-
 Menu::~Menu()
 {
 
@@ -171,30 +175,29 @@ void Menu::OnLoadScene()
 
 void Menu::PlayerControllerInput(int ID, InputController Input)
 {
-	if (Input == RIGHT_FACE_BUTTON)
+	if (PlayerSelectElements[0]->IsActive())
 	{
-		if (PlayerSelectElements[0]->IsActive() || ControlsElements[0]->IsActive() || CreditsElements[0]->IsActive())
+		if (Input == SPECIAL_BUTTON_RIGHT || (Input == BOTTOM_FACE_BUTTON && !vPlayerStatus[ID].IsPlaying) || (Input == RIGHT_FACE_BUTTON && !vPlayerStatus[ID].IsReady))
 		{
-			SwitchScreens(MENU);
-		}
-	}
-	else if (PlayerSelectElements[0]->IsActive())
-	{
-		if (Input == SPECIAL_BUTTON_RIGHT || (Input == BOTTOM_FACE_BUTTON && !vPlayerStatus[ID].IsPlaying))
-		{
-			vPlayerStatus[ID].IsPlaying = !vPlayerStatus[ID].IsPlaying;
+			if (Input != RIGHT_FACE_BUTTON) vPlayerStatus[ID].IsPlaying = !vPlayerStatus[ID].IsPlaying;
+			else vPlayerStatus[ID].IsPlaying = false;
 			if (vPlayerStatus[ID].IsPlaying)
+			{
 				vPlayerStatus[ID].PlayerJoinedText->sText = "Joined";
+				vPlayerStatus[ID].PlayerImage->SetActive(true);
+			}
 			else
 			{
 				vPlayerStatus[ID].PlayerJoinedText->sText = "Press Start to join";
 				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
+				vPlayerStatus[ID].PlayerImage->SetActive(false);
 				vPlayerStatus[ID].IsReady = false;
 			}
 		}
-		else if (Input == BOTTOM_FACE_BUTTON)
+		else if (Input == BOTTOM_FACE_BUTTON || Input == RIGHT_FACE_BUTTON)
 		{
-			vPlayerStatus[ID].IsReady = !vPlayerStatus[ID].IsReady;
+			if (Input != RIGHT_FACE_BUTTON) vPlayerStatus[ID].IsReady = !vPlayerStatus[ID].IsReady;
+			else vPlayerStatus[ID].IsReady = false;
 			CheckPlayersToStartTimer();
 			if (vPlayerStatus[ID].IsReady)
 			{
@@ -203,6 +206,47 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 			}
 			else
 				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
+		}
+		else if ((Input == LEFT_BUTTON || Input == RIGHT_BUTTON) && vPlayerStatus[ID].IsPlaying && !vPlayerStatus[ID].IsReady)
+		{
+			int Dir = 1;
+			if (Input == LEFT_BUTTON) Dir = -1;
+			//vPlayerStatus[ID].CurrentSkin = PlayerSkin((int)vPlayerStatus[ID].CurrentSkin + Dir);
+			int CurrentSkin = (int)vPlayerStatus[ID].CurrentSkin;
+			CurrentSkin += Dir;
+			if (CurrentSkin < 0) CurrentSkin = 1;
+			else if (CurrentSkin > 1) CurrentSkin = 0;
+			vPlayerStatus[ID].CurrentSkin = PlayerSkin(CurrentSkin);
+			const char* NewImage = "Resources/Images/office-square.png";
+			switch (vPlayerStatus[ID].CurrentSkin)
+			{
+			case OfficeBall:
+			{
+				NewImage = "Resources/Images/office-square.png";
+				break;
+			}
+			case SmexyHexy:
+			{
+				NewImage = "Resources/Images/SmexyHexy.png";
+				break;
+			}
+			default:
+				std::cout << "nah man\n";
+				break;
+			}
+			glm::vec2 Pos = vPlayerStatus[ID].PlayerImage->GetPosition();
+			DestroyUIElement(vPlayerStatus[ID].PlayerImage);
+			vPlayerStatus[ID].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 200, 200, NewImage, 1));
+			AddUIElement(vPlayerStatus[ID].PlayerImage);
+			PlayerSelectElements.push_back(vPlayerStatus[ID].PlayerImage);
+		}
+
+	}
+	else if (Input == RIGHT_FACE_BUTTON)
+	{
+		if (ControlsElements[0]->IsActive() || CreditsElements[0]->IsActive())
+		{
+			SwitchScreens(MENU);
 		}
 	}
 	else if (Input == BOTTOM_FACE_BUTTON)
@@ -281,6 +325,7 @@ void Menu::ResetPlayerSelectScreen()
 		PStat.IsPlaying = false;
 		PStat.IsReady = false;
 		PStat.PlayerJoinedText->sText = "Press Start to join";
+		PStat.PlayerImage->SetActive(false);
 	}
 	StartTimerText->SetActive(false);
 }
@@ -294,6 +339,7 @@ void Menu::StartGame()
 		{
 			PlayerInfo NewPlayerInfo;
 			NewPlayerInfo.PlayerID = i; // Set player ID
+			NewPlayerInfo.Skin = vPlayerStatus[i].CurrentSkin;
 			GameManager::GetInstance()->vPlayerInfo.insert(std::pair<int, PlayerInfo>(i, NewPlayerInfo)); // Add to map
 		}
 	}
