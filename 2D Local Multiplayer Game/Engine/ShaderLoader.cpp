@@ -95,7 +95,7 @@ GLuint ShaderLoader::CreateShader(GLenum shaderType, std::string
 #--Return--#: 		Returns the program gluint
 ************************************************************/
 GLuint ShaderLoader::CreateProgram(const char* vertexShaderFilename,
-	const char* fragmentShaderFilename)
+	const char* fragmentShaderFilename, const char* geometryShaderFilename)
 {
 
 	//read the shader files and save the code
@@ -104,12 +104,58 @@ GLuint ShaderLoader::CreateProgram(const char* vertexShaderFilename,
 
 	GLuint vertex_shader = CreateShader(GL_VERTEX_SHADER, vertex_shader_code, "vertex shader");
 	GLuint fragment_shader = CreateShader(GL_FRAGMENT_SHADER, fragment_shader_code, "fragment shader");
+	GLuint geometry_shader;
+
+	if (std::string(geometryShaderFilename) != "")
+	{
+		std::string geometry_shader_code = ReadShader(geometryShaderFilename);
+		geometry_shader = CreateShader(GL_GEOMETRY_SHADER, geometry_shader_code, "geometry shader");
+	}
 	
 	int link_result = 0;
 	//create the program handle, attatch the shaders and link it
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vertex_shader);
 	glAttachShader(program, fragment_shader);
+	if (std::string(geometryShaderFilename) != "") glAttachShader(program, geometry_shader);
+
+	glLinkProgram(program);
+	glGetProgramiv(program, GL_LINK_STATUS, &link_result);
+	//check for link errors
+	if (link_result == GL_FALSE)
+	{
+
+		int info_log_length = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info_log_length);
+		std::vector<char> program_log(info_log_length);
+		glGetProgramInfoLog(program, info_log_length, NULL, &program_log[0]);
+		std::cout << "Shader Loader : LINK ERROR" << std::endl << &program_log[0] << std::endl;
+		return 0;
+	}
+	return program;
+}
+
+GLuint ShaderLoader::CreateTessProgram(const char * vertexShaderFilename, const char * fragmentShaderFilename, const char * TessControlShaderFilename, const char * TessEvalShaderFilename)
+{
+	//read the shader files and save the code
+	std::string vertex_shader_code = ReadShader(vertexShaderFilename);
+	std::string fragment_shader_code = ReadShader(fragmentShaderFilename);
+	std::string tess_control_shader_code = ReadShader(TessControlShaderFilename);
+	std::string tess_eval_shader_code = ReadShader(TessEvalShaderFilename);
+
+	GLuint vertex_shader = CreateShader(GL_VERTEX_SHADER, vertex_shader_code, "vertex shader");
+	GLuint fragment_shader = CreateShader(GL_FRAGMENT_SHADER, fragment_shader_code, "fragment shader");
+	GLuint tess_control_shader = CreateShader(GL_TESS_CONTROL_SHADER, tess_control_shader_code, "tess control shader");
+	GLuint tess_eval_shader = CreateShader(GL_TESS_EVALUATION_SHADER, tess_eval_shader_code, "tess eval shader");
+
+
+	int link_result = 0;
+	//create the program handle, attatch the shaders and link it
+	GLuint program = glCreateProgram();
+	glAttachShader(program, vertex_shader);
+	glAttachShader(program, fragment_shader);
+	glAttachShader(program, tess_control_shader);
+	glAttachShader(program, tess_eval_shader);
 
 	glLinkProgram(program);
 	glGetProgramiv(program, GL_LINK_STATUS, &link_result);

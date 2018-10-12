@@ -189,6 +189,9 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddBlock({ -3, -3.5 }, 1, 0.5, Utils::CENTER_LEFT);
 			LevelToAddTo->AddBlock({ 3, -3.5 }, 1, 0.5, Utils::CENTER_RIGHT);
 
+			LevelToAddTo->AddDropoutBlock({ -4.0, -2.0 });
+			LevelToAddTo->AddDropoutBlock({ 4.0, -2.0 });
+
 			LevelToAddTo->AddBlock({ 0, -4.2 }, 0.5, 0.5, Utils::CENTER);
 			break;
 		}

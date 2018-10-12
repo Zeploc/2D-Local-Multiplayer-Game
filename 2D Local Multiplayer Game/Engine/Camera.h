@@ -70,6 +70,8 @@ public:
 	{
 		bUseSpectatorControls = !bUseSpectatorControls;
 	}
+
+	bool bSpectatorMovement = true;
 private:
 	// FPS CONTROLLS
 	bool bUseSpectatorControls = false;

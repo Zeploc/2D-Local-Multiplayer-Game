@@ -44,7 +44,7 @@ Sphere::Sphere(float fWidth, float fHeight, float fDepth, glm::vec4 _Colour)
 	}
 	else
 	{
-		program = Shader::Programs["program"];
+		program = Shader::Programs["BaseProgram"];
 	}
 
 	SetInitialStates();
@@ -67,7 +67,7 @@ Sphere::Sphere(float fWidth, float fHeight, float fDepth, glm::vec4 _Colour, con
 	bHasTexture = true;
 	BindSphere();
 	m_eShape = Utils::SPHERE;
-	program = Shader::Programs["Textureprogram"];
+	program = Shader::Programs["BaseProgram"];
 
 	SetInitialStates();
 }
@@ -219,11 +219,11 @@ void Sphere::SetLit(bool _bIsLit)
 	{
 		if (bHasTexture)
 		{
-			program = Shader::Programs["Textureprogram"];
+			program = Shader::Programs["BaseProgram"];
 		}
 		else
 		{
-			program = Shader::Programs["program"];
+			program = Shader::Programs["BaseProgram"];
 		}
 	}	
 }

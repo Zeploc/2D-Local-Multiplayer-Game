@@ -36,7 +36,7 @@ Pyramid::Pyramid(float fWidth, float fHeight, float fDepth, glm::vec4 _Colour)
 	m_iIndicies = 18;
 	BindPyramid();
 	m_eShape = Utils::PYRAMID;
-	program = Shader::Programs["program"];
+	program = Shader::Programs["BaseProgram"];
 
 	SetInitialStates();
 }
@@ -59,7 +59,7 @@ Pyramid::Pyramid(float fWidth, float fHeight, float fDepth, glm::vec4 _Colour, c
 	m_iIndicies = 18;
 	BindPyramid();
 	m_eShape = Utils::PYRAMID;
-	program = Shader::Programs["Textureprogram"];
+	program = Shader::Programs["BaseProgram"];
 
 	SetInitialStates();
 }

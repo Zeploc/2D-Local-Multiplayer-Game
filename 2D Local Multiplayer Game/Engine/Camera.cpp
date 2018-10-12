@@ -98,18 +98,21 @@ void Camera::SpectatorControls()
 		-cos(glm::radians(Pitch)) * cos(glm::radians(Yaw)));
 	cameraFront = glm::normalize(frontVector);
 
-	if (Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_HOLD)
-		cameraPos += cameraFront * cameraSpeed * 0.025f;
-	else if (Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_HOLD)
-		cameraPos -= cameraFront * cameraSpeed * 0.025f;
+	if (bSpectatorMovement)
+	{
+		if (Input::GetInstance()->KeyState[(unsigned char)'w'] == Input::INPUT_HOLD)
+			cameraPos += cameraFront * cameraSpeed * 0.025f;
+		else if (Input::GetInstance()->KeyState[(unsigned char)'s'] == Input::INPUT_HOLD)
+			cameraPos -= cameraFront * cameraSpeed * 0.025f;
 
-	if (Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD)
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 0.025f;
-	else if (Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_HOLD)
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 0.025f;
+		if (Input::GetInstance()->KeyState[(unsigned char)'a'] == Input::INPUT_HOLD)
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 0.025f;
+		else if (Input::GetInstance()->KeyState[(unsigned char)'d'] == Input::INPUT_HOLD)
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 0.025f;
 
-	if (Input::GetInstance()->KeyState[(unsigned char)' '] == Input::INPUT_HOLD)
-		cameraPos += cameraUp * cameraSpeed * 0.025f;
+		if (Input::GetInstance()->KeyState[(unsigned char)' '] == Input::INPUT_HOLD)
+			cameraPos += cameraUp * cameraSpeed * 0.025f;
+	}
 
 	glutWarpPointer((float)SCR_WIDTH * 0.5f, (float)SCR_HEIGHT * 0.5f);	
 }
@@ -168,9 +171,12 @@ void Camera::SetMVP(Utils::Transform _transform, GLuint program)
 	glm::mat4 rotation = glm::rotate(glm::mat4(), glm::radians(_transform.Rotation.x), glm::vec3(1, 0, 0));
 	rotation = glm::rotate(rotation, glm::radians(_transform.Rotation.y), glm::vec3(0, 1, 0));
 	rotation = glm::rotate(rotation, glm::radians(_transform.Rotation.z), glm::vec3(0, 0, 1));
-	
+
 	glm::mat4 model = translate * rotation * scale;
-	
+	glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_FALSE, glm::value_ptr(projection));
+
 	glm::mat4 MVP = projection * view * model;
 	GLint MVPLoc = glGetUniformLocation(program, "MVP");
 	glUniformMatrix4fv(MVPLoc, 1, GL_FALSE, glm::value_ptr(MVP));

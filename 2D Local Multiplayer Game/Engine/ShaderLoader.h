@@ -35,6 +35,10 @@ class ShaderLoader
 		ShaderLoader(void);
 		~ShaderLoader(void);
 		GLuint CreateProgram(const char* VertexShaderFilename,
-			const char* FragmentShaderFilename);
+			const char* FragmentShaderFilename, const char* GeometryShaderFilename);
+
+		GLuint CreateTessProgram(const char* VertexShaderFilename,
+			const char* FragmentShaderFilename, const char* TessControlShaderFilename,
+			const char* TessEvalShaderFilename);
 
 };

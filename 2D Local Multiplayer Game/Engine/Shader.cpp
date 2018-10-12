@@ -79,10 +79,17 @@ void Shader::CleanUp()
 	Textures.clear();
 }
 
-void Shader::AddProgram(std::string VertexShaderPath, std::string FragmentShaderPath, std::string ShaderName)
+void Shader::AddProgram(std::string VertexShaderPath, std::string FragmentShaderPath, std::string ShaderName, std::string GeometryShaderPath)
 {
 	ShaderLoader loader;
-	Programs.insert(std::pair<std::string, GLuint>(ShaderName, loader.CreateProgram(VertexShaderPath.c_str(), FragmentShaderPath.c_str())));
+	Programs.insert(std::pair<std::string, GLuint>(ShaderName, loader.CreateProgram(VertexShaderPath.c_str(), FragmentShaderPath.c_str(), GeometryShaderPath.c_str())));
+	LogManager::GetInstance()->DisplayLogMessage("Loading Shader \"" + ShaderName + "\"");
+}
+
+void Shader::AddTessProgram(std::string VertexShaderPath, std::string FragmentShaderPath, std::string TessControlShaderPath, std::string TessEvalShaderPath, std::string ShaderName)
+{
+	ShaderLoader loader;
+	Programs.insert(std::pair<std::string, GLuint>(ShaderName, loader.CreateTessProgram(VertexShaderPath.c_str(), FragmentShaderPath.c_str(), TessControlShaderPath.c_str(), TessEvalShaderPath.c_str())));
 	LogManager::GetInstance()->DisplayLogMessage("Loading Shader \"" + ShaderName + "\"");
 }
 

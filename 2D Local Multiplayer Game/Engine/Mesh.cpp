@@ -20,6 +20,7 @@
 #include "CollisionBounds.h"
 #include "Shader.h"
 
+#include <glm\gtc\type_ptr.hpp>
 
 /************************************************************
 #--Description--#:  Constructor function
@@ -55,26 +56,75 @@ Mesh::~Mesh()
 ************************************************************/
 void Mesh::Render(Utils::Transform Newtransform)
 {
+	Utils::Transform ScaledUpTransform = Newtransform;
+	ScaledUpTransform.Scale *= 1.1;
 	// ABOVE CALLED FROM DERIVED RENDER
+	glUniform1i(glGetUniformLocation(program, "bIsTex"), bHasTexture);
+	glUniform1i(glGetUniformLocation(program, "bFog"), bFog);
 	if (bHasTexture)
 	{
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
-	
+
 	}
 	if (bReflection)
-	{		
+	{
 		glActiveTexture(GL_TEXTURE1);
 		glUniform1i(glGetUniformLocation(program, "skybox"), 1);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, Utils::WorldCubeMap->EntityMesh->texture);
 		glUniform1f(glGetUniformLocation(program, "ReflectionSize"), 0.1f);
 
 	}
+	if (bFog)
+	{
+		glUniform3fv(glGetUniformLocation(program, "cameraPos"), 1, glm::value_ptr(Camera::GetInstance()->GetCameraPosition()));
+		glUniform4fv(glGetUniformLocation(program, "vFogColor"), 1, glm::value_ptr(Lighting::m_v4FogColour));
+		glUniform1f(glGetUniformLocation(program, "StartFog"), Lighting::StartFogDistance);
+		glUniform1f(glGetUniformLocation(program, "EndFog"), Lighting::EndFogDistance);
+	}
 	if (bCullFace) glEnable(GL_CULL_FACE);
 	else glDisable(GL_CULL_FACE);
+
+	//enable stencil and set stencil operation
+	if (bStencil)
+	{
+		glEnable(GL_STENCIL_TEST);
+		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		//glDepthMask(GL_FALSE);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); //stPass, dpFail, bothPass
+
+	}
+
+	//** 1st pass **
+	//set current stencil value
+	glStencilFunc(GL_ALWAYS, // test function
+		1,// current value to set
+		0xFF);//mask value,
+
+	glStencilMask(0xFF);//enable writing to stencil buffer
+						//--> render regular sized cube // fills stencil buffer
+
 	Camera::GetInstance()->SetMVP(Newtransform, program);
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, m_iIndicies, GL_UNSIGNED_INT, 0);
+
+	if (bStencil)
+	{
+
+		// ** 2nd pass **
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00); //disable writing to stencil buffer
+							 //--> render scaled up cube // write to areas where value is not equal to 1
+
+		glUniform1i(glGetUniformLocation(program, "bIsTex"), false);
+		Camera::GetInstance()->SetMVP(ScaledUpTransform, program);
+		glDrawElements(GL_TRIANGLES, m_iIndicies, GL_UNSIGNED_INT, 0);
+
+		//disable writing to stencil mask
+		glStencilMask(0x00);
+		glDisable(GL_STENCIL_TEST);
+	}
+
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -130,7 +180,7 @@ void Mesh::SetReflection(bool _bReflecting, bool _bIsInitialState)
 		}
 		else
 		{
-			program = Shader::Programs["program"];
+			program = Shader::Programs["BaseProgram"];
 		}
 	}
 	if (_bIsInitialState)

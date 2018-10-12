@@ -37,6 +37,9 @@ public:
 	~Lighting();
 
 	static glm::vec3 m_v3SunDirection;
+	static glm::vec4 m_v4FogColour;
+	static float StartFogDistance;
+	static float EndFogDistance;
 
 	static void PassLightingToShader(GLuint program, LightInfo _LightInfo, Utils::Transform ModelTransform);
 };

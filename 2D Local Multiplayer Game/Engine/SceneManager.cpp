@@ -65,9 +65,9 @@ void SceneManager::AddScene(std::shared_ptr<Scene> _Scene)
 	if (Scenes.empty())
 	{
 		Scenes.insert(std::pair<std::string, std::shared_ptr<Scene>>(_Scene->SceneName, _Scene));
-		_Scene->OnLoadScene();
 		CurrentScene = _Scene->SceneName;
 		SceneToSwitch = CurrentScene;
+		_Scene->OnLoadScene();
 	}
 	else
 		Scenes.insert(std::pair<std::string, std::shared_ptr<Scene>>(_Scene->SceneName, _Scene));

@@ -20,7 +20,7 @@
 // OpenGL Library Includes //
 #include <glew.h>
 #include <freeglut.h>
-#include <glm/common.hpp>
+#include <glm\glm.hpp>
 
 // Engine Includes //
 #include "Utils.h"
@@ -76,11 +76,15 @@ public:
 	int m_iIndicies;
 	LightInfo LightProperties;
 	bool bCullFace = true;
+	// Stencil
+	bool bStencil = false;
+	glm::vec4 StencilColour = { 0.5, 0.7, 0.8, 1.0f };
 	//std::shared_ptr<Entity> EntityRef;
 protected:
 	std::shared_ptr<CollisionBounds> MeshCollisionBounds;
 	bool bIsLit = false;
 	bool bReflection = false;
+	bool bFog = true;
 	
 	struct InitialState
 	{
