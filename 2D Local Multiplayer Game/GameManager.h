@@ -18,7 +18,7 @@
 
 enum PlayerSkin
 {
-	OfficeBall,
+	OfficeSquare,
 	SmexyHexy,
 	GuyAngle,
 	Rhombage

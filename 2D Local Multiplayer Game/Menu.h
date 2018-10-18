@@ -20,6 +20,7 @@
 
 // Library Includes //
 #include <vector>
+#include <map>
 
 enum InputDirection
 {
@@ -67,6 +68,8 @@ public:
 
 	void SwitchScreens(MenuScreens NewScreen);
 
+	static const char* GetSkinPath(enum PlayerSkin Skin);
+
 private:
 	std::vector<std::shared_ptr<UIElement>> MenuElements;
 	std::vector<std::shared_ptr<UIElement>> PlayerSelectElements;
@@ -76,11 +79,13 @@ private:
 
 	std::vector<PlayerStatus> vPlayerStatus;
 
+	std::map<enum PlayerSkin, bool> UsedSkins;
+
 
 	float StartTime = 3.0f;
 	std::shared_ptr<UIText> StartTimerText;
 
 	// DEBUG/TESTING
-	bool SkipPlayerSelect = true;
+	bool SkipPlayerSelect = false;
 };
 

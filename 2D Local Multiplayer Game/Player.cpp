@@ -36,36 +36,11 @@ Player::Player(glm::vec3 StartPosition, int PlayerID) // Will also take the type
 	: Entity({ StartPosition , {0, 0, 0}, {1, 1, 1} }, Utils::CENTER)
 {
 	glm::vec4 Colour = { 1.0f, 1.0f, 1.0f, 1.0f };
-	/*switch (PlayerID)
-	{
-	case 0:
-	{
-		Colour = { 1.0, 0.5, 0.7, 1.0 };
-		break;
-	}
-	case 1:
-	{
-		Colour = { 0.3, 0.9, 0.4, 1.0 };
-		break;
-	}
-	case 2:
-	{
-		Colour = { 0.5, 0.7, 2.0, 1.0 };
-		break;
-	}
-	case 3:
-	{
-		Colour = { 1.0, 0.9, 0.0, 1.0 };
-		break;
-	}
-	default:
-		break;
-	}*/
 	m_iPlayerID = PlayerID;
 
 	switch (GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].Skin)
 	{
-	case OfficeBall:
+	case OfficeSquare:
 	{
 		NormalImage = "Resources/Images/office-square.png";
 		BallImage = "Resources/Images/OfficeBall.png";
@@ -127,6 +102,15 @@ void Player::Init(b2World& world)
 void Player::Update()
 {
 	Entity::Update();
+
+	if (CurrentHitVisualCooldown > 0)
+	{
+		CurrentHitVisualCooldown -= Time::dTimeDelta;
+		if (CurrentHitVisualCooldown <= 0)
+		{
+			SetHitVisual(false);
+		}
+	}
 
 	float TimeStepRate = 60.0f;// (60 / Time::dTimeDelta) / 60.0f;
 	if (body)
@@ -321,6 +305,7 @@ void Player::Reset()
 
 void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
 {
+	SetHitVisual(true);
 	SoundManager::GetInstance()->PlayAudio("KnockbackSound", "CPlayerKnock");
 	if (Normalize)
 	{
@@ -342,7 +327,7 @@ void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
 	body->ApplyForceToCenter(b2Vec2(Direction.x, Direction.y), true);
 	OutsideForcesApplying = true;
 	KnockedBackTimer = KnockBackControlTime;
-	GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].KnockbackText->sText = std::to_string(int(KnockbackPercentage * 100));
+	GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].KnockbackText->sText = std::to_string(int(KnockbackPercentage * 100)) + "%";
 }
 
 void Player::AttemptMelee()
@@ -383,5 +368,21 @@ void Player::DropCurrentWeapon()
 void Player::Fire()
 {
 	CurrentWeapon->Fire();
+}
+
+void Player::SetHitVisual(bool ShowVisual)
+{
+	if (ShowVisual)
+	{
+		EntityMesh->Colour = { 1.0f, 0.1f, 0.1f, 1.0f };
+		EntityMesh->Rebind();
+		CurrentHitVisualCooldown = HitVisualCooldown;
+	}
+	else
+	{
+		CurrentHitVisualCooldown = 0;
+		EntityMesh->Colour = { 1.0f, 1.0f, 1.0f, 1.0f };
+		EntityMesh->Rebind();
+	}
 }
 

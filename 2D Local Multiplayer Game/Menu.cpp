@@ -101,7 +101,7 @@ Menu::Menu() : Scene("Menu")
 		NewPlayerStatus.PlayerJoinedText = PlayerJoin;
 		NewPlayerStatus.PlayerReadyText = PlayerReady;
 		NewPlayerStatus.PlayerImage = PlayerImage;
-		NewPlayerStatus.CurrentSkin = OfficeBall;
+		NewPlayerStatus.CurrentSkin = OfficeSquare;
 		vPlayerStatus.push_back(NewPlayerStatus);
 	}
 
@@ -143,6 +143,11 @@ Menu::Menu() : Scene("Menu")
 		std::shared_ptr<MenuPlayerController> NewMenuPlayer = std::make_shared<MenuPlayerController>(i);
 		AddEntity(NewMenuPlayer, true);
 	}
+
+	UsedSkins.insert(std::pair<PlayerSkin, bool>(OfficeSquare, false));
+	UsedSkins.insert(std::pair<PlayerSkin, bool>(SmexyHexy, false));
+	UsedSkins.insert(std::pair<PlayerSkin, bool>(GuyAngle, false));
+	UsedSkins.insert(std::pair<PlayerSkin, bool>(Rhombage, false));
 }
 
 Menu::~Menu()
@@ -196,16 +201,62 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 		}
 		else if (Input == BOTTOM_FACE_BUTTON || Input == RIGHT_FACE_BUTTON)
 		{
-			if (Input != RIGHT_FACE_BUTTON) vPlayerStatus[ID].IsReady = !vPlayerStatus[ID].IsReady;
-			else vPlayerStatus[ID].IsReady = false;
-			CheckPlayersToStartTimer();
-			if (vPlayerStatus[ID].IsReady)
-			{
-				vPlayerStatus[ID].PlayerReadyText->SetActive(true);
+			// Check if the player is trrying to ready up or unready
+			bool AttemptReadyUp = true;
+			if (Input == RIGHT_FACE_BUTTON || vPlayerStatus[ID].IsReady)
+				AttemptReadyUp = false;
 
+			// Check if they are tryng to ready up on an invalid skin
+			if (AttemptReadyUp && UsedSkins[vPlayerStatus[ID].CurrentSkin] == true)
+			{
+				return;
+			}
+
+			if (AttemptReadyUp)
+			{
+				vPlayerStatus[ID].IsReady = true;
+				vPlayerStatus[ID].PlayerReadyText->SetActive(true);
+				UsedSkins[vPlayerStatus[ID].CurrentSkin] = true;
 			}
 			else
+			{
+				vPlayerStatus[ID].IsReady = false;
 				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
+				UsedSkins[vPlayerStatus[ID].CurrentSkin] = false;
+				/// Set any of the images with this skin back
+			}
+
+			for (int pId = 0; pId < vPlayerStatus.size(); pId++)
+			{
+				if (pId == ID) continue; // Dont check same player
+				if (vPlayerStatus[pId].CurrentSkin == vPlayerStatus[ID].CurrentSkin && vPlayerStatus[pId].IsPlaying)
+				{
+					float Alpha = 1.0f;
+
+					if (UsedSkins[vPlayerStatus[pId].CurrentSkin])
+						Alpha = 0.3f;
+
+					glm::vec2 Pos = vPlayerStatus[pId].PlayerImage->GetPosition();
+					const char* NewImage = GetSkinPath(vPlayerStatus[pId].CurrentSkin);
+
+					DestroyUIElement(vPlayerStatus[pId].PlayerImage);
+					vPlayerStatus[pId].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, Alpha }, 200, 200, NewImage, 2));
+					AddUIElement(vPlayerStatus[pId].PlayerImage);
+					PlayerSelectElements.push_back(vPlayerStatus[pId].PlayerImage);
+				}
+			}
+			CheckPlayersToStartTimer();
+
+			/*if (Input != RIGHT_FACE_BUTTON) vPlayerStatus[ID].IsReady = !vPlayerStatus[ID].IsReady;
+			else vPlayerStatus[ID].IsReady = false;
+			if (vPlayerStatus[ID].IsReady)
+			{
+				UsedSkins[vPlayerStatus[ID].CurrentSkin] = true;
+			}
+			else
+			{
+				UsedSkins[vPlayerStatus[ID].CurrentSkin] = false;
+			}*/
 		}
 		else if ((Input == LEFT_BUTTON || Input == RIGHT_BUTTON) && vPlayerStatus[ID].IsPlaying && !vPlayerStatus[ID].IsReady)
 		{
@@ -217,36 +268,15 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 			if (CurrentSkin < 0) CurrentSkin = 3;
 			else if (CurrentSkin > 3) CurrentSkin = 0;
 			vPlayerStatus[ID].CurrentSkin = PlayerSkin(CurrentSkin);
-			const char* NewImage = "Resources/Images/office-square.png";
-			switch (vPlayerStatus[ID].CurrentSkin)
-			{
-			case OfficeBall:
-			{
-				NewImage = "Resources/Images/office-square.png";
-				break;
-			}
-			case SmexyHexy:
-			{
-				NewImage = "Resources/Images/SmexyHexy.png";
-				break;
-			}
-			case GuyAngle:
-			{
-				NewImage = "Resources/Images/Guyangle.png";
-				break;
-			}
-			case Rhombage:
-			{
-				NewImage = "Resources/Images/Rhombage.png";
-				break;
-			}
-			default:
-				std::cout << "nah man\n";
-				break;
-			}
+			const char* NewImage = GetSkinPath(vPlayerStatus[ID].CurrentSkin);
+			
+			float Alpha = 1.0f;
+
+			if (UsedSkins[vPlayerStatus[ID].CurrentSkin])
+				Alpha = 0.3f;
 			glm::vec2 Pos = vPlayerStatus[ID].PlayerImage->GetPosition();
 			DestroyUIElement(vPlayerStatus[ID].PlayerImage);
-			vPlayerStatus[ID].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 200, 200, NewImage, 2));
+			vPlayerStatus[ID].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, Alpha }, 200, 200, NewImage, 2));
 			AddUIElement(vPlayerStatus[ID].PlayerImage);
 			PlayerSelectElements.push_back(vPlayerStatus[ID].PlayerImage);
 		}
@@ -416,6 +446,37 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 	}
 	break;
 	default:
+		break;
+	}
+}
+
+const char* Menu::GetSkinPath(PlayerSkin Skin)
+{
+	switch (Skin)
+	{
+	case OfficeSquare:
+	{
+		return "Resources/Images/office-square.png";
+		break;
+	}
+	case SmexyHexy:
+	{
+		return "Resources/Images/SmexyHexy.png";
+		break;
+	}
+	case GuyAngle:
+	{
+		return "Resources/Images/Guyangle.png";
+		break;
+	}
+	case Rhombage:
+	{
+		return "Resources/Images/Rhombage.png";
+		break;
+	}
+	default:
+		std::cout << "Couldn't find skin path\n";
+		return "";
 		break;
 	}
 }

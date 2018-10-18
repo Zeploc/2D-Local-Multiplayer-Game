@@ -71,6 +71,10 @@ private:
 
 	const char* NormalImage = "Resources/Images/office-square.png";
 	const char* BallImage = "Resources/Images/OfficeBall.png";
+	float CurrentHitVisualCooldown = 0;
+	float HitVisualCooldown = 0.25f;
+	void SetHitVisual(bool ShowVisual);
+
 
 	int m_iPlayerID = -1;
 
