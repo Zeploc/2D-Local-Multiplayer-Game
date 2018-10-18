@@ -319,12 +319,14 @@ void Level::OnGameComplete()
 
 void Level::ShowEndScreen()
 {
-	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
-	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Game Complete", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
+	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.85));
+	std::shared_ptr<UIText> RoundTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 250.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Round " + std::to_string(GameManager::GetInstance()->CurrentRound), "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIText> OverallTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Overall", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
 	AddUIElement(BackImage);
-	AddUIElement(Title);
+	AddUIElement(RoundTitle);
+	AddUIElement(OverallTitle);
 
-	/// Have players stats, get from game manager, display each position, and each score
+	// Have players stats, get from game manager, display each position, and each score
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
 	{
 		// Add player
@@ -379,11 +381,66 @@ void Level::ShowEndScreen()
 			player.second.CurrentScore += 400;
 			break;
 		}
-		std::shared_ptr<UIText> PlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT/2), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
-		AddUIElement(PlayerPlacement);
-		std::shared_ptr<UIText> PlayerScore(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 100.0f), Utils::CENTER, PlayerColour, std::to_string(player.second.CurrentScore), "Resources/Fonts/Roboto-Medium.ttf", 35, Utils::CENTER));
-		AddUIElement(PlayerScore);
+		std::shared_ptr<UIText> RoundPlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT/2 - 150.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		AddUIElement(RoundPlayerPlacement);
 	}
+	// Overall Place and score
+	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
+	{
+		// Add player
+		glm::vec4 PlayerColour = { 0.8, 0.1, 0.1, 1.0 };
+		switch (player.first)
+		{
+		case 1:
+		{
+			PlayerColour = { 0.2, 0.7, 0.1, 1.0 };
+			break;
+		}
+		case 2:
+		{
+			PlayerColour = { 0.2, 0.3, 1.0, 1.0 };
+			break;
+		}
+		case 3:
+		{
+			PlayerColour = { 1.0, 0.7, 0.0, 1.0 };
+			break;
+		}
+		}
+		int Place = 1;
+		for (auto& OtherPlayer : GameManager::GetInstance()->vPlayerInfo)
+		{
+			if (player.second.CurrentScore < OtherPlayer.second.CurrentScore && player.second.PlayerID != OtherPlayer.second.PlayerID) // If score is less than another player (and this player isin't the current)
+				Place++;
+		}
+
+		std::string PlaceMessage = "4th";
+		switch (Place)
+		{
+		case 1:
+		{
+			PlaceMessage = "1st";
+			break;
+		}
+		case 2:
+		{
+			PlaceMessage = "2nd";
+			break;
+		}
+		case 3:
+		{
+			PlaceMessage = "3rd";
+			break;
+		}
+		}
+
+		std::shared_ptr<UIText> PlayerScore(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 200.0f), Utils::CENTER, PlayerColour, std::to_string(player.second.CurrentScore), "Resources/Fonts/Roboto-Medium.ttf", 35, Utils::CENTER));
+		AddUIElement(PlayerScore);
+
+		std::shared_ptr<UIText> GamePlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 100.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		AddUIElement(GamePlayerPlacement);
+	}
+
 	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 220.0f), Utils::CENTER, { 0.4f,0.4f,0.4f, 1.0f }, "Press start to go to next round", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
 	AddUIElement(StartToContinue);
 	/// Generate random new gamemode
@@ -550,6 +607,12 @@ void Level::PControllerInput(InputController _ControllerInput)
 		{
 			// next random round
 			LevelManager::GetInstance()->NewRound(GetRandomGamemode());
+			GameManager::GetInstance()->CurrentRound++;
+			if (GameManager::GetInstance()->CurrentRound > GameManager::GetInstance()->NumRounds)
+			{
+				GameManager::GetInstance()->CurrentRound = 1;
+				SceneManager::GetInstance()->SwitchScene("Menu");
+			}
 		}
 		else
 		{

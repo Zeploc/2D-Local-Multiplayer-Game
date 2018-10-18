@@ -96,8 +96,8 @@ void LevelManager::RemoveExcessLevel()
 
 void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToAddTo)
 {
-	int RandomMap = 1;// rand() % 2;
-	switch (BOMB_SURVIVAL)// LevelToAddTo->CurrentGamemode)
+	int RandomMap = rand() % 2;
+	switch (LevelToAddTo->CurrentGamemode)
 	{
 	case DROPOUT:
 	{

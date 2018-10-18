@@ -43,6 +43,9 @@ public:
 
 	void RemovePlayers();
 
+	int NumRounds = 10;
+	int CurrentRound = 1;
+
 	// Singleton
 public:
 	static std::shared_ptr<GameManager> GetInstance();
