@@ -205,7 +205,7 @@ void UIButton::Pressed()
 {
 	if (m_PressSoundPath != "")
 	{
-		SoundManager::GetInstance()->PlayAudio(m_PressSoundPath, "FXC");
+		SoundManager::GetInstance()->PlayAudio(m_PressSoundPath, "UIC");
 	}
 	bPressed = true;
 	bButtonPressedThisFrame = true;
