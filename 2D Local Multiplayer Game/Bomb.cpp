@@ -62,6 +62,11 @@ void Bomb::Update()
 			EntityMesh->Colour = { 1.0f, 0.3f, 0.3f, 1.0f };
 			EntityMesh->Rebind();
 		}
+		if (bExplodeWarning)
+		{
+			float Ratio = (CurrentTimer - (ExplosionTime - ExplodeWarning)) / (ExplodeWarning);
+			transform.Scale = glm::vec3(1, 1, 1) * (1 + (BlownScale - 1.0f) * Ratio);
+		}
 	}
 
 }

@@ -14,6 +14,7 @@ public:
 
 	float BombRange = 3.0f;
 	float ExplodeWarning = 0.5f;
+	float BlownScale = 1.5f;
 
 private:
 
