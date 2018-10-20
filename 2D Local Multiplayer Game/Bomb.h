@@ -12,12 +12,15 @@ public:
 	void Init(b2World& world);
 	bool Explosion();
 
+	float BombRange = 3.0f;
+	float ExplodeWarning = 0.5f;
+
 private:
 
 	bool bExploded = false;
+	bool bExplodeWarning = false;
 
 	float ExplosionTime = 3.0f;
 	float CurrentTimer = 0.0f;
 
-	std::shared_ptr<Entity> BombEntity;
 };

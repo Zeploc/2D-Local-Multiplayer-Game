@@ -15,7 +15,7 @@
 // Library Includes //
 #include <iostream>
 #include <time.h>
-#include <vld.h>
+//#include <vld.h>
 
 // OpenGL Library Includes //
 #include <glew.h>

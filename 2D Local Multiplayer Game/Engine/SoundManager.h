@@ -17,6 +17,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 
 // OpenGL Library Includes //
 #include <fmod.hpp>
@@ -33,29 +34,22 @@ public:
 
 	struct SoundObject
 	{
+		std::string sName;
 		FMOD::Sound* Sound;
-		std::string sName;
-	};
-	struct ChannelObject
-	{
 		FMOD::Channel* channel;
-		std::string sName;
 	};
 	
 	const bool AddAudio(const char* Path, bool bLoop, std::string sName);
 	FMOD::Sound* GetAudio(std::string sName);
-	void AddChannel(std::string sName);
-	bool PlayAudio(std::string sName, std::string sChannel);
+	bool PlayAudio(std::string sName);
 	bool PauseAudio(std::string sChannel);
 	bool StopAudio(std::string sChannel);
 	bool SetChannelVolume(std::string sChannel, float _fVolume);
 
 private:
-	std::vector<SoundObject> Sounds;
-	std::vector<ChannelObject> Channels;
+	std::map<std::string, SoundObject> Sounds;
 
 	bool ChannelExists(std::string sName);
-	int GetChannelID(std::string sName);
 
 	// Singleton
 public:

@@ -60,7 +60,14 @@ Entity::Entity(Utils::Transform _Transform, Utils::EANCHOR _Anchor)
 ************************************************************/
 Entity::~Entity()
 {
+	EntityMesh.reset();
 	EntityMesh = nullptr;
+	if (body)
+	{
+		b2World* worldref = body->GetWorld();
+		worldref->DestroyBody(body);
+	}
+	body = nullptr;
 }
 
 

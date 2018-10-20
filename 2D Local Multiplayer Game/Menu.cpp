@@ -40,8 +40,8 @@ void ExitGameBtn();
 
 Menu::Menu() : Scene("Menu")
 {
-	SoundManager::GetInstance()->AddChannel("CMainMusic");
 	SoundManager::GetInstance()->AddAudio("Resources/Sounds/MainMusic.mp3", false, "MainTrack");
+	SoundManager::GetInstance()->SetChannelVolume("MainTrack", 0.15);
 
 	// Menu Elements
 	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Local Multiplayer Game", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
@@ -388,7 +388,7 @@ void Menu::StartGame()
 	}
 	LevelManager::GetInstance()->NewRound(GetRandomGamemode()); // New level
 	
-	SoundManager::GetInstance()->PlayAudio("MainTrack", "CMainMenu");
+	SoundManager::GetInstance()->PlayAudio("MainTrack");
 }
 
 void Menu::SwitchScreens(MenuScreens NewScreen)
@@ -425,7 +425,7 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 		if (SkipPlayerSelect)
 		{
 			LevelManager::GetInstance()->NewRound(GetRandomGamemode()); // New level
-			SoundManager::GetInstance()->PlayAudio("MainTrack", "CMainMenu");
+			SoundManager::GetInstance()->PlayAudio("MainTrack");
 			break;
 		}
 		for (auto& UIElem : PlayerSelectElements)

@@ -51,8 +51,7 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 {
 	CurrentGamemode = LevelGM;
 
-	SoundManager::GetInstance()->AddChannel("CPlayerDeath");
-	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "FallingToYourDeath");
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "PlayerDeath");
 	// Pause Screen elements
 	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
 	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Paused", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
@@ -60,6 +59,10 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	ResumeBtn->AddText("RESUME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, BackToMenu));
 	QuitBtn->AddText("QUIT", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+
+	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT), Utils::BOTTOM_CENTER, 0.0f, glm::vec4(0.2f, 0.2f, 0.2f, 0.8f), Camera::GetInstance()->SCR_WIDTH, 70));
+	AddUIElement(RoundBackImage);
+	IngameHUD.push_back(RoundBackImage);
 
 	AddUIElement(BackImage);
 	AddUIElement(Title);
@@ -75,25 +78,8 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	QuitBtn->SetActive(false);
 	CurrentSelectedButton = ResumeBtn;
 	CurrentSelectedButton->HoverOverride = true;
-
-	CircleEntity = std::make_shared<Entity>(Entity({ { 5.0f, 2.0f, 0 } ,{ 0, 0, 45 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> CircleImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png"));
-	CircleEntity->AddMesh(CircleImage);
-	//AddEntity(CircleEntity, true);
-	//CircleEntity->SetupB2CircleBody(world, b2_dynamicBody, true, true, 10.0f);
-
-	std::shared_ptr<Entity> DynamicBoxEntity = std::make_shared<Entity>(Entity({ { 0, 4, 0 } ,{ 0, 0, 20 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> TestImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.9f, 0.3f, 0.1f, 1.0f }, "Resources/Images/Box.png"));
-	DynamicBoxEntity->AddMesh(TestImage);
-	//AddEntity(DynamicBoxEntity, true);
-	//DynamicBoxEntity->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
 		
 
-	//std::shared_ptr<SpikeHazard> SpikeHazzard1 = std::make_shared<SpikeHazard>(SpikeHazard({ { -2, 1, 0 } ,{ 0, 0, -45 },{ 1, 1, 1 } }, Utils::CENTER));
-	//SpikeHazzard1->Init(world);
-	//AddEntity(SpikeHazzard1, true);
-	
-	//bIsPersistant = true;	
 	world.SetGravity(b2Vec2(0.0f, -gravity));
 
 	Camera::GetInstance()->SetWindowScale(CameraClosestZoom);
@@ -157,7 +143,7 @@ void Level::Update()
 			it = Players.erase(it);
 			Endit = Players.end();
 			PlayerKnockedOut(PlayerId);
-			SoundManager::GetInstance()->PlayAudio("FallingToYourDeath", "CPlayerDeath");
+			SoundManager::GetInstance()->PlayAudio("PlayerDeath");
 			continue;
 			
 		}
@@ -176,27 +162,11 @@ void Level::OnLoadScene()
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
 	{
 		// Add player
-		glm::vec4 KnockbackColour = { 0.8, 0.1, 0.1, 1.0 };
-		switch (player.first)
-		{
-		case 1:
-		{
-			KnockbackColour = { 0.2, 0.7, 0.1, 1.0 };
-			break;
-		}
-		case 2:
-		{
-			KnockbackColour = { 0.2, 0.3, 1.0, 1.0 };
-			break;
-		}
-		case 3:
-		{
-			KnockbackColour = { 1.0, 0.7, 0.0, 1.0 };
-			break;
-		}
-		}
-		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(120 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, KnockbackColour, "100%", "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		glm::vec4 KnockbackColour = GetPlaceColour(player.second.FullGamePlace);		
+		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(140 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::BOTTOM_LEFT, KnockbackColour, "100%", "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
 		AddUIElement(KnockbackPercentage);
+		std::shared_ptr<UIImage> KnockbackIcon(new UIImage(glm::vec2(50 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::CENTER, 0, {1.0f, 1.0f, 1.0f, 1.0f}, 50, 50, Menu::GetSkinPath(player.second.Skin), 1));
+		AddUIElement(KnockbackIcon);
 		std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player(SpawnPosition, player.second.PlayerID));
 		AddEntity(PlayerEnt, true);
 		PlayerEnt->Init(world);
@@ -208,9 +178,9 @@ void Level::OnLoadScene()
 		AddEntity(newPlayerController);
 		player.second.KnockbackText = KnockbackPercentage;
 		player.second.CurrentGamePlace = 0;
+		IngameHUD.push_back(KnockbackPercentage);
+		IngameHUD.push_back(KnockbackIcon);
 	}
-
-
 }
 
 void BackToMenu()
@@ -301,8 +271,12 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 
 void Level::PlayerKnockedOut(int PlayerID)
 {
-	/// Assign score/place
-	GameManager::GetInstance()->vPlayerInfo[PlayerID].KnockbackText->sText = "KNOCKED";
+	// Assign score/place
+	std::shared_ptr<UIText> KnockbackText = GameManager::GetInstance()->vPlayerInfo[PlayerID].KnockbackText;
+	KnockbackText->sText = "X";
+	KnockbackText->Colour = { 0.9f, 0.1f, 0.1f, 1.0f };
+	KnockbackText->iPSize = 80;
+	KnockbackText->SetPosition(KnockbackText->GetPosition() + glm::vec2(-20, 0));
 	GameManager::GetInstance()->vPlayerInfo[PlayerID].CurrentGamePlace = Players.size() + 1; 
 	if (Players.size() <= 1)
 	{
@@ -328,30 +302,16 @@ void Level::ShowEndScreen()
 	AddUIElement(RoundTitle);
 	AddUIElement(OverallTitle);
 
+	for (auto& HUDEle : IngameHUD)
+	{
+		HUDEle->SetActive(false);
+	}
+
 	// Have players stats, get from game manager, display each position, and each score
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
 	{
-		player.second.KnockbackText->SetActive(false);
 		// Add player
-		glm::vec4 PlayerColour = { 0.8, 0.1, 0.1, 1.0 };
-		switch (player.first)
-		{
-		case 1:
-		{
-			PlayerColour = { 0.2, 0.7, 0.1, 1.0 };
-			break;
-		}
-		case 2:
-		{
-			PlayerColour = { 0.2, 0.3, 1.0, 1.0 };
-			break;
-		}
-		case 3:
-		{
-			PlayerColour = { 1.0, 0.7, 0.0, 1.0 };
-			break;
-		}
-		}
+		glm::vec4 PlayerColour = { 226.0f / 255.0f, 175.0f / 255.0f, 45.0f / 255.0f, 1.0f };//  Gold { 0.2, 0.7, 0.1, 1.0 }; // Green
 		std::string PlaceMessage = "NONE";
 		std::string AdditionMessage = "+0";
 		switch (player.second.CurrentGamePlace)
@@ -368,6 +328,7 @@ void Level::ShowEndScreen()
 			PlaceMessage = "2nd";
 			AdditionMessage = "+300";
 			player.second.CurrentScore += 300;
+			PlayerColour = { 192.0f / 255.0f, 198.0f / 255.0f, 209.0f / 255.0f, 1.0f };// Silver { 0.2, 0.3, 1.0, 1.0 }; // Blue
 			break;
 		}
 		case 3:
@@ -375,6 +336,7 @@ void Level::ShowEndScreen()
 			PlaceMessage = "3rd";
 			AdditionMessage = "+200";
 			player.second.CurrentScore += 200;
+			PlayerColour = { 209.0f / 255.0f, 103.0f / 255.0f, 58.0f / 255.0f, 1.0f };// Bronze { 1.0, 0.7, 0.0, 1.0 }; // Yellow
 			break;
 		}
 		case 4:
@@ -382,12 +344,13 @@ void Level::ShowEndScreen()
 			PlaceMessage = "4th";
 			AdditionMessage = "+100";
 			player.second.CurrentScore += 100;
+			PlayerColour = { 0.6f, 0.6f, 0.6f, 1.0f };// Grey { 0.8, 0.1, 0.1, 1.0 }; // Red
 			break;
 		}
 		default:
 			PlaceMessage = "1st";
 			AdditionMessage = "+400";
-			player.second.CurrentScore += 400;
+			player.second.CurrentScore += 400;			
 			break;
 		}
 		std::shared_ptr<UIText> RoundPlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT/2 - 180.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
@@ -395,36 +358,19 @@ void Level::ShowEndScreen()
 		std::shared_ptr<UIText> RoundPlayerAddScore(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 - 130.0f), Utils::CENTER, PlayerColour, AdditionMessage, "Resources/Fonts/Roboto-Medium.ttf", 25, Utils::CENTER));
 		AddUIElement(RoundPlayerAddScore);
 	}
+
 	// Overall Place and score
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
 	{
 		// Add player
-		glm::vec4 PlayerColour = { 0.8, 0.1, 0.1, 1.0 };
-		switch (player.first)
-		{
-		case 1:
-		{
-			PlayerColour = { 0.2, 0.7, 0.1, 1.0 };
-			break;
-		}
-		case 2:
-		{
-			PlayerColour = { 0.2, 0.3, 1.0, 1.0 };
-			break;
-		}
-		case 3:
-		{
-			PlayerColour = { 1.0, 0.7, 0.0, 1.0 };
-			break;
-		}
-		}
 		int Place = 1;
 		for (auto& OtherPlayer : GameManager::GetInstance()->vPlayerInfo)
 		{
 			if (player.second.CurrentScore < OtherPlayer.second.CurrentScore && player.second.PlayerID != OtherPlayer.second.PlayerID) // If score is less than another player (and this player isin't the current)
 				Place++;
 		}
-
+		player.second.FullGamePlace = Place;
+		glm::vec4 PlayerColour = GetPlaceColour(Place);
 		std::string PlaceMessage = "4th";
 		switch (Place)
 		{
@@ -458,8 +404,8 @@ void Level::ShowEndScreen()
 
 	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300.0f), Utils::CENTER, { 0.9f, 0.9f, 0.9f, 1.0f }, "Press start to go to next round", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
 	AddUIElement(StartToContinue);
-	/// Generate random new gamemode
-	/// Display next gamemode (GetGamemodeString())
+	// Generate random new gamemode
+	// Display next gamemode (GetGamemodeString())
 		
 }
 
@@ -678,6 +624,34 @@ void Level::ControllerInputAxis(InputDirection NewInput)
 			break;
 		}
 	}
+}
+
+glm::vec4 Level::GetPlaceColour(int Place)
+{
+	glm::vec4 PlayerColour = { 0.6f, 0.6f, 0.6f, 1.0f };// Grey { 0.8, 0.1, 0.1, 1.0 }; // Red
+	std::string PlaceMessage = "4th";
+	switch (Place)
+	{
+	case 1:
+	{
+		PlaceMessage = "1st";
+		PlayerColour = { 226.0f / 255.0f, 175.0f / 255.0f, 45.0f / 255.0f, 1.0f };//  Gold { 0.2, 0.7, 0.1, 1.0 }; // Green
+		break;
+	}
+	case 2:
+	{
+		PlaceMessage = "2nd";
+		PlayerColour = { 192.0f / 255.0f, 198.0f / 255.0f, 209.0f / 255.0f, 1.0f };// Silver { 0.2, 0.3, 1.0, 1.0 }; // Blue
+		break;
+	}
+	case 3:
+	{
+		PlaceMessage = "3rd";
+		PlayerColour = { 209.0f / 255.0f, 103.0f / 255.0f, 58.0f / 255.0f, 1.0f };// Bronze { 1.0, 0.7, 0.0, 1.0 }; // Yellow
+		break;
+	}
+	}
+	return PlayerColour;
 }
 
 void PlayerContactListener::BeginContact(b2Contact * contact)

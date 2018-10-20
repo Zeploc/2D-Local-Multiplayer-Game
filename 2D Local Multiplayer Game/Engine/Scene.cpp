@@ -116,24 +116,18 @@ void Scene::AddEntity(std::shared_ptr<Entity> _Entity, bool IsInitial)
 #--Return--#: 		NA
 ************************************************************/
 void Scene::DestroyEntity(std::shared_ptr<Entity> _Entity)
-{	
+{
+	_Entity->SetActive(false);
 	if (_Entity->IsInitialEntity())
 	{
 		DestroyedEntities.push_back(_Entity);
-		_Entity->SetActive(false);
+	}
+	else
+	{
+		EntitiesToBeDestroyed.push_back(_Entity);
 	}
 	_Entity->OnDestroy();
 	
-	// Find entity in entities
-	for (auto it = Entities.begin(); it != Entities.end(); ++it)
-	{
-		if (*it == _Entity || *it == nullptr)
-		{
-			// Remove from entities list
-			Entities.erase(it);
-			break;
-		}
-	}
 	// Reset all but this option?
 	//EntDetroy.reset();
 }
@@ -217,6 +211,20 @@ void Scene::Update()
 		UIDestroy.reset();
 	}
 	if (!UIElementsToBeDestroyed.empty()) UIElementsToBeDestroyed.clear();
+
+	for (auto& EDestroy : EntitiesToBeDestroyed)
+	{
+		for (auto it = Entities.begin(); it != Entities.end(); ++it)
+		{
+			if (*it == EDestroy)
+			{
+				Entities.erase(it);
+				break;
+			}
+		}
+		EDestroy.reset();
+	}
+	if (!EntitiesToBeDestroyed.empty()) EntitiesToBeDestroyed.clear();
 }
 
 void Scene::OnLoadScene()

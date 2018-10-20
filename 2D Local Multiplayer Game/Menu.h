@@ -86,6 +86,6 @@ private:
 	std::shared_ptr<UIText> StartTimerText;
 
 	// DEBUG/TESTING
-	bool SkipPlayerSelect = false;
+	bool SkipPlayerSelect = true;
 };
 

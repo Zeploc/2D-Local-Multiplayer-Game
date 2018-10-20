@@ -95,8 +95,7 @@ void Player::Init(b2World& world)
 	SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
 	//body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
 
-	SoundManager::GetInstance()->AddChannel("CPlayerKnock");
-	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Hit.wav", false, "KnockbackSound");
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Hit.wav", false, "KnockbackSound " + std::to_string(m_iPlayerID));
 }
 
 void Player::Update()
@@ -306,7 +305,7 @@ void Player::Reset()
 void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
 {
 	SetHitVisual(true);
-	SoundManager::GetInstance()->PlayAudio("KnockbackSound", "CPlayerKnock");
+	SoundManager::GetInstance()->PlayAudio("KnockbackSound " + std::to_string(m_iPlayerID));
 	if (Normalize)
 	{
 		Direction = glm::normalize(Direction);
