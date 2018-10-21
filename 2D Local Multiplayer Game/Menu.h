@@ -30,7 +30,6 @@ enum InputDirection
 	RIGHT
 };
 
-
 struct PlayerStatus
 {
 	bool IsPlaying = false;
@@ -63,6 +62,7 @@ public:
 	void ControllerInputAxis(InputDirection NewInput);
 	void CheckPlayersToStartTimer();
 	void ResetPlayerSelectScreen();
+	void UpdateImageStatus(int ID);
 	
 	void StartGame();
 
@@ -86,6 +86,6 @@ private:
 	std::shared_ptr<UIText> StartTimerText;
 
 	// DEBUG/TESTING
-	bool SkipPlayerSelect = true;
+	bool SkipPlayerSelect = false;
 };
 

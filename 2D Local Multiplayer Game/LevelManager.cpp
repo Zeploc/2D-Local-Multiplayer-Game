@@ -97,6 +97,11 @@ void LevelManager::RemoveExcessLevel()
 void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToAddTo)
 {
 	int RandomMap = rand() % 2;
+	while (RandomMap != LastMapPlayed && LastMapPlayed != -1)
+	{
+		RandomMap = rand() % 2;
+	}
+	LastMapPlayed = RandomMap;
 	switch (LevelToAddTo->CurrentGamemode)
 	{
 	case DROPOUT:
@@ -112,7 +117,7 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddDropoutBlock({ 5, -3.5 }, 4);
 			LevelToAddTo->AddDropoutBlock({ -2.5, -2.5 }, 11);
 			LevelToAddTo->AddDropoutBlock({ -5.5, -0.5 }, 5);
-			LevelToAddTo->AddDropoutBlock({ 3.5,-0.5 }, 5);
+			LevelToAddTo->AddDropoutBlock({ 3.5, -0.5 }, 5);
 			LevelToAddTo->AddDropoutBlock({ -1, 1 }, 5);
 			LevelToAddTo->AddDropoutBlock({ -7, 1.5 }, 2);
 			LevelToAddTo->AddDropoutBlock({ 6.5, 1.5 }, 2);
@@ -137,6 +142,7 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 	}
 	break;
 	case BOMB_SURVIVAL:
+	default:
 	{
 		switch (RandomMap)
 		{
@@ -223,8 +229,6 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 		}
 	}
 	break;
-	default:
-		break;
 	}
 }
 

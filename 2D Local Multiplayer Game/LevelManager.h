@@ -41,6 +41,8 @@ public:
 	void RemoveExcessLevel();
 	void AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToAddTo);
 
+private:
+	int LastMapPlayed = -1;
 	
 	// Singleton
 public:

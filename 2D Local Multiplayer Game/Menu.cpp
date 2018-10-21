@@ -135,7 +135,7 @@ Menu::Menu() : Scene("Menu")
 	CreditsElements.push_back(CreditsTitle);
 	CreditsElements.push_back(BToBack);
 
-	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50.0f), 0, glm::vec4(0.7, 0.7, 0.7, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER));
+	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50.0f), 0, glm::vec4(0.7, 0.7, 0.7, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
 	AddUIElement(BToBackPlayerSelect);
 
 	PlayerSelectElements.push_back(BToBackPlayerSelect);
@@ -193,6 +193,9 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 			{
 				vPlayerStatus[ID].PlayerJoinedText->sText = "Joined";
 				vPlayerStatus[ID].PlayerImage->SetActive(true);
+				StartTime = 3;
+				StartTimerText->SetActive(false);
+				UpdateImageStatus(ID);
 			}
 			else
 			{
@@ -200,6 +203,9 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
 				vPlayerStatus[ID].PlayerImage->SetActive(false);
 				vPlayerStatus[ID].IsReady = false;
+				StartTime = 3;
+				StartTimerText->SetActive(false);
+				UsedSkins[vPlayerStatus[ID].CurrentSkin] = false;
 			}
 		}
 		else if (Input == BOTTOM_FACE_BUTTON || Input == RIGHT_FACE_BUTTON)
@@ -226,7 +232,7 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 				vPlayerStatus[ID].IsReady = false;
 				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
 				UsedSkins[vPlayerStatus[ID].CurrentSkin] = false;
-				/// Set any of the images with this skin back
+				// Set any of the images with this skin back
 			}
 
 			for (int pId = 0; pId < vPlayerStatus.size(); pId++)
@@ -234,32 +240,11 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 				if (pId == ID) continue; // Dont check same player
 				if (vPlayerStatus[pId].CurrentSkin == vPlayerStatus[ID].CurrentSkin && vPlayerStatus[pId].IsPlaying)
 				{
-					float Alpha = 1.0f;
-
-					if (UsedSkins[vPlayerStatus[pId].CurrentSkin])
-						Alpha = 0.3f;
-
-					glm::vec2 Pos = vPlayerStatus[pId].PlayerImage->GetPosition();
-					const char* NewImage = GetSkinPath(vPlayerStatus[pId].CurrentSkin);
-
-					DestroyUIElement(vPlayerStatus[pId].PlayerImage);
-					vPlayerStatus[pId].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, Alpha }, 200, 200, NewImage, 2));
-					AddUIElement(vPlayerStatus[pId].PlayerImage);
-					PlayerSelectElements.push_back(vPlayerStatus[pId].PlayerImage);
+					UpdateImageStatus(pId);
 				}
 			}
 			CheckPlayersToStartTimer();
 
-			/*if (Input != RIGHT_FACE_BUTTON) vPlayerStatus[ID].IsReady = !vPlayerStatus[ID].IsReady;
-			else vPlayerStatus[ID].IsReady = false;
-			if (vPlayerStatus[ID].IsReady)
-			{
-				UsedSkins[vPlayerStatus[ID].CurrentSkin] = true;
-			}
-			else
-			{
-				UsedSkins[vPlayerStatus[ID].CurrentSkin] = false;
-			}*/
 		}
 		else if ((Input == LEFT_BUTTON || Input == RIGHT_BUTTON) && vPlayerStatus[ID].IsPlaying && !vPlayerStatus[ID].IsReady)
 		{
@@ -271,17 +256,7 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 			if (CurrentSkin < 0) CurrentSkin = 3;
 			else if (CurrentSkin > 3) CurrentSkin = 0;
 			vPlayerStatus[ID].CurrentSkin = PlayerSkin(CurrentSkin);
-			const char* NewImage = GetSkinPath(vPlayerStatus[ID].CurrentSkin);
-			
-			float Alpha = 1.0f;
-
-			if (UsedSkins[vPlayerStatus[ID].CurrentSkin])
-				Alpha = 0.3f;
-			glm::vec2 Pos = vPlayerStatus[ID].PlayerImage->GetPosition();
-			DestroyUIElement(vPlayerStatus[ID].PlayerImage);
-			vPlayerStatus[ID].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, Alpha }, 200, 200, NewImage, 2));
-			AddUIElement(vPlayerStatus[ID].PlayerImage);
-			PlayerSelectElements.push_back(vPlayerStatus[ID].PlayerImage);
+			UpdateImageStatus(ID);
 		}
 
 	}
@@ -370,7 +345,25 @@ void Menu::ResetPlayerSelectScreen()
 		PStat.PlayerJoinedText->sText = "Press Start to join";
 		PStat.PlayerImage->SetActive(false);
 	}
+
+	for (auto& CSkin : UsedSkins)
+	{
+		CSkin.second = false;
+	}
 	StartTimerText->SetActive(false);
+}
+
+void Menu::UpdateImageStatus(int ID)
+{
+	const char* NewImage = GetSkinPath(vPlayerStatus[ID].CurrentSkin);
+	float Alpha = 1.0f;
+	if (UsedSkins[vPlayerStatus[ID].CurrentSkin])
+		Alpha = 0.3f;
+	glm::vec2 Pos = vPlayerStatus[ID].PlayerImage->GetPosition();
+	DestroyUIElement(vPlayerStatus[ID].PlayerImage);
+	vPlayerStatus[ID].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, Alpha }, 200, 200, NewImage, 2));
+	AddUIElement(vPlayerStatus[ID].PlayerImage);
+	PlayerSelectElements.push_back(vPlayerStatus[ID].PlayerImage);
 }
 
 void Menu::StartGame()
