@@ -105,7 +105,7 @@ void Entity::AddMesh(std::shared_ptr<Mesh> _NewMesh)
 ************************************************************/
 void Entity::DrawEntity()
 {
-	if (!EntityMesh || !bVisible) return;
+	if (!EntityMesh || !bVisible || !bActive) return;
 	Utils::Transform AnchoredTransform = transform;
 	if (EntityMesh->GetCollisionBounds())
 		AnchoredTransform.Position = Utils::GetAncoredPosition(transform.Position, EntityMesh->GetCollisionBounds()->GetDimensions(), EntityAnchor);

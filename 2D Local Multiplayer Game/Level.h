@@ -80,8 +80,9 @@ public:
 	void TogglePause();
 
 	void AddDropoutBlock(glm::vec2 Pos, int TileCount = 1, const char* ImagePath = "Resources/Images/Fallout.png");
-	void AddBlock(glm::vec2 Pos, float Width = 0.5f, float Height = 0.5f, Utils::EANCHOR anchor = Utils::CENTER, const char* ImagePath = "Resources/Images/Platform.png");
+	void AddBlock(glm::vec2 Pos, float Width = 0.5f, float Height = 0.5f, Utils::EANCHOR anchor = Utils::CENTER, bool Standable = true, const char* ImagePath = "Resources/Images/Platform.png");
 	void AddSpike(glm::vec2 Pos);
+	void AddSpawnPoint(glm::vec2 Pos);
 
 	void PControllerInput(InputController _ControllerInput);
 	void ControllerInputAxis(InputDirection NewInput);
@@ -94,6 +95,8 @@ public:
 	std::vector<std::shared_ptr<UIElement>> IngameHUD;
 
 	std::vector<ContactInfo> AllContacts;
+	std::vector<glm::vec2> PlatformPoints;
+	std::vector<glm::vec2> SpawnPoints;
 
 	std::shared_ptr<Entity> CircleEntity;
 	std::shared_ptr<class MachineGun> NewWeapon;

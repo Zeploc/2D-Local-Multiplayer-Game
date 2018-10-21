@@ -104,22 +104,10 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 		switch (RandomMap)
 		{
 		case 0:
-		{
-			LevelToAddTo->AddDropoutBlock({ -6.5, -3.5 }, 4);
-			LevelToAddTo->AddDropoutBlock({ 5, -3.5 }, 4);
-			LevelToAddTo->AddDropoutBlock({ -2.5, -2.5 }, 11);
-			LevelToAddTo->AddDropoutBlock({ -5.5, -0.5 }, 5);
-			LevelToAddTo->AddDropoutBlock({ 3.5,-0.5 }, 5);
-			LevelToAddTo->AddDropoutBlock({ -1, 1 }, 5);
-			LevelToAddTo->AddDropoutBlock({ -7, 1.5 }, 2);
-			LevelToAddTo->AddDropoutBlock({ 6.5, 1.5 }, 2);
-			LevelToAddTo->AddDropoutBlock({ -4, 2.5 }, 4);
-			LevelToAddTo->AddDropoutBlock({ 2.5, 2.5 }, 4);
-			break;
-		}
+		case 1:
 		default:
 		{
-
+			//Dropout Blocks
 			LevelToAddTo->AddDropoutBlock({ -6.5, -3.5 }, 4);
 			LevelToAddTo->AddDropoutBlock({ 5, -3.5 }, 4);
 			LevelToAddTo->AddDropoutBlock({ -2.5, -2.5 }, 11);
@@ -130,8 +118,21 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddDropoutBlock({ 6.5, 1.5 }, 2);
 			LevelToAddTo->AddDropoutBlock({ -4, 2.5 }, 4);
 			LevelToAddTo->AddDropoutBlock({ 2.5, 2.5 }, 4);
-		}
+
+			// Spawn Points
+			LevelToAddTo->AddSpawnPoint({ -6, -3 });
+			LevelToAddTo->AddSpawnPoint({ 6, -3 });
+			LevelToAddTo->AddSpawnPoint({ -2, -2 });
+			LevelToAddTo->AddSpawnPoint({ 2, -2 });
+			LevelToAddTo->AddSpawnPoint({ -4.5, 0 });
+			LevelToAddTo->AddSpawnPoint({ 4.5, 0 });
+			LevelToAddTo->AddSpawnPoint({ 0, 1.5 });
+			LevelToAddTo->AddSpawnPoint({ -6.5, 2 });
+			LevelToAddTo->AddSpawnPoint({ 6.5, 2 });
+			LevelToAddTo->AddSpawnPoint({ -3, 3 });
+			LevelToAddTo->AddSpawnPoint({ 3, 3 });
 			break;
+		}
 		}
 	}
 	break;
@@ -140,40 +141,51 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 		switch (RandomMap)
 		{
 		case 0:
+		default:
 		{
+			// Blocks
 			LevelToAddTo->AddBlock({ 0, -3 }, 10);
 			LevelToAddTo->AddBlock({ 0, 1 }, 6);
 			LevelToAddTo->AddBlock({ -5, -1 }, 3);
 			LevelToAddTo->AddBlock({ 5, -1 }, 3);
+			// Spikes
 			LevelToAddTo->AddSpike({ -1, -2.5 });
 			LevelToAddTo->AddSpike({ 1, -2.5 });
 			LevelToAddTo->AddSpike({ -6, -0.5 });
 			LevelToAddTo->AddSpike({ 6, -0.5 });
+
+			// Spawn Points
+			LevelToAddTo->AddSpawnPoint({ -4, -2.5 });
+			LevelToAddTo->AddSpawnPoint({ 4, -2.5 });
+			LevelToAddTo->AddSpawnPoint({ -4.5, -0.5 });
+			LevelToAddTo->AddSpawnPoint({ 4.5, -0.5 });
+			LevelToAddTo->AddSpawnPoint({ -2.5, 1.5 });
+			LevelToAddTo->AddSpawnPoint({ 2.5, 1.5 });
 			break;
 		}
 		case 1:
 		{
 			// Layer 1
-			LevelToAddTo->AddBlock({ -7, 4 }, 6, 0.5, Utils::CENTER_LEFT);
-			LevelToAddTo->AddBlock({ 7, 4 }, 6, 0.5, Utils::CENTER_RIGHT);
-			LevelToAddTo->AddBlock({ -5.5, 3.5 }, 0.5, 0.5, Utils::CENTER_LEFT);
-			LevelToAddTo->AddBlock({ 5.5, 3.5 }, 0.5, 0.5, Utils::CENTER_RIGHT);
+			LevelToAddTo->AddBlock({ -7, 4 }, 6, 0.5, Utils::CENTER_LEFT, false);
+			LevelToAddTo->AddBlock({ 7, 4 }, 6, 0.5, Utils::CENTER_RIGHT, false);
+			LevelToAddTo->AddBlock({ -5.5, 3.5 }, 0.5, 0.5, Utils::CENTER_LEFT, false);
+			LevelToAddTo->AddBlock({ 5.5, 3.5 }, 0.5, 0.5, Utils::CENTER_RIGHT, false);
 
 			LevelToAddTo->AddBlock({ 0, 3.5 }, 0.5, 1.0, Utils::TOP_CENTER);
 
 			// Layer 2
 			LevelToAddTo->AddBlock({ -7, 2 }, 3.5, 0.5, Utils::CENTER_LEFT);
 			LevelToAddTo->AddBlock({ 7, 2 }, 3.5, 0.5, Utils::CENTER_RIGHT);
-			LevelToAddTo->AddBlock({ -7, 1.5 }, 0.5, 1.0, Utils::TOP_CENTER);
-			LevelToAddTo->AddBlock({ 7, 1.5 }, 0.5, 1.0, Utils::TOP_CENTER);
+			LevelToAddTo->AddBlock({ -7, 1.5 }, 0.5, 1.0, Utils::TOP_CENTER, false);
+			LevelToAddTo->AddBlock({ 7, 1.5 }, 0.5, 1.0, Utils::TOP_CENTER, false);
 
 			LevelToAddTo->AddBlock({ 0, 1 }, 3.5, 0.5, Utils::CENTER);
 
 			// Layer 3
 			LevelToAddTo->AddBlock({ -7, -0.5 }, 2, 0.5, Utils::CENTER_LEFT);
 			LevelToAddTo->AddBlock({ 7, -0.5 }, 2, 0.5, Utils::CENTER_RIGHT);
-			LevelToAddTo->AddBlock({ -7, -1 }, 0.5, 1.5, Utils::TOP_CENTER);
-			LevelToAddTo->AddBlock({ 7, -1 }, 0.5, 1.5, Utils::TOP_CENTER);
+			LevelToAddTo->AddBlock({ -7, -1 }, 0.5, 1.5, Utils::TOP_CENTER, false);
+			LevelToAddTo->AddBlock({ 7, -1 }, 0.5, 1.5, Utils::TOP_CENTER, false);
 
 			LevelToAddTo->AddBlock({ -3, -0.5 }, 1, 0.5, Utils::CENTER_LEFT);
 			LevelToAddTo->AddBlock({ 3, -0.5 }, 1, 0.5, Utils::CENTER_RIGHT);
@@ -193,18 +205,19 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddDropoutBlock({ 4.0, -2.0 });
 
 			LevelToAddTo->AddBlock({ 0, -4.2 }, 0.5, 0.5, Utils::CENTER);
-			break;
-		}
-		default:
-		{
-			LevelToAddTo->AddBlock({ 0, -3 }, 10);
-			LevelToAddTo->AddBlock({ 0, 1 }, 6);
-			LevelToAddTo->AddBlock({ -5, -1 }, 3);
-			LevelToAddTo->AddBlock({ 5, -1 }, 3);
-			LevelToAddTo->AddSpike({ -1, -2.5 });
-			LevelToAddTo->AddSpike({ 1, -2.5 });
-			LevelToAddTo->AddSpike({ -6, -0.5 });
-			LevelToAddTo->AddSpike({ 6, -0.5 });
+
+			// Spawn Points
+			LevelToAddTo->AddSpawnPoint({ -6, 2.5 });
+			LevelToAddTo->AddSpawnPoint({ 6, 2.5 });
+			LevelToAddTo->AddSpawnPoint({ 0, 1.5 });
+			LevelToAddTo->AddSpawnPoint({ -6.5, 0 });
+			LevelToAddTo->AddSpawnPoint({ 6.5, 0 });
+			LevelToAddTo->AddSpawnPoint({ -1.5, -0.5 });
+			LevelToAddTo->AddSpawnPoint({ 1.5, -0.5 });
+			LevelToAddTo->AddSpawnPoint({ -2.5, -2.5 });
+			LevelToAddTo->AddSpawnPoint({ 2.5, -2.5 });
+			LevelToAddTo->AddSpawnPoint({ -6, -3 });
+			LevelToAddTo->AddSpawnPoint({ 6, -3 });
 			break;
 		}
 		}
