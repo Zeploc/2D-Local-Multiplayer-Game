@@ -219,7 +219,7 @@ void Player::Update()
 		DropCurrentWeapon();
 	}
 
-	if ((Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) && CurrentWeapon != NULL || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUTTON] == Input::INPUT_FIRST_PRESS && CurrentWeapon != NULL)
+	if ((Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) && CurrentWeapon != NULL || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUMPER] == Input::INPUT_FIRST_PRESS && CurrentWeapon != NULL)
 	{
 		Fire();
 	}
@@ -374,14 +374,12 @@ void Player::SetHitVisual(bool ShowVisual)
 	if (ShowVisual)
 	{
 		EntityMesh->Colour = { 1.0f, 0.1f, 0.1f, 1.0f };
-		EntityMesh->Rebind();
 		CurrentHitVisualCooldown = HitVisualCooldown;
 	}
 	else
 	{
 		CurrentHitVisualCooldown = 0;
 		EntityMesh->Colour = { 1.0f, 1.0f, 1.0f, 1.0f };
-		EntityMesh->Rebind();
 	}
 }
 

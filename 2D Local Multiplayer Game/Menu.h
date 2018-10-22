@@ -37,6 +37,9 @@ struct PlayerStatus
 	std::shared_ptr<UIText> PlayerJoinedText;
 	std::shared_ptr<UIText> PlayerReadyText;
 	std::shared_ptr<class UIImage> PlayerImage;
+	std::shared_ptr<class UIImage> ButtonHintImage;
+	std::shared_ptr<class UIImage> LeftHintImage;
+	std::shared_ptr<class UIImage> RightHintImage;
 	enum PlayerSkin CurrentSkin;
 	// Player asthetic chosen
 };
@@ -69,6 +72,7 @@ public:
 	void SwitchScreens(MenuScreens NewScreen);
 
 	static const char* GetSkinPath(enum PlayerSkin Skin);
+	static const char* GetInputImagePath(enum InputController InputType);
 
 private:
 	std::vector<std::shared_ptr<UIElement>> MenuElements;

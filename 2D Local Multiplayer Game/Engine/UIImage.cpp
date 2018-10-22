@@ -38,7 +38,8 @@
 UIImage::UIImage(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation, glm::vec4 _Colour, int _iWidth, int _iHeight)
 	: UIElement(_Position, _fRotation, _Colour), iWidth(_iWidth), iHeight(_iHeight), ImageAnchor(_anchor)
 {
-	VAO = Shader::BindArray((float)iWidth, (float)iHeight, _Colour);
+	VAO = Shader::BindArray((float)iWidth, (float)iHeight, Colour);
+	textureLocation = glGetUniformLocation(Shader::Programs["UIprogram"], "tex");
 }
 
 /************************************************************
@@ -50,8 +51,9 @@ UIImage::UIImage(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation, 
 UIImage::UIImage(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation, glm::vec4 _Colour, int _iWidth, int _iHeight, const char * TextureSource, int _DrawMode)
 	: UIElement(_Position, _fRotation, _Colour), iWidth(_iWidth), iHeight(_iHeight), ImageAnchor(_anchor)
 {
-	VAO = Shader::BindUITextureArray((float)iWidth, (float)iHeight, _Colour, TextureSource, texture, _DrawMode);
+	VAO = Shader::BindUITextureArray((float)iWidth, (float)iHeight, TextureSource, texture, _DrawMode);
 	bHasTexture = true;
+	textureLocation = glGetUniformLocation(Shader::Programs["UIprogram"], "tex");
 }
 /************************************************************
 #--Description--#:  Destructor function
@@ -77,6 +79,7 @@ void UIImage::DrawUIElement()
 	{
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
+		glUniform1i(textureLocation, 0);
 	}
 	else
 	{
@@ -140,4 +143,14 @@ glm::vec2 UIImage::GetPositionFromAnchor(glm::vec2 _Position, Utils::EANCHOR _an
 		break;
 	}
 	return glm::vec3();
+}
+
+void UIImage::SetImage(const char * TextureSource, int _iWidth, int _iHeight, int _DrawMode)
+{
+	if (_iWidth != -1)
+		iWidth = _iWidth;
+	if (_iHeight != -1)
+		iHeight = _iHeight;
+	VAO = Shader::BindUITextureArray((float)iWidth, (float)iHeight, TextureSource, texture, _DrawMode);
+	bHasTexture = true;
 }

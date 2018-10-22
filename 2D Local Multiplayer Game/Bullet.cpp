@@ -30,7 +30,7 @@ Bullet::~Bullet()
 
 void Bullet::Init(b2World & _world)
 {
-	SetupB2BoxBody(_world, b2_dynamicBody, false, true, 3.0f,0.3f,true);
+	SetupB2BoxBody(_world, b2_dynamicBody, false, true, 3.0f, 0.3f, true);
 	if (CurrentPlayer->transform.Scale.x < 0)
 	{
 		FiredLeft = true;
