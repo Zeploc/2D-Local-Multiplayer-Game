@@ -67,7 +67,6 @@ void OnExit();
 bool bLoading = true;
 
 float CurrentTimer = 0.0f;
-float TickRate = 60.0f;
 double dPrevTime = 0.0f;
 
 /************************************************************
@@ -172,7 +171,7 @@ void Update()
 		double TimeDelta = (dCurrentTime - dPrevTime) / 1000;
 		dPrevTime = glutGet(GLUT_ELAPSED_TIME);
 		CurrentTimer += TimeDelta;
-		if (CurrentTimer > 1.0f / TickRate)
+		if (CurrentTimer > 1.0f / Time::TickRate)
 		{
 			SceneManager::GetInstance()->UpdateCurrentScene();
 			Time::Update();

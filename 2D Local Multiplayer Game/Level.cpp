@@ -64,6 +64,9 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	AddUIElement(RoundBackImage);
 	IngameHUD.push_back(RoundBackImage);
 
+	FPSText = std::make_shared<UIText>( UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH, Camera::GetInstance()->SCR_HEIGHT), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "FPS", "Resources/Fonts/Roboto-Thin.ttf", 20, Utils::BOTTOM_RIGHT));
+	AddUIElement(FPSText);
+
 	AddUIElement(BackImage);
 	AddUIElement(Title);
 	AddUIElement(ResumeBtn);
@@ -84,7 +87,7 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 
 	Camera::GetInstance()->SetWindowScale(CameraClosestZoom);
 
-	timeStep = 1.0f / 60.0f;
+	timeStep = 1.0f / Time::TickRate;
 
 	world.SetContactListener(&CustomContactListener);
 }
@@ -132,6 +135,12 @@ void Level::OnLoadScene()
 
 void Level::Update()
 {
+	fpsCurrentTime += Time::dTimeDelta;
+	if (fpsCurrentTime > 0.3)
+	{
+		FPSText->sText = "FPS " + std::to_string(int(Time::dFPS * 10) / 10);
+		fpsCurrentTime = 0.0f;
+	}
 	if (GamePaused)
 	{
 		for (auto& PController : PlayerControllers)
@@ -175,6 +184,7 @@ void Level::Update()
 		if ((*it).second->transform.Position.y < PlayerFalloutYPosition)
 		{
 			int PlayerId = (*it).first;
+			(*it).second->DropCurrentWeapon();
 			DestroyEntity((*it).second);
 			it = Players.erase(it);
 			Endit = Players.end();
@@ -213,7 +223,7 @@ void Level::GamemodeProcess()
 	break;
 	case BOMB_SURVIVAL:
 	{
-		/// Add random spawning of bombs
+		// Add random spawning of bombs
 		RandomSpawnBomb();
 	}
 	break;

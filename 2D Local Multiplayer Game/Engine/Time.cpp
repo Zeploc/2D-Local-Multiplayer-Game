@@ -30,6 +30,7 @@ double Time::dPrevTime = 0.0;
 double Time::dTimeDelta = 0.0;
 double Time::dCurrentTime = 0.0;
 double Time::dFPS = 0.0;
+float Time::TickRate = 60.0f;
 
 /************************************************************
 #--Description--#:  Constructor function

@@ -114,7 +114,6 @@ void Player::Update()
 		}
 	}
 
-	float TimeStepRate = 60.0f;// (60 / Time::dTimeDelta) / 60.0f;
 	if (body)
 	{
 		CheckGroundRay Result;
@@ -164,9 +163,9 @@ void Player::Update()
 		
 	if (CanJump && (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[32] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1)))
 	{
-		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().y * body->GetMass() * TimeStepRate;
-		if (bIsRollingMode) body->ApplyForce(b2Vec2(0, RollingJumpForce - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
-		else body->ApplyForce(b2Vec2(0, fJumpForce - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
+		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().y * body->GetMass() * Time::TickRate;
+		if (bIsRollingMode) body->ApplyForce(b2Vec2(0, (RollingJumpForce * Time::TickRate) - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
+		else body->ApplyForce(b2Vec2(0, (fJumpForce * Time::TickRate) - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
 		
 		CanJump = false;
 	}
@@ -188,8 +187,8 @@ void Player::Update()
 	
 	if (body)
 	{
-		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().x * body->GetMass() * TimeStepRate;
-		float ForceToApply = MaxSpeed * body->GetMass() * TimeStepRate;
+		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().x * body->GetMass() * Time::TickRate;
+		float ForceToApply = MaxSpeed * body->GetMass() * Time::TickRate;
 
 
 		//if (bIsRollingMode)

@@ -101,6 +101,9 @@ public:
 	std::shared_ptr<Entity> CircleEntity;
 	std::shared_ptr<class MachineGun> NewWeapon;
 
+	std::shared_ptr<UIText> FPSText;
+	float fpsCurrentTime = 0;
+
 	b2World world;
 	float gravity = 15.0f;
 

@@ -48,7 +48,7 @@ public:
 
 private:
 	// Movement
-	float fJumpForce = 600.0f;
+	float fJumpForce = 10.0f;
 	float fSmackRange = 1.0f;
 	float BaseKnockbackSize = 200.0f;
 	float BaseRollKnockbackSize = 50.0f;
@@ -64,7 +64,7 @@ private:
 	bool CanJump = true;
 	float KnockedBackTimer = 0.0f;
 
-	float RollingJumpForce = 500.0f;
+	float RollingJumpForce = 8.3f;
 	float RollingFriction = 0.7f;
 	float RollingAngularDamping = 2.5f;
 	float RollingAccelerateSpeed = 12.0f;

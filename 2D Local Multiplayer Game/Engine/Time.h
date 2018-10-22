@@ -25,6 +25,9 @@ public:
 	static double dCurrentTime;
 	static double dTimeDelta;
 	static double dFPS;
+
+	static float TickRate;
+
 private:
 	static double dPrevTime;
 };
