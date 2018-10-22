@@ -102,15 +102,14 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 		RandomMap = rand() % 2;
 	}
 	LastMapPlayed = RandomMap;
-	switch (LevelToAddTo->CurrentGamemode)
+	switch (BOMB_SURVIVAL)//LevelToAddTo->CurrentGamemode)
 	{
 	case DROPOUT:
 	{
 		switch (RandomMap)
 		{
-		case 0:
-		case 1:
 		default:
+		case 0:
 		{
 			//Dropout Blocks
 			LevelToAddTo->AddDropoutBlock({ -6.5, -3.5 }, 4);
@@ -138,13 +137,51 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddSpawnPoint({ 3, 3 });
 			break;
 		}
+		case 1:
+		{
+			//Dropout Blocks
+			LevelToAddTo->AddDropoutBlock({ -2.5, -4 }, 11);
+			LevelToAddTo->AddDropoutBlock({ -6.5, -3 }, 11);
+			LevelToAddTo->AddDropoutBlock({ 1.5, -3 }, 11);
+			LevelToAddTo->AddDropoutBlock({ -6.5, -2 }, 2, false);
+			LevelToAddTo->AddDropoutBlock({ 6.5, -2 }, 2, false);
+			LevelToAddTo->AddDropoutBlock({ -7, -1 }, 2, false);
+			LevelToAddTo->AddDropoutBlock({ 7, -1 }, 2, false);
+			LevelToAddTo->AddDropoutBlock({ -2, -1.5 }, 9);
+			LevelToAddTo->AddDropoutBlock({ -5, -0.5 }, 5);
+			LevelToAddTo->AddDropoutBlock({ 3, -0.5 }, 5);
+			LevelToAddTo->AddDropoutBlock({ -1, 0 }, 5);
+			LevelToAddTo->AddDropoutBlock({ -3, 1 }, 3);
+			LevelToAddTo->AddDropoutBlock({ 2, 1 }, 3);
+			LevelToAddTo->AddDropoutBlock({ 0, 2 }, 3, false);
+			LevelToAddTo->AddDropoutBlock({ -1, 2.5 }, 5);
+
+			LevelToAddTo->AddDropoutBlock({ -5, 1.5 }, 2);
+			LevelToAddTo->AddDropoutBlock({ 4.5, 1.5 }, 2);
+			LevelToAddTo->AddDropoutBlock({ -6, 2 }, 2);
+			LevelToAddTo->AddDropoutBlock({ 5.5, 2 }, 2);
+			LevelToAddTo->AddDropoutBlock({ -7, 2.5 }, 2);
+			LevelToAddTo->AddDropoutBlock({ 6.5, 2.5 }, 2);
+			LevelToAddTo->AddDropoutBlock({ -3.5, 3 }, 3);
+			LevelToAddTo->AddDropoutBlock({ 2.5, 3 }, 3);
+
+
+			// Spawn Points
+			LevelToAddTo->AddSpawnPoint({ -4.5, -2.5 });
+			LevelToAddTo->AddSpawnPoint({ 4.5, -2.5 });
+			LevelToAddTo->AddSpawnPoint({ 0, -1 });
+			LevelToAddTo->AddSpawnPoint({ -4, 0 });
+			LevelToAddTo->AddSpawnPoint({ 4, 0 });
+			LevelToAddTo->AddSpawnPoint({ 0, 3 });
+			break;
+		}
 		}
 	}
 	break;
 	case BOMB_SURVIVAL:
 	default:
 	{
-		switch (RandomMap)
+		switch (1)
 		{
 		case 0:
 		default:
@@ -210,7 +247,7 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddDropoutBlock({ -4.0, -2.0 });
 			LevelToAddTo->AddDropoutBlock({ 4.0, -2.0 });
 
-			LevelToAddTo->AddBlock({ 0, -4.2 }, 0.5, 0.5, Utils::CENTER);
+			LevelToAddTo->AddBlock({ 0, -4.0 }, 0.5, 0.5, Utils::CENTER);
 
 			// Spawn Points
 			LevelToAddTo->AddSpawnPoint({ -6, 2.5 });

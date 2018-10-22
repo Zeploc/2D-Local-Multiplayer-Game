@@ -494,19 +494,31 @@ void Resume()
 }
 
 // Level Creation
-void Level::AddDropoutBlock(glm::vec2 Pos, int TileCount, const char * ImagePath)
+void Level::AddDropoutBlock(glm::vec2 Pos, int TileCount, bool Horizontal, const char * ImagePath)
 {
+	if (!Horizontal)
+	{
+		Pos.y -= 0.5f;
+		glm::vec2 StandPos = Pos;
+		StandPos.y += 0.5f;
+		PlatformPoints.push_back(StandPos);
+	}
 	for (int i = 0; i < TileCount; i++)
 	{
 		std::shared_ptr<DropoutBlock> FallBlock = std::make_shared<DropoutBlock>(DropoutBlock(Pos, Utils::CENTER, ImagePath));
 		FallBlock->Init(world);
 		AddEntity(FallBlock, true);
 
-		glm::vec2 StandPos = Pos;
-		StandPos.y += 0.5f;
-		PlatformPoints.push_back(StandPos);
-
-		Pos.x += 0.5;
+		if (Horizontal)
+		{
+			glm::vec2 StandPos = Pos;
+			StandPos.y += 0.5f;
+			PlatformPoints.push_back(StandPos);
+		}
+		if (Horizontal)
+			Pos.x += 0.5;
+		else
+			Pos.y += 0.5;
 	}
 }
 

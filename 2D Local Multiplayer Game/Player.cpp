@@ -73,6 +73,8 @@ Player::Player(glm::vec3 StartPosition, int PlayerID) // Will also take the type
 	AddMesh(NewImage);
 	NewImage->bCullFace = false;
 
+	EntityMesh->m_fWidth *= 0.9f;
+	EntityMesh->m_fHeight *= 0.9f;
 	// Define another Circle shape for our dynamic body.
 	circleShape.m_radius = EntityMesh->m_fHeight / 2.0f;
 
@@ -94,6 +96,7 @@ void Player::Init(b2World& world)
 
 	SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
 	//body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
+	ChangePhysicsMode(false);
 
 	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Hit.wav", false, "KnockbackSound " + std::to_string(m_iPlayerID));
 }
@@ -125,48 +128,7 @@ void Player::Update()
 
 		if ((Input::GetInstance()->KeyState[(unsigned char)'g'] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[TOP_FACE_BUTTON] == Input::INPUT_FIRST_PRESS)
 		{
-			/*b2Filter NoCollisionFilter;
-			NoCollisionFilter.groupIndex = bIsRollingMode - 2;
-			body->GetFixtureList()->SetFilterData(NoCollisionFilter);*/
-
-			bIsRollingMode = !bIsRollingMode;
-
-			b2Fixture *fixtureA = body->GetFixtureList();
-			body->DestroyFixture(fixtureA);
-
-			// Define the dynamic body fixture.
-			b2FixtureDef fixtureDef;
-			if (bIsRollingMode)
-			{
-				fixtureDef.shape = &circleShape;
-				// Override the default friction.
-				fixtureDef.friction = RollingFriction;
-				body->SetAngularDamping(RollingAngularDamping);
-				body->SetFixedRotation(false);
-				std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = BallImage;
-				EntityMesh->Rebind();
-			}
-			else
-			{
-				fixtureDef.shape = &boxShape;
-				// Override the default friction.
-				fixtureDef.friction = NormalFriction;
-				body->SetTransform(body->GetPosition(), 0.0f);
-				body->SetAngularDamping(0.0f);
-				body->SetFixedRotation(true);
-				std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = NormalImage;
-				EntityMesh->Rebind();
-			}
-
-			//// Not collide with bodys with a group index 0f -1
-			//b2Filter NoPlayerCollisionFilter;
-			//NoPlayerCollisionFilter.groupIndex = -1;
-			//fixtureDef.filter = NoPlayerCollisionFilter;
-			// Set the box density to be non-zero, so it will be dynamic.
-			fixtureDef.density = 5.0f;
-			
-			// Add the shape to the body.
-			body->CreateFixture(&fixtureDef);
+			ChangePhysicsMode(!bIsRollingMode);
 		}
 	}
 
@@ -300,6 +262,52 @@ void Player::Reset()
 	CanJump = true;
 	OutsideForcesApplying = false;
 	KnockedBackTimer = 0.0f;
+}
+
+void Player::ChangePhysicsMode(bool IsBall)
+{
+	/*b2Filter NoCollisionFilter;
+			NoCollisionFilter.groupIndex = bIsRollingMode - 2;
+			body->GetFixtureList()->SetFilterData(NoCollisionFilter);*/
+
+	bIsRollingMode = IsBall;
+
+	b2Fixture *fixtureA = body->GetFixtureList();
+	body->DestroyFixture(fixtureA);
+
+	// Define the dynamic body fixture.
+	b2FixtureDef fixtureDef;
+	if (bIsRollingMode)
+	{
+		fixtureDef.shape = &circleShape;
+		// Override the default friction.
+		fixtureDef.friction = RollingFriction;
+		body->SetAngularDamping(RollingAngularDamping);
+		body->SetFixedRotation(false);
+		std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = BallImage;
+		EntityMesh->Rebind();
+	}
+	else
+	{
+		fixtureDef.shape = &boxShape;
+		// Override the default friction.
+		fixtureDef.friction = NormalFriction;
+		body->SetTransform(body->GetPosition(), 0.0f);
+		body->SetAngularDamping(0.0f);
+		body->SetFixedRotation(true);
+		std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = NormalImage;
+		EntityMesh->Rebind();
+	}
+
+	//// Not collide with bodys with a group index 0f -1
+	//b2Filter NoPlayerCollisionFilter;
+	//NoPlayerCollisionFilter.groupIndex = -1;
+	//fixtureDef.filter = NoPlayerCollisionFilter;
+	// Set the box density to be non-zero, so it will be dynamic.
+	fixtureDef.density = PlayerDensity;
+
+	// Add the shape to the body.
+	body->CreateFixture(&fixtureDef);
 }
 
 void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)

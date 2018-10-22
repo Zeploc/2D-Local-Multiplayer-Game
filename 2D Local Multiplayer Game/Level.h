@@ -79,7 +79,7 @@ public:
 
 	void TogglePause();
 
-	void AddDropoutBlock(glm::vec2 Pos, int TileCount = 1, const char* ImagePath = "Resources/Images/Fallout.png");
+	void AddDropoutBlock(glm::vec2 Pos, int TileCount = 1, bool Horizontal = true, const char* ImagePath = "Resources/Images/Fallout.png");
 	void AddBlock(glm::vec2 Pos, float Width = 0.5f, float Height = 0.5f, Utils::EANCHOR anchor = Utils::CENTER, bool Standable = true, const char* ImagePath = "Resources/Images/Platform.png");
 	void AddSpike(glm::vec2 Pos);
 	void AddSpawnPoint(glm::vec2 Pos);
