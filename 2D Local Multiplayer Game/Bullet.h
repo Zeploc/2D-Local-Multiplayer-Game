@@ -15,6 +15,7 @@ public:
 protected:
 	bool FiredRight = false;
 	bool FiredLeft = false;
+	bool UsingShotgun = false;
 	std::shared_ptr<Player> CurrentPlayer;
 };
 
