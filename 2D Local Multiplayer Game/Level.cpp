@@ -621,6 +621,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 		DestroyEntity(Player1);
 		Players.erase(PlayerId);
 		PlayerKnockedOut(PlayerId);
+		SoundManager::GetInstance()->PlayAudio("PlayerDeath");
 	}
 	else if (Player1 && Collided->body && Bombuu)
 	{
@@ -630,6 +631,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 
 		Player1->ApplyKnockback((glm::vec2(Direction.x * 20, Direction.y * 20)), false);
 
+		SoundManager::GetInstance()->PlayAudio("Bomb");
 		DestroyEntity(Bombuu);
 	}
 	else if (Player1 && Collided->body && SpeedyGun) // OR if a bullet is the first object

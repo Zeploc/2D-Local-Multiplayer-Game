@@ -40,9 +40,12 @@ void ExitGameBtn();
 
 Menu::Menu() : Scene("Menu")
 {
-	SoundManager::GetInstance()->AddAudio("Resources/Sounds/MainMusic.mp3", false, "MainTrack");
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/8-Bit-Mayhem.mp3", true, "MainTrack");
 	SoundManager::GetInstance()->SetChannelVolume("MainTrack", 0.15);
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Puzzle-Dreams-2.mp3", true, "MenuTrack");
 
+	SoundManager::GetInstance()->SetChannelVolume("MenuTrack", 0.15);
+	SoundManager::GetInstance()->PlayAudio("MenuTrack");
 	// Menu Elements
 	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Local Multiplayer Game", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
 	std::shared_ptr<UIButton> StartBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, SelectPlayersBtn));
@@ -69,11 +72,11 @@ Menu::Menu() : Scene("Menu")
 	MenuElements.push_back(CreditsBtn);
 	MenuElements.push_back(QuitBtn);
 
-	StartBtn->SetPressSound("Resources/Sounds/menu-click.wav");
-	ControlsBtn->SetPressSound("Resources/Sounds/menu-click.wav");
-	CreditsBtn->SetPressSound("Resources/Sounds/menu-click.wav");
-	QuitBtn->SetPressSound("Resources/Sounds/menu-click.wav");
-	SoundManager::GetInstance()->SetChannelVolume("Resources/Sounds/menu-click.wav", 0.1);
+	StartBtn->SetPressSound("Resources/Sounds/Button.mp3");
+	ControlsBtn->SetPressSound("Resources/Sounds/Button.mp3");
+	CreditsBtn->SetPressSound("Resources/Sounds/Button.mp3");
+	QuitBtn->SetPressSound("Resources/Sounds/Button.mp3");
+	SoundManager::GetInstance()->SetChannelVolume("Resources/Sounds/Button.mp3", 0.1);
 
 	CurrentSelectedButton = StartBtn;
 	CurrentSelectedButton->HoverOverride = true;
@@ -441,6 +444,7 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 		if (SkipPlayerSelect)
 		{
 			LevelManager::GetInstance()->NewRound(GetRandomGamemode()); // New level
+			SoundManager::GetInstance()->PauseAudio("MenuTrack");
 			SoundManager::GetInstance()->PlayAudio("MainTrack");
 			break;
 		}
