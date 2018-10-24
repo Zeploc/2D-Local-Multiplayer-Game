@@ -22,7 +22,7 @@ MachineGun::~MachineGun()
 void MachineGun::Fire()
 {
 	SoundManager::GetInstance()->PlayAudio("MachineGunFire");
-	std::shared_ptr<Bullet> BulletFromAGun = std::make_shared<Bullet>(Bullet({CurrentPlayer->transform}, Utils::CENTER,CurrentPlayer));
+	std::shared_ptr<Bullet> BulletFromAGun = std::make_shared<Bullet>(Bullet({transform}, Utils::CENTER,CurrentPlayer));
 	BulletFromAGun->Init(*body->GetWorld());
 	SceneManager::GetInstance()->GetCurrentScene()->AddEntity(BulletFromAGun);
 }

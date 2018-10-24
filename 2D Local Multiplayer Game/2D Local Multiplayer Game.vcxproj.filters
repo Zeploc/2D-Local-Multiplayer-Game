@@ -186,7 +186,7 @@
       <Filter>Game\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="Shotgun.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Game\Weapons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -326,7 +326,7 @@
       <Filter>Game\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="Shotgun.h">
-      <Filter>Header Files</Filter>
+      <Filter>Game\Weapons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

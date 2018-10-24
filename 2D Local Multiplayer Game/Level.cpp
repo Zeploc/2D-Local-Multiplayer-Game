@@ -277,7 +277,7 @@ void Level::SpawnRandomWeapon()
 		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
 		break;
 	case SNIPER:
-		NewWeapon = std::make_shared<Shotgun>(Shotgun(RandomPos, Utils::CENTER));
+		NewWeapon = std::make_shared<Weapon>(Weapon(RandomPos, Utils::CENTER, SNIPER));
 		break;
 	case SHOTGUN:
 		NewWeapon = std::make_shared<Shotgun>(Shotgun(RandomPos, Utils::CENTER));
@@ -598,6 +598,8 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
 	std::shared_ptr<Bomb> Bombuu = std::dynamic_pointer_cast<Bomb>(Collided);
 	std::shared_ptr<Bullet> BulletObj = std::dynamic_pointer_cast<Bullet>(Collided);
+	std::shared_ptr<Bullet> BulletObj2 = std::dynamic_pointer_cast<Bullet>(Object);
+	
 
 	if (Player1 && Collided->body && Player2 && Collided->body)
 	{
@@ -645,14 +647,32 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 
 	if (Collided->body && BulletObj)
 	{
-		if (Player1 && Player1 != BulletObj->GetCurrentPlayer())
-		{
-			Player1->ApplyKnockback(glm::vec2(BulletObj->body->GetLinearVelocity().x, BulletObj->body->GetLinearVelocity().y), true);
-		}
 		if (Player1 != BulletObj->GetCurrentPlayer())
 		{
-			DestroyEntity(BulletObj);
+			if (Player1)
+			{
+				Player1->ApplyKnockback(glm::vec2(BulletObj->body->GetLinearVelocity().x, BulletObj->body->GetLinearVelocity().y), true);
+			}
+
+			if (BulletObj2)
+			{
+				if (BulletObj->GetCurrentPlayer() != BulletObj2->GetCurrentPlayer())
+				{
+					DestroyEntity(BulletObj);
+					DestroyEntity(BulletObj2);
+				}
+			}
+			else if (DropBlock)
+			{
+				DropBlock->BlockHit();
+				DestroyEntity(BulletObj);
+			}
+			else
+			{
+				DestroyEntity(BulletObj);
+			}
 		}
+		
 
 	}
 }

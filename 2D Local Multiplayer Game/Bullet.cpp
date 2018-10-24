@@ -8,6 +8,7 @@
 #include "Weapon.h"
 #include <iostream>
 #include "Engine\Input.h"
+#include <glm\gtx\rotate_vector.hpp>
 
 Bullet::Bullet(Utils::Transform _Transform, Utils::EANCHOR _Anchor, std::shared_ptr<Player> _CurrentPlayer)
 	: Entity(_Transform, _Anchor)
@@ -30,7 +31,7 @@ Bullet::~Bullet()
 
 void Bullet::Init(b2World & _world)
 {
-	SetupB2BoxBody(_world, b2_dynamicBody, false, true, 3.0f, 0.3f, true);
+	float Density = 3.0f;
 	if (CurrentPlayer->transform.Scale.x < 0)
 	{
 		FiredLeft = true;
@@ -41,41 +42,42 @@ void Bullet::Init(b2World & _world)
 		FiredRight = true;
 	}
 
-	if (CurrentPlayer->CurrentWeapon->GetCurrentWeapon() == SHOTGUN)
+	switch (CurrentPlayer->CurrentWeapon->GetCurrentWeapon())
 	{
-		UsingShotgun = true;
+	case ROCKET_LAUNCHER:
+		break;
+	case MACHINE_GUN:
+		Density = 0.5f;
+		break;
+	case GRENADE_LAUNCHER:
+		break;
+	case SNIPER:
+		Density = 10.0f;
+		BulletSpeed = 20.0f;
+		break;
+	case SHOTGUN:
+	default:
+		break;
 	}
+
+	SetupB2BoxBody(_world, b2_dynamicBody, false, true, Density, 0.0f, true);
+
+	BulletVelocity = { BulletSpeed, 0 };
+	BulletVelocity = glm::rotateZ(glm::vec3(BulletVelocity, 0), body->GetAngle());
 }
 
 void Bullet::Update()
 {
-	if (UsingShotgun)
-	{
-		if (FiredLeft)
-		{
-			this->body->SetLinearVelocity(b2Vec2{ -10,10 });
-		}
-		if (FiredRight)
-		{
-			this->body->SetLinearVelocity(b2Vec2{ 10,-10 });
-		}
-	}
-	else
-	{
-		if (FiredLeft)
-		{
-			this->body->SetLinearVelocity(b2Vec2{ -10,0 });
-		}
-		if (FiredRight)
-		{
-			this->body->SetLinearVelocity(b2Vec2{ 10,0 });
-		}
-	}
-	
 
-	
+	if (FiredLeft)
+	{
+		this->body->SetLinearVelocity(b2Vec2{ -BulletVelocity.x, BulletVelocity.y });
+	}
+	if (FiredRight)
+	{
+		this->body->SetLinearVelocity(b2Vec2{ BulletVelocity.x, BulletVelocity.y });
+	}	
 	
 	Entity::Update();
-	
-	
+		
 }
