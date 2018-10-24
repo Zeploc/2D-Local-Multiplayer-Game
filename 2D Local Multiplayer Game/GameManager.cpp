@@ -30,7 +30,7 @@ GameManager::GameManager()
 	// Initial Default
 	PlayerInfo Player1;
 	Player1.PlayerID = 0;
-	Player1.Skin = Rhombage;
+	Player1.Skin = OfficeSquare;
 	vPlayerInfo.insert(std::pair<int, PlayerInfo>(0, Player1));
 	PlayerInfo Player2;
 	Player2.PlayerID = 1;

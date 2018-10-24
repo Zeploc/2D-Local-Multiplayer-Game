@@ -28,7 +28,7 @@ class UIImage :	public UIElement
 {
 public:	
 	UIImage(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation, glm::vec4 _Colour, int _iWidth, int _iHeight);
-	UIImage(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation, glm::vec4 _Colour, int _iWidth, int _iHeight, const char *  TextureSource, int _DrawMode);
+	UIImage(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation, glm::vec4 _Colour, int _iWidth, int _iHeight, const char *  TextureSource, int _DrawMode = 1);
 	~UIImage();
 
 	void DrawUIElement();
@@ -38,9 +38,12 @@ public:
 
 	static glm::vec2 GetPositionFromAnchor(glm::vec2 _Position, Utils::EANCHOR _anchor, int _iWidth, int _iHeight);
 
+	void SetImage(const char *  TextureSource, int _iWidth = -1, int _iHeight = -1, int _DrawMode = 1);
+
 private:
 	GLuint VAO;
 	GLuint texture;
+	GLuint textureLocation;
 
 	bool bHasTexture = false;
 	Utils::EANCHOR ImageAnchor;

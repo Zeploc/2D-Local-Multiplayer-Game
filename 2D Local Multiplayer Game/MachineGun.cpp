@@ -10,8 +10,7 @@
 MachineGun::MachineGun(glm::vec2 Position, Utils::EANCHOR _Anchor)
 	: Weapon(Position, _Anchor, MACHINE_GUN)
 {
-	SoundManager::GetInstance()->AddChannel("CGunfire");
-	SoundManager::GetInstance()->AddAudio("Resources/Sounds/BulletWhiz.mp3", false, "Shooting");
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/BulletWhiz.mp3", false, "MachineGunFire");
 }
 
 
@@ -22,7 +21,7 @@ MachineGun::~MachineGun()
 
 void MachineGun::Fire()
 {
-	SoundManager::GetInstance()->PlayAudio("Shooting", "CGunfire");
+	SoundManager::GetInstance()->PlayAudio("MachineGunFire");
 	std::shared_ptr<Bullet> BulletFromAGun = std::make_shared<Bullet>(Bullet({CurrentPlayer->transform}, Utils::CENTER,CurrentPlayer));
 	BulletFromAGun->Init(*body->GetWorld());
 	SceneManager::GetInstance()->GetCurrentScene()->AddEntity(BulletFromAGun);

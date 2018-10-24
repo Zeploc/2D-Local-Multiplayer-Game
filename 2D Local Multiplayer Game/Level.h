@@ -79,21 +79,30 @@ public:
 
 	void TogglePause();
 
-	void AddDropoutBlock(glm::vec2 Pos, int TileCount = 1, const char* ImagePath = "Resources/Images/Fallout.png");
-	void AddBlock(glm::vec2 Pos, float Width = 0.5f, float Height = 0.5f, Utils::EANCHOR anchor = Utils::CENTER, const char* ImagePath = "Resources/Images/Platform.png");
+	void AddDropoutBlock(glm::vec2 Pos, int TileCount = 1, bool Horizontal = true, const char* ImagePath = "Resources/Images/Fallout.png");
+	void AddBlock(glm::vec2 Pos, float Width = 0.5f, float Height = 0.5f, Utils::EANCHOR anchor = Utils::CENTER, bool Standable = true, const char* ImagePath = "Resources/Images/Platform.png");
 	void AddSpike(glm::vec2 Pos);
+	void AddSpawnPoint(glm::vec2 Pos);
 
 	void PControllerInput(InputController _ControllerInput);
 	void ControllerInputAxis(InputDirection NewInput);
 
+	static glm::vec4 GetPlaceColour(int Place);
+
 	std::map<int, std::shared_ptr<class Player>> Players;
 	std::map<int, std::shared_ptr<class PlayerController>> PlayerControllers;
 	std::map<int, std::shared_ptr<UIText>> KnockbackTexts;
+	std::vector<std::shared_ptr<UIElement>> IngameHUD;
 
 	std::vector<ContactInfo> AllContacts;
+	std::vector<glm::vec2> PlatformPoints;
+	std::vector<glm::vec2> SpawnPoints;
 
 	std::shared_ptr<Entity> CircleEntity;
 	std::shared_ptr<class MachineGun> NewWeapon;
+
+	std::shared_ptr<UIText> FPSText;
+	float fpsCurrentTime = 0;
 
 	b2World world;
 	float gravity = 15.0f;
@@ -103,7 +112,7 @@ public:
 	int32 positionIterations = 2;
 
 	float CameraCloseRange = 5;
-	float CameraClosestZoom = 170.0f;
+	float CameraClosestZoom = 160.0f;
 	float CameraFurthestZoom = 120.0f; // Smaller is further
 	float CameraZoomOutMultiplyer = 15.0f;
 

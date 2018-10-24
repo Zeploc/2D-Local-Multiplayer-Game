@@ -38,6 +38,7 @@ DropoutBlock::~DropoutBlock()
 
 void DropoutBlock::Update()
 {
+	return;
 	if (IsHit)
 	{
 		if (CurrentTimer > 0)
@@ -70,7 +71,7 @@ void DropoutBlock::Update()
 
 void DropoutBlock::Init(b2World& world)
 {
-	SetupB2BoxBody(world, b2_staticBody, false, false);
+	SetupB2BoxBody(world, b2_staticBody, false, true);
 }
 
 void DropoutBlock::BlockHit()

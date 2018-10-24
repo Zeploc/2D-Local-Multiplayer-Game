@@ -60,7 +60,14 @@ Entity::Entity(Utils::Transform _Transform, Utils::EANCHOR _Anchor)
 ************************************************************/
 Entity::~Entity()
 {
+	EntityMesh.reset();
 	EntityMesh = nullptr;
+	if (body)
+	{
+		b2World* worldref = body->GetWorld();
+		worldref->DestroyBody(body);
+	}
+	body = nullptr;
 }
 
 
@@ -98,7 +105,7 @@ void Entity::AddMesh(std::shared_ptr<Mesh> _NewMesh)
 ************************************************************/
 void Entity::DrawEntity()
 {
-	if (!EntityMesh || !bVisible) return;
+	if (!EntityMesh || !bVisible || !bActive) return;
 	Utils::Transform AnchoredTransform = transform;
 	if (EntityMesh->GetCollisionBounds())
 		AnchoredTransform.Position = Utils::GetAncoredPosition(transform.Position, EntityMesh->GetCollisionBounds()->GetDimensions(), EntityAnchor);

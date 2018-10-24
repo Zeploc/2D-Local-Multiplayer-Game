@@ -36,36 +36,11 @@ Player::Player(glm::vec3 StartPosition, int PlayerID) // Will also take the type
 	: Entity({ StartPosition , {0, 0, 0}, {1, 1, 1} }, Utils::CENTER)
 {
 	glm::vec4 Colour = { 1.0f, 1.0f, 1.0f, 1.0f };
-	/*switch (PlayerID)
-	{
-	case 0:
-	{
-		Colour = { 1.0, 0.5, 0.7, 1.0 };
-		break;
-	}
-	case 1:
-	{
-		Colour = { 0.3, 0.9, 0.4, 1.0 };
-		break;
-	}
-	case 2:
-	{
-		Colour = { 0.5, 0.7, 2.0, 1.0 };
-		break;
-	}
-	case 3:
-	{
-		Colour = { 1.0, 0.9, 0.0, 1.0 };
-		break;
-	}
-	default:
-		break;
-	}*/
 	m_iPlayerID = PlayerID;
 
 	switch (GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].Skin)
 	{
-	case OfficeBall:
+	case OfficeSquare:
 	{
 		NormalImage = "Resources/Images/office-square.png";
 		BallImage = "Resources/Images/OfficeBall.png";
@@ -98,6 +73,8 @@ Player::Player(glm::vec3 StartPosition, int PlayerID) // Will also take the type
 	AddMesh(NewImage);
 	NewImage->bCullFace = false;
 
+	EntityMesh->m_fWidth *= 0.9f;
+	EntityMesh->m_fHeight *= 0.9f;
 	// Define another Circle shape for our dynamic body.
 	circleShape.m_radius = EntityMesh->m_fHeight / 2.0f;
 
@@ -119,16 +96,24 @@ void Player::Init(b2World& world)
 
 	SetupB2BoxBody(world, b2_dynamicBody, false, true, 5.0f, 0.0f);
 	//body->GetFixtureList()->SetFilterData(NoPlayerCollisionFilter);
+	ChangePhysicsMode(false);
 
-	SoundManager::GetInstance()->AddChannel("CPlayerKnock");
-	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Hit.wav", false, "KnockbackSound");
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Hit.wav", false, "KnockbackSound " + std::to_string(m_iPlayerID));
 }
 
 void Player::Update()
 {
 	Entity::Update();
 
-	float TimeStepRate = 60.0f;// (60 / Time::dTimeDelta) / 60.0f;
+	if (CurrentHitVisualCooldown > 0)
+	{
+		CurrentHitVisualCooldown -= Time::dTimeDelta;
+		if (CurrentHitVisualCooldown <= 0)
+		{
+			SetHitVisual(false);
+		}
+	}
+
 	if (body)
 	{
 		CheckGroundRay Result;
@@ -142,48 +127,7 @@ void Player::Update()
 
 		if ((Input::GetInstance()->KeyState[(unsigned char)'g'] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[TOP_FACE_BUTTON] == Input::INPUT_FIRST_PRESS)
 		{
-			/*b2Filter NoCollisionFilter;
-			NoCollisionFilter.groupIndex = bIsRollingMode - 2;
-			body->GetFixtureList()->SetFilterData(NoCollisionFilter);*/
-
-			bIsRollingMode = !bIsRollingMode;
-
-			b2Fixture *fixtureA = body->GetFixtureList();
-			body->DestroyFixture(fixtureA);
-
-			// Define the dynamic body fixture.
-			b2FixtureDef fixtureDef;
-			if (bIsRollingMode)
-			{
-				fixtureDef.shape = &circleShape;
-				// Override the default friction.
-				fixtureDef.friction = RollingFriction;
-				body->SetAngularDamping(RollingAngularDamping);
-				body->SetFixedRotation(false);
-				std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = BallImage;
-				EntityMesh->Rebind();
-			}
-			else
-			{
-				fixtureDef.shape = &boxShape;
-				// Override the default friction.
-				fixtureDef.friction = NormalFriction;
-				body->SetTransform(body->GetPosition(), 0.0f);
-				body->SetAngularDamping(0.0f);
-				body->SetFixedRotation(true);
-				std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = NormalImage;
-				EntityMesh->Rebind();
-			}
-
-			//// Not collide with bodys with a group index 0f -1
-			//b2Filter NoPlayerCollisionFilter;
-			//NoPlayerCollisionFilter.groupIndex = -1;
-			//fixtureDef.filter = NoPlayerCollisionFilter;
-			// Set the box density to be non-zero, so it will be dynamic.
-			fixtureDef.density = 5.0f;
-			
-			// Add the shape to the body.
-			body->CreateFixture(&fixtureDef);
+			ChangePhysicsMode(!bIsRollingMode);
 		}
 	}
 
@@ -219,9 +163,9 @@ void Player::Update()
 		
 	if (CanJump && (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[BOTTOM_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[32] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1)))
 	{
-		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().y * body->GetMass() * TimeStepRate;
-		if (bIsRollingMode) body->ApplyForce(b2Vec2(0, RollingJumpForce - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
-		else body->ApplyForce(b2Vec2(0, fJumpForce - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
+		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().y * body->GetMass() * Time::TickRate;
+		if (bIsRollingMode) body->ApplyForce(b2Vec2(0, (RollingJumpForce * Time::TickRate) - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
+		else body->ApplyForce(b2Vec2(0, (fJumpForce * Time::TickRate) - ForceToCounterCurrentVelocity), body->GetWorldCenter(), true);
 		
 		CanJump = false;
 	}
@@ -236,15 +180,15 @@ void Player::Update()
 		DropCurrentWeapon();
 	}
 
-	if ((Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) && CurrentWeapon != NULL || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUTTON] == Input::INPUT_FIRST_PRESS && CurrentWeapon != NULL)
+	if ((Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) && CurrentWeapon != NULL || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUMPER] == Input::INPUT_FIRST_PRESS && CurrentWeapon != NULL)
 	{
 		Fire();
 	}
 	
 	if (body)
 	{
-		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().x * body->GetMass() * TimeStepRate;
-		float ForceToApply = MaxSpeed * body->GetMass() * TimeStepRate;
+		float ForceToCounterCurrentVelocity = body->GetLinearVelocity().x * body->GetMass() * Time::TickRate;
+		float ForceToApply = MaxSpeed * body->GetMass() * Time::TickRate;
 
 
 		//if (bIsRollingMode)
@@ -319,9 +263,56 @@ void Player::Reset()
 	KnockedBackTimer = 0.0f;
 }
 
+void Player::ChangePhysicsMode(bool IsBall)
+{
+	/*b2Filter NoCollisionFilter;
+			NoCollisionFilter.groupIndex = bIsRollingMode - 2;
+			body->GetFixtureList()->SetFilterData(NoCollisionFilter);*/
+
+	bIsRollingMode = IsBall;
+
+	b2Fixture *fixtureA = body->GetFixtureList();
+	body->DestroyFixture(fixtureA);
+
+	// Define the dynamic body fixture.
+	b2FixtureDef fixtureDef;
+	if (bIsRollingMode)
+	{
+		fixtureDef.shape = &circleShape;
+		// Override the default friction.
+		fixtureDef.friction = RollingFriction;
+		body->SetAngularDamping(RollingAngularDamping);
+		body->SetFixedRotation(false);
+		std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = BallImage;
+		EntityMesh->Rebind();
+	}
+	else
+	{
+		fixtureDef.shape = &boxShape;
+		// Override the default friction.
+		fixtureDef.friction = NormalFriction;
+		body->SetTransform(body->GetPosition(), 0.0f);
+		body->SetAngularDamping(0.0f);
+		body->SetFixedRotation(true);
+		std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = NormalImage;
+		EntityMesh->Rebind();
+	}
+
+	//// Not collide with bodys with a group index 0f -1
+	//b2Filter NoPlayerCollisionFilter;
+	//NoPlayerCollisionFilter.groupIndex = -1;
+	//fixtureDef.filter = NoPlayerCollisionFilter;
+	// Set the box density to be non-zero, so it will be dynamic.
+	fixtureDef.density = PlayerDensity;
+
+	// Add the shape to the body.
+	body->CreateFixture(&fixtureDef);
+}
+
 void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
 {
-	SoundManager::GetInstance()->PlayAudio("KnockbackSound", "CPlayerKnock");
+	SetHitVisual(true);
+	SoundManager::GetInstance()->PlayAudio("KnockbackSound " + std::to_string(m_iPlayerID));
 	if (Normalize)
 	{
 		Direction = glm::normalize(Direction);
@@ -342,7 +333,7 @@ void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
 	body->ApplyForceToCenter(b2Vec2(Direction.x, Direction.y), true);
 	OutsideForcesApplying = true;
 	KnockedBackTimer = KnockBackControlTime;
-	GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].KnockbackText->sText = std::to_string(int(KnockbackPercentage * 100));
+	GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].KnockbackText->sText = std::to_string(int(KnockbackPercentage * 100)) + "%";
 }
 
 void Player::AttemptMelee()
@@ -383,5 +374,19 @@ void Player::DropCurrentWeapon()
 void Player::Fire()
 {
 	CurrentWeapon->Fire();
+}
+
+void Player::SetHitVisual(bool ShowVisual)
+{
+	if (ShowVisual)
+	{
+		EntityMesh->Colour = { 1.0f, 0.1f, 0.1f, 1.0f };
+		CurrentHitVisualCooldown = HitVisualCooldown;
+	}
+	else
+	{
+		CurrentHitVisualCooldown = 0;
+		EntityMesh->Colour = { 1.0f, 1.0f, 1.0f, 1.0f };
+	}
 }
 

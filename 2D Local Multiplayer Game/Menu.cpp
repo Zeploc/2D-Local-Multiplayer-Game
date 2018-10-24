@@ -40,9 +40,12 @@ void ExitGameBtn();
 
 Menu::Menu() : Scene("Menu")
 {
-	SoundManager::GetInstance()->AddChannel("CMainMusic");
-	SoundManager::GetInstance()->AddAudio("Resources/Sounds/MainMusic.mp3", false, "MainTrack");
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/8-Bit-Mayhem.mp3", true, "MainTrack");
+	SoundManager::GetInstance()->SetChannelVolume("MainTrack", 0.15);
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Puzzle-Dreams-2.mp3", true, "MenuTrack");
 
+	SoundManager::GetInstance()->SetChannelVolume("MenuTrack", 0.15);
+	SoundManager::GetInstance()->PlayAudio("MenuTrack");
 	// Menu Elements
 	//std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Local Multiplayer Game", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
 	
@@ -77,11 +80,11 @@ Menu::Menu() : Scene("Menu")
 	MenuElements.push_back(CreditsBtn);
 	MenuElements.push_back(QuitBtn);
 
-	StartBtn->SetPressSound("Resources/Sounds/menu-click.wav");
-	ControlsBtn->SetPressSound("Resources/Sounds/menu-click.wav");
-	CreditsBtn->SetPressSound("Resources/Sounds/menu-click.wav");
-	QuitBtn->SetPressSound("Resources/Sounds/menu-click.wav");
-	SoundManager::GetInstance()->SetChannelVolume("UIC", 0.1);
+	StartBtn->SetPressSound("Resources/Sounds/Button.mp3");
+	ControlsBtn->SetPressSound("Resources/Sounds/Button.mp3");
+	CreditsBtn->SetPressSound("Resources/Sounds/Button.mp3");
+	QuitBtn->SetPressSound("Resources/Sounds/Button.mp3");
+	SoundManager::GetInstance()->SetChannelVolume("Resources/Sounds/Button.mp3", 0.1);
 
 	CurrentSelectedButton = StartBtn;
 	CurrentSelectedButton->HoverOverride = true;
@@ -98,21 +101,33 @@ Menu::Menu() : Scene("Menu")
 		std::shared_ptr<UIText> PlayerLabel(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 150), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Player " + std::to_string(i + 1), "Resources/Fonts/Roboto-Regular.ttf", 25, Utils::CENTER));
 		AddUIElement(PlayerLabel);
 		PlayerSelectElements.push_back(PlayerLabel);
-		std::shared_ptr<UIText> PlayerJoin(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 100), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Press Start to join", "Resources/Fonts/Roboto-Thin.ttf", 25, Utils::CENTER));
+		std::shared_ptr<UIText> PlayerJoin(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 120), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Press Start to join", "Resources/Fonts/Roboto-Thin.ttf", 25, Utils::CENTER));
 		AddUIElement(PlayerJoin);
 		PlayerSelectElements.push_back(PlayerJoin);
 		std::shared_ptr<UIText> PlayerReady(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 200), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Ready", "Resources/Fonts/Roboto-Bold.ttf", 25, Utils::CENTER));
 		AddUIElement(PlayerReady);
 		PlayerSelectElements.push_back(PlayerReady);
-		std::shared_ptr<UIImage> PlayerImage(new UIImage(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 50), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 200, 200, "Resources/Images/office-square.png", 1));
+		std::shared_ptr<UIImage> PlayerImage(new UIImage(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 0), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 200, 200, "Resources/Images/office-square.png", 1));
 		AddUIElement(PlayerImage);
 		PlayerSelectElements.push_back(PlayerImage);
+		std::shared_ptr<UIImage> ButtonHintImage(new UIImage(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 150), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 70, 60, GetInputImagePath(SPECIAL_BUTTON_RIGHT), 1));
+		AddUIElement(ButtonHintImage);
+		PlayerSelectElements.push_back(ButtonHintImage);
+		std::shared_ptr<UIImage> LeftHintImage(new UIImage(glm::vec2(XPos - 60, Camera::GetInstance()->SCR_HEIGHT / 2 + 150), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 70, 65, GetInputImagePath(LEFT_BUMPER), 1));
+		AddUIElement(LeftHintImage);
+		PlayerSelectElements.push_back(LeftHintImage);
+		std::shared_ptr<UIImage> RightHintImage(new UIImage(glm::vec2(XPos + 60, Camera::GetInstance()->SCR_HEIGHT / 2 + 150), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 70, 65, GetInputImagePath(RIGHT_BUMPER), 1));
+		AddUIElement(RightHintImage);
+		PlayerSelectElements.push_back(RightHintImage);
 		PlayerReady->SetActive(false);
 
 		NewPlayerStatus.PlayerJoinedText = PlayerJoin;
 		NewPlayerStatus.PlayerReadyText = PlayerReady;
 		NewPlayerStatus.PlayerImage = PlayerImage;
-		NewPlayerStatus.CurrentSkin = OfficeBall;
+		NewPlayerStatus.ButtonHintImage = ButtonHintImage;
+		NewPlayerStatus.LeftHintImage = LeftHintImage;
+		NewPlayerStatus.RightHintImage = RightHintImage;
+		NewPlayerStatus.CurrentSkin = OfficeSquare;
 		vPlayerStatus.push_back(NewPlayerStatus);
 	}
 
@@ -143,7 +158,7 @@ Menu::Menu() : Scene("Menu")
 	CreditsElements.push_back(CreditsTitle);
 	CreditsElements.push_back(BToBack);
 
-	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50.0f), 0, glm::vec4(0.7, 0.7, 0.7, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER));
+	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50.0f), 0, glm::vec4(0.7, 0.7, 0.7, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
 	AddUIElement(BToBackPlayerSelect);
 
 	PlayerSelectElements.push_back(BToBackPlayerSelect);
@@ -154,6 +169,11 @@ Menu::Menu() : Scene("Menu")
 		std::shared_ptr<MenuPlayerController> NewMenuPlayer = std::make_shared<MenuPlayerController>(i);
 		AddEntity(NewMenuPlayer, true);
 	}
+
+	UsedSkins.insert(std::pair<PlayerSkin, bool>(OfficeSquare, false));
+	UsedSkins.insert(std::pair<PlayerSkin, bool>(SmexyHexy, false));
+	UsedSkins.insert(std::pair<PlayerSkin, bool>(GuyAngle, false));
+	UsedSkins.insert(std::pair<PlayerSkin, bool>(Rhombage, false));
 }
 
 Menu::~Menu()
@@ -196,70 +216,82 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 			{
 				vPlayerStatus[ID].PlayerJoinedText->sText = "Joined";
 				vPlayerStatus[ID].PlayerImage->SetActive(true);
+				vPlayerStatus[ID].ButtonHintImage->SetImage(GetInputImagePath(BOTTOM_FACE_BUTTON), 85, 60);
+				vPlayerStatus[ID].LeftHintImage->SetActive(true);
+				vPlayerStatus[ID].RightHintImage->SetActive(true);
+				StartTime = 3;
+				StartTimerText->SetActive(false);
+				UpdateImageStatus(ID);
 			}
 			else
 			{
 				vPlayerStatus[ID].PlayerJoinedText->sText = "Press Start to join";
 				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
 				vPlayerStatus[ID].PlayerImage->SetActive(false);
+				vPlayerStatus[ID].LeftHintImage->SetActive(false);
+				vPlayerStatus[ID].RightHintImage->SetActive(false);
+				vPlayerStatus[ID].ButtonHintImage->SetImage(GetInputImagePath(SPECIAL_BUTTON_RIGHT), 70, 60);
 				vPlayerStatus[ID].IsReady = false;
+				StartTime = 3;
+				StartTimerText->SetActive(false);
+				UsedSkins[vPlayerStatus[ID].CurrentSkin] = false;
 			}
 		}
 		else if (Input == BOTTOM_FACE_BUTTON || Input == RIGHT_FACE_BUTTON)
 		{
-			if (Input != RIGHT_FACE_BUTTON) vPlayerStatus[ID].IsReady = !vPlayerStatus[ID].IsReady;
-			else vPlayerStatus[ID].IsReady = false;
-			CheckPlayersToStartTimer();
-			if (vPlayerStatus[ID].IsReady)
-			{
-				vPlayerStatus[ID].PlayerReadyText->SetActive(true);
+			// Check if the player is trrying to ready up or unready
+			bool AttemptReadyUp = true;
+			if (Input == RIGHT_FACE_BUTTON || vPlayerStatus[ID].IsReady)
+				AttemptReadyUp = false;
 
+			// Check if they are tryng to ready up on an invalid skin
+			if (AttemptReadyUp && UsedSkins[vPlayerStatus[ID].CurrentSkin] == true)
+			{
+				return;
+			}
+
+			if (AttemptReadyUp)
+			{
+				vPlayerStatus[ID].IsReady = true;
+				vPlayerStatus[ID].PlayerReadyText->SetActive(true);
+				vPlayerStatus[ID].LeftHintImage->SetActive(false);
+				vPlayerStatus[ID].RightHintImage->SetActive(false);
+				UsedSkins[vPlayerStatus[ID].CurrentSkin] = true;
+				vPlayerStatus[ID].ButtonHintImage->SetImage(GetInputImagePath(RIGHT_FACE_BUTTON), 85, 60);
 			}
 			else
+			{
+				vPlayerStatus[ID].IsReady = false;
 				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
+				vPlayerStatus[ID].LeftHintImage->SetActive(true);
+				vPlayerStatus[ID].RightHintImage->SetActive(true);
+				UsedSkins[vPlayerStatus[ID].CurrentSkin] = false;
+				vPlayerStatus[ID].ButtonHintImage->SetImage(GetInputImagePath(BOTTOM_FACE_BUTTON), 85, 60);
+				// Set any of the images with this skin back
+			}
+
+			for (int pId = 0; pId < vPlayerStatus.size(); pId++)
+			{
+				if (pId == ID) continue; // Dont check same player
+				if (vPlayerStatus[pId].CurrentSkin == vPlayerStatus[ID].CurrentSkin && vPlayerStatus[pId].IsPlaying)
+				{
+					UpdateImageStatus(pId);
+				}
+			}
+			CheckPlayersToStartTimer();
+
 		}
-		else if ((Input == LEFT_BUTTON || Input == RIGHT_BUTTON) && vPlayerStatus[ID].IsPlaying && !vPlayerStatus[ID].IsReady)
+		else if ((Input == LEFT_BUMPER || Input == RIGHT_BUMPER) && vPlayerStatus[ID].IsPlaying && !vPlayerStatus[ID].IsReady)
 		{
 			int Dir = 1;
-			if (Input == LEFT_BUTTON) Dir = -1;
+			if (Input == LEFT_BUMPER) Dir = -1;
 			//vPlayerStatus[ID].CurrentSkin = PlayerSkin((int)vPlayerStatus[ID].CurrentSkin + Dir);
 			int CurrentSkin = (int)vPlayerStatus[ID].CurrentSkin;
 			CurrentSkin += Dir;
 			if (CurrentSkin < 0) CurrentSkin = 3;
 			else if (CurrentSkin > 3) CurrentSkin = 0;
 			vPlayerStatus[ID].CurrentSkin = PlayerSkin(CurrentSkin);
-			const char* NewImage = "Resources/Images/office-square.png";
-			switch (vPlayerStatus[ID].CurrentSkin)
-			{
-			case OfficeBall:
-			{
-				NewImage = "Resources/Images/office-square.png";
-				break;
-			}
-			case SmexyHexy:
-			{
-				NewImage = "Resources/Images/SmexyHexy.png";
-				break;
-			}
-			case GuyAngle:
-			{
-				NewImage = "Resources/Images/Guyangle.png";
-				break;
-			}
-			case Rhombage:
-			{
-				NewImage = "Resources/Images/Rhombage.png";
-				break;
-			}
-			default:
-				std::cout << "nah man\n";
-				break;
-			}
-			glm::vec2 Pos = vPlayerStatus[ID].PlayerImage->GetPosition();
-			DestroyUIElement(vPlayerStatus[ID].PlayerImage);
-			vPlayerStatus[ID].PlayerImage = std::make_shared<UIImage>(UIImage(Pos, Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 200, 200, NewImage, 2));
-			AddUIElement(vPlayerStatus[ID].PlayerImage);
-			PlayerSelectElements.push_back(vPlayerStatus[ID].PlayerImage);
+			UpdateImageStatus(ID);
 		}
 
 	}
@@ -347,8 +379,25 @@ void Menu::ResetPlayerSelectScreen()
 		PStat.IsReady = false;
 		PStat.PlayerJoinedText->sText = "Press Start to join";
 		PStat.PlayerImage->SetActive(false);
+		PStat.LeftHintImage->SetActive(false);
+		PStat.RightHintImage->SetActive(false);
+	}
+
+	for (auto& CSkin : UsedSkins)
+	{
+		CSkin.second = false;
 	}
 	StartTimerText->SetActive(false);
+}
+
+void Menu::UpdateImageStatus(int ID)
+{
+	float Alpha = 1.0f;
+	if (UsedSkins[vPlayerStatus[ID].CurrentSkin])
+		Alpha = 0.3f;
+	vPlayerStatus[ID].PlayerImage->SetImage(GetSkinPath(vPlayerStatus[ID].CurrentSkin));
+	vPlayerStatus[ID].PlayerImage->Colour.a = Alpha;
+	vPlayerStatus[ID].ButtonHintImage->Colour.a = Alpha;
 }
 
 void Menu::StartGame()
@@ -366,7 +415,7 @@ void Menu::StartGame()
 	}
 	LevelManager::GetInstance()->NewRound(GetRandomGamemode()); // New level
 	
-	SoundManager::GetInstance()->PlayAudio("MainTrack", "CMainMenu");
+	SoundManager::GetInstance()->PlayAudio("MainTrack");
 }
 
 void Menu::SwitchScreens(MenuScreens NewScreen)
@@ -403,7 +452,8 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 		if (SkipPlayerSelect)
 		{
 			LevelManager::GetInstance()->NewRound(GetRandomGamemode()); // New level
-			SoundManager::GetInstance()->PlayAudio("MainTrack", "CMainMenu");
+			SoundManager::GetInstance()->PauseAudio("MenuTrack");
+			SoundManager::GetInstance()->PlayAudio("MainTrack");
 			break;
 		}
 		for (auto& UIElem : PlayerSelectElements)
@@ -430,6 +480,83 @@ void Menu::SwitchScreens(MenuScreens NewScreen)
 	}
 	break;
 	default:
+		break;
+	}
+}
+
+const char * Menu::GetInputImagePath(InputController InputType)
+{
+	switch (InputType)
+	{
+	case DPAD_UP:
+		break;
+	case DPAD_DOWN:
+		break;
+	case DPAD_LEFT:
+		break;
+	case DPAD_RIGHT:
+		break;
+	case SPECIAL_BUTTON_RIGHT:
+		return "Resources/Images/Buttons/Start_Button.png";
+		break;
+	case SPECIAL_BUTTON_LEFT:
+		return "Resources/Images/Buttons/Select_Button.png";
+		break;
+	case LEFT_STICK_DOWN:
+		break;
+	case RIGHT_STICK_DOWN:
+		break;
+	case LEFT_BUMPER:
+		return "Resources/Images/Buttons/LB.png";
+		break;
+	case RIGHT_BUMPER:
+		return "Resources/Images/Buttons/RB.png";
+		break;
+	case BOTTOM_FACE_BUTTON:
+		return "Resources/Images/Buttons/A.png";
+		break;
+	case RIGHT_FACE_BUTTON:
+		return "Resources/Images/Buttons/B.png";
+		break;
+	case LEFT_FACE_BUTTON:
+		return "Resources/Images/Buttons/X.png";
+		break;
+	case TOP_FACE_BUTTON:
+		return "Resources/Images/Buttons/Y.png";
+		break;
+	default:
+		break;
+	}
+	return "";
+}
+
+const char* Menu::GetSkinPath(PlayerSkin Skin)
+{
+	switch (Skin)
+	{
+	case OfficeSquare:
+	{
+		return "Resources/Images/office-square.png";
+		break;
+	}
+	case SmexyHexy:
+	{
+		return "Resources/Images/SmexyHexy.png";
+		break;
+	}
+	case GuyAngle:
+	{
+		return "Resources/Images/Guyangle.png";
+		break;
+	}
+	case Rhombage:
+	{
+		return "Resources/Images/Rhombage.png";
+		break;
+	}
+	default:
+		std::cout << "Couldn't find skin path\n";
+		return "";
 		break;
 	}
 }

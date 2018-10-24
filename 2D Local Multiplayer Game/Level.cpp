@@ -39,6 +39,7 @@
 #include "Menu.h"
 #include "Bomb.h"
 #include "Bullet.h"
+#include "Shotgun.h"
 
 // Library Includes //
 #include <iostream>
@@ -51,8 +52,7 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 {
 	CurrentGamemode = LevelGM;
 
-	SoundManager::GetInstance()->AddChannel("CPlayerDeath");
-	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "FallingToYourDeath");
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "PlayerDeath");
 	// Pause Screen elements
 	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
 	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Paused", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
@@ -60,6 +60,13 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	ResumeBtn->AddText("RESUME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, BackToMenu));
 	QuitBtn->AddText("QUIT", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+
+	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT), Utils::BOTTOM_CENTER, 0.0f, glm::vec4(0.2f, 0.2f, 0.2f, 0.8f), Camera::GetInstance()->SCR_WIDTH, 70));
+	AddUIElement(RoundBackImage);
+	IngameHUD.push_back(RoundBackImage);
+
+	FPSText = std::make_shared<UIText>( UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH, Camera::GetInstance()->SCR_HEIGHT), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "FPS", "Resources/Fonts/Roboto-Thin.ttf", 20, Utils::BOTTOM_RIGHT));
+	AddUIElement(FPSText);
 
 	AddUIElement(BackImage);
 	AddUIElement(Title);
@@ -75,30 +82,13 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	QuitBtn->SetActive(false);
 	CurrentSelectedButton = ResumeBtn;
 	CurrentSelectedButton->HoverOverride = true;
-
-	CircleEntity = std::make_shared<Entity>(Entity({ { 5.0f, 2.0f, 0 } ,{ 0, 0, 45 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> CircleImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.3f, 0.4f, 0.9f, 1.0f }, "Resources/Images/Box.png"));
-	CircleEntity->AddMesh(CircleImage);
-	//AddEntity(CircleEntity, true);
-	//CircleEntity->SetupB2CircleBody(world, b2_dynamicBody, true, true, 10.0f);
-
-	std::shared_ptr<Entity> DynamicBoxEntity = std::make_shared<Entity>(Entity({ { 0, 4, 0 } ,{ 0, 0, 20 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> TestImage = std::make_shared<Plane>(Plane(0.5f, 0.5f, { 0.9f, 0.3f, 0.1f, 1.0f }, "Resources/Images/Box.png"));
-	DynamicBoxEntity->AddMesh(TestImage);
-	//AddEntity(DynamicBoxEntity, true);
-	//DynamicBoxEntity->SetupB2BoxBody(world, b2_dynamicBody, true, true, 10.0f);
 		
 
-	//std::shared_ptr<SpikeHazard> SpikeHazzard1 = std::make_shared<SpikeHazard>(SpikeHazard({ { -2, 1, 0 } ,{ 0, 0, -45 },{ 1, 1, 1 } }, Utils::CENTER));
-	//SpikeHazzard1->Init(world);
-	//AddEntity(SpikeHazzard1, true);
-	
-	//bIsPersistant = true;	
 	world.SetGravity(b2Vec2(0.0f, -gravity));
 
 	Camera::GetInstance()->SetWindowScale(CameraClosestZoom);
 
-	timeStep = 1.0f / 60.0f;
+	timeStep = 1.0f / Time::TickRate;
 
 	world.SetContactListener(&CustomContactListener);
 }
@@ -108,8 +98,50 @@ Level::~Level()
 
 }
 
+void Level::OnLoadScene()
+{
+	Scene::OnLoadScene();
+	LevelManager::GetInstance()->RemoveExcessLevel();
+	LevelManager::GetInstance()->AddRandomMapForGamemode(std::dynamic_pointer_cast<Level>(this->shared_from_this()));
+	glm::vec3 SpawnPosition = { -1, 2, 0 };
+	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
+	{
+		if (SpawnPoints.size() > 0)
+		{
+			int RandSpawn = rand() % SpawnPoints.size(); // Random spawn
+			SpawnPosition = glm::vec3(SpawnPoints[RandSpawn], 0); // Set random spawn point
+			SpawnPoints.erase(SpawnPoints.begin() + RandSpawn); // Delete spawn from vector so players cant spawn in each other
+		}
+		// Add player
+		glm::vec4 KnockbackColour = GetPlaceColour(player.second.FullGamePlace);
+		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(140 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::BOTTOM_LEFT, KnockbackColour, "100%", "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		AddUIElement(KnockbackPercentage);
+		std::shared_ptr<UIImage> KnockbackIcon(new UIImage(glm::vec2(50 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 50, 50, Menu::GetSkinPath(player.second.Skin), 1));
+		AddUIElement(KnockbackIcon);
+		std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player(SpawnPosition, player.second.PlayerID));
+		AddEntity(PlayerEnt, true);
+		PlayerEnt->Init(world);
+		Players.insert(std::pair<int, std::shared_ptr<Player>>(player.second.PlayerID, PlayerEnt));
+		SpawnPosition.x += 0.5f;
+		// Add Player Controller
+		std::shared_ptr<PlayerController> newPlayerController = std::make_shared<PlayerController>(PlayerController(player.second.PlayerID, std::dynamic_pointer_cast<Level>(this->shared_from_this())));
+		PlayerControllers.insert(std::pair<int, std::shared_ptr<PlayerController>>(player.second.PlayerID, newPlayerController));
+		AddEntity(newPlayerController);
+		player.second.KnockbackText = KnockbackPercentage;
+		player.second.CurrentGamePlace = 0;
+		IngameHUD.push_back(KnockbackPercentage);
+		IngameHUD.push_back(KnockbackIcon);
+	}
+}
+
 void Level::Update()
 {
+	fpsCurrentTime += Time::dTimeDelta;
+	if (fpsCurrentTime > 0.3)
+	{
+		FPSText->sText = "FPS " + std::to_string(int(Time::dFPS * 10) / 10);
+		fpsCurrentTime = 0.0f;
+	}
 	if (GamePaused)
 	{
 		for (auto& PController : PlayerControllers)
@@ -153,11 +185,12 @@ void Level::Update()
 		if ((*it).second->transform.Position.y < PlayerFalloutYPosition)
 		{
 			int PlayerId = (*it).first;
+			(*it).second->DropCurrentWeapon();
 			DestroyEntity((*it).second);
 			it = Players.erase(it);
 			Endit = Players.end();
 			PlayerKnockedOut(PlayerId);
-			SoundManager::GetInstance()->PlayAudio("FallingToYourDeath", "CPlayerDeath");
+			SoundManager::GetInstance()->PlayAudio("PlayerDeath");
 			continue;
 			
 		}
@@ -167,285 +200,17 @@ void Level::Update()
 	Camera::GetInstance()->SetWindowScale(NewZoom);
 }
 
-void Level::OnLoadScene()
+// Game Cycle
+void Level::RandomWeaponsSpawnCycle()
 {
-	Scene::OnLoadScene();
-	LevelManager::GetInstance()->RemoveExcessLevel();
-	LevelManager::GetInstance()->AddRandomMapForGamemode(std::dynamic_pointer_cast<Level>(this->shared_from_this()));
-	glm::vec3 SpawnPosition = { -1, 2, 0 };
-	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
+	WeaponSpawnTime -= Time::dTimeDelta;
+	if (WeaponSpawnTime <= 0.0f)
 	{
-		// Add player
-		glm::vec4 KnockbackColour = { 0.8, 0.1, 0.1, 1.0 };
-		switch (player.first)
-		{
-		case 1:
-		{
-			KnockbackColour = { 0.2, 0.7, 0.1, 1.0 };
-			break;
-		}
-		case 2:
-		{
-			KnockbackColour = { 0.2, 0.3, 1.0, 1.0 };
-			break;
-		}
-		case 3:
-		{
-			KnockbackColour = { 1.0, 0.7, 0.0, 1.0 };
-			break;
-		}
-		}
-		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(120 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 40), Utils::BOTTOM_CENTER, KnockbackColour, "100", "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
-		AddUIElement(KnockbackPercentage);
-		std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player(SpawnPosition, player.second.PlayerID));
-		AddEntity(PlayerEnt, true);
-		PlayerEnt->Init(world);
-		Players.insert(std::pair<int, std::shared_ptr<Player>>(player.second.PlayerID, PlayerEnt));
-		SpawnPosition.x += 1;
-		// Add Player Controller
-		std::shared_ptr<PlayerController> newPlayerController = std::make_shared<PlayerController>(PlayerController(player.second.PlayerID, std::dynamic_pointer_cast<Level>(this->shared_from_this())));
-		PlayerControllers.insert(std::pair<int, std::shared_ptr<PlayerController>>(player.second.PlayerID, newPlayerController));
-		AddEntity(newPlayerController);
-		player.second.KnockbackText = KnockbackPercentage;
-		player.second.CurrentGamePlace = 0;
+		int RangeSize = (MaxWeaponSpawnTime - MinWeaponSpawnTime) * 1000;
+		WeaponSpawnTime = (rand() % RangeSize) / 1000 + MinWeaponSpawnTime;
+		SpawnRandomWeapon();
+		std::cout << "New random time " << WeaponSpawnTime << std::endl;
 	}
-
-
-}
-
-void BackToMenu()
-{
-	SceneManager::GetInstance()->SwitchScene("Menu");
-}
-
-void Resume()
-{
-	std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
-	LevelRef->TogglePause();
-}
-
-void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entity> Collided)
-{
-	std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(Object);
-	std::shared_ptr<Player> Player2 = std::dynamic_pointer_cast<Player>(Collided);
-	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
-	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Collided);
-	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
-	std::shared_ptr<Bomb> Bombuu = std::dynamic_pointer_cast<Bomb>(Collided);
-	std::shared_ptr<Bullet> BigOldMetalKiller = std::dynamic_pointer_cast<Bullet>(Collided);
-
-	if (Player1 && Collided->body && Player2 && Collided->body)
-	{	
-		if (Player1->body->GetLinearVelocity().Length() > Player2->body->GetLinearVelocity().Length() && Player1->GetIsRolling() == true)
-		{
-			Player2->ApplyKnockback(glm::vec2(Player1->body->GetLinearVelocity().x, Player1->body->GetLinearVelocity().y), false);
-		}
-		else if(Player2->GetIsRolling() == true)
-		{
-			Player1->ApplyKnockback((glm::vec2(Player2->body->GetLinearVelocity().x, Player2->body->GetLinearVelocity().y)), false);
-		}
-	}
-	else if (Player1 && Collided->body && DropBlock) // OR if a bullet is the first object
-	{
-		DropBlock->BlockHit();
-	}
-	else if (Player1 && Collided->body && Spike) // OR if a bullet is the first object
-	{
-		std::cout << "Collided with Spike" << std::endl;
-		//SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity((Player1->shared_from_this()));		
-
-		int PlayerId = Player1->GetID();
-		DestroyEntity(Player1);
-		Players.erase(PlayerId);
-		PlayerKnockedOut(PlayerId);
-	}
-	else if (Player1 && Collided->body && Bombuu)
-	{
-		std::cout << "Collision with bomb" << std::endl;
-
-		glm::vec2 Direction = glm::vec2(Player1->transform.Position.x - Bombuu->transform.Position.x, Player1->transform.Position.y - Bombuu->transform.Position.y);
-		
-		Player1->ApplyKnockback((glm::vec2(Direction.x * 20, Direction.y * 20)), false);
-
-		DestroyEntity(Bombuu);
-		
-
-		/*
-		int PlayerId = Player1->GetID();
-		DestroyEntity(Player1);
-		Players.erase(PlayerId);
-		PlayerKnockedOut(PlayerId);
-		DestroyEntity(Bombuu);
-		*/
-	}
-	else if (Player1 && Collided->body && SpeedyGun) // OR if a bullet is the first object
-	{
-		std::cout << "Gun Collision" << std::endl;
-		Player1->EquipWeapon(SpeedyGun);
-		
-	}
-
-	if (Collided->body && BigOldMetalKiller)
-	{
-		if (Player1 && Player1 != BigOldMetalKiller->GetCurrentPlayer())
-		{
-			Player1->ApplyKnockback(glm::vec2(BigOldMetalKiller->body->GetLinearVelocity().x, BigOldMetalKiller->body->GetLinearVelocity().y), true);
-		}
-		if (Player1 != BigOldMetalKiller->GetCurrentPlayer())
-		{
-			DestroyEntity(BigOldMetalKiller);
-		}
-		
-	}
-}
-
-void Level::PlayerKnockedOut(int PlayerID)
-{
-	/// Assign score/place
-	GameManager::GetInstance()->vPlayerInfo[PlayerID].KnockbackText->sText = "KNOCKED";
-	GameManager::GetInstance()->vPlayerInfo[PlayerID].CurrentGamePlace = Players.size() + 1; 
-	if (Players.size() <= 1)
-	{
-		OnGameComplete();
-	}
-}
-
-void Level::OnGameComplete()
-{
-	GamePaused = true;
-	GameIsComplete = true;
-	ShowEndScreen();
-}
-
-void Level::ShowEndScreen()
-{
-	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.85));
-	std::shared_ptr<UIText> RoundTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 250.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Round " + std::to_string(GameManager::GetInstance()->CurrentRound), "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
-	std::shared_ptr<UIText> OverallTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Overall", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
-	AddUIElement(BackImage);
-	AddUIElement(RoundTitle);
-	AddUIElement(OverallTitle);
-
-	// Have players stats, get from game manager, display each position, and each score
-	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
-	{
-		// Add player
-		glm::vec4 PlayerColour = { 0.8, 0.1, 0.1, 1.0 };
-		switch (player.first)
-		{
-		case 1:
-		{
-			PlayerColour = { 0.2, 0.7, 0.1, 1.0 };
-			break;
-		}
-		case 2:
-		{
-			PlayerColour = { 0.2, 0.3, 1.0, 1.0 };
-			break;
-		}
-		case 3:
-		{
-			PlayerColour = { 1.0, 0.7, 0.0, 1.0 };
-			break;
-		}
-		}
-		std::string PlaceMessage = "NONE";
-		switch (player.second.CurrentGamePlace)
-		{
-		case 1:
-		{
-			PlaceMessage = "1st";
-			player.second.CurrentScore += 400;
-			break;
-		}
-		case 2:
-		{
-			PlaceMessage = "2nd";
-			player.second.CurrentScore += 300;
-			break;
-		}
-		case 3:
-		{
-			PlaceMessage = "3rd";
-			player.second.CurrentScore += 200;
-			break;
-		}
-		case 4:
-		{
-			PlaceMessage = "4th";
-			player.second.CurrentScore += 100;
-			break;
-		}
-		default:
-			PlaceMessage = "1st";
-			player.second.CurrentScore += 400;
-			break;
-		}
-		std::shared_ptr<UIText> RoundPlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT/2 - 150.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
-		AddUIElement(RoundPlayerPlacement);
-	}
-	// Overall Place and score
-	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
-	{
-		// Add player
-		glm::vec4 PlayerColour = { 0.8, 0.1, 0.1, 1.0 };
-		switch (player.first)
-		{
-		case 1:
-		{
-			PlayerColour = { 0.2, 0.7, 0.1, 1.0 };
-			break;
-		}
-		case 2:
-		{
-			PlayerColour = { 0.2, 0.3, 1.0, 1.0 };
-			break;
-		}
-		case 3:
-		{
-			PlayerColour = { 1.0, 0.7, 0.0, 1.0 };
-			break;
-		}
-		}
-		int Place = 1;
-		for (auto& OtherPlayer : GameManager::GetInstance()->vPlayerInfo)
-		{
-			if (player.second.CurrentScore < OtherPlayer.second.CurrentScore && player.second.PlayerID != OtherPlayer.second.PlayerID) // If score is less than another player (and this player isin't the current)
-				Place++;
-		}
-
-		std::string PlaceMessage = "4th";
-		switch (Place)
-		{
-		case 1:
-		{
-			PlaceMessage = "1st";
-			break;
-		}
-		case 2:
-		{
-			PlaceMessage = "2nd";
-			break;
-		}
-		case 3:
-		{
-			PlaceMessage = "3rd";
-			break;
-		}
-		}
-
-		std::shared_ptr<UIText> PlayerScore(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 200.0f), Utils::CENTER, PlayerColour, std::to_string(player.second.CurrentScore), "Resources/Fonts/Roboto-Medium.ttf", 35, Utils::CENTER));
-		AddUIElement(PlayerScore);
-
-		std::shared_ptr<UIText> GamePlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 100.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
-		AddUIElement(GamePlayerPlacement);
-	}
-
-	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 220.0f), Utils::CENTER, { 0.4f,0.4f,0.4f, 1.0f }, "Press start to go to next round", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
-	AddUIElement(StartToContinue);
-	/// Generate random new gamemode
-	/// Display next gamemode (GetGamemodeString())
-		
 }
 
 void Level::GamemodeProcess()
@@ -456,13 +221,13 @@ void Level::GamemodeProcess()
 	{
 
 	}
-		break;
+	break;
 	case BOMB_SURVIVAL:
 	{
-		/// Add random spawning of bombs
+		// Add random spawning of bombs
 		RandomSpawnBomb();
 	}
-		break;
+	break;
 	default:
 		break;
 	}
@@ -470,11 +235,9 @@ void Level::GamemodeProcess()
 
 void Level::SpawnBomb()
 {
-	glm::vec2 RandomPos = { 0.0f, 0.0f };
-	RandomPos.x = rand() % int((MaxPosition.x - MinPosition.x) * 1000);
-	RandomPos.x /= 1000.0f;
-	RandomPos.x += MinPosition.x;
-	RandomPos.y = MaxPosition.y;
+	int Random = rand() % PlatformPoints.size();
+	glm::vec2 RandomPos = PlatformPoints[Random];
+	RandomPos.y += 1.5f;
 
 	std::shared_ptr<class Bomb> NewBombu;
 	NewBombu = std::make_shared<Bomb>(Bomb(RandomPos, Utils::CENTER));
@@ -498,13 +261,8 @@ void Level::SpawnRandomWeapon()
 {
 	WeaponType NewWeaponType = WeaponType(rand() % 5);
 
-	glm::vec2 RandomPos = { 0, 0 };
-	RandomPos.x = rand() % int((MaxPosition.x - MinPosition.x) * 1000);
-	RandomPos.x /= 1000.0f;
-	RandomPos.x += MinPosition.x;
-	RandomPos.y = rand() % int((MaxPosition.y - MinPosition.y) * 1000);
-	RandomPos.y /= 1000.0f;
-	RandomPos.y += MinPosition.y;
+	int Random = rand() % PlatformPoints.size();
+	glm::vec2 RandomPos = PlatformPoints[Random];
 
 	std::shared_ptr<class Weapon> NewWeapon;
 	switch (NewWeaponType)
@@ -519,10 +277,10 @@ void Level::SpawnRandomWeapon()
 		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
 		break;
 	case SNIPER:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+		NewWeapon = std::make_shared<Shotgun>(Shotgun(RandomPos, Utils::CENTER));
 		break;
 	case SHOTGUN:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+		NewWeapon = std::make_shared<Shotgun>(Shotgun(RandomPos, Utils::CENTER));
 		break;
 	default:
 		break;
@@ -531,73 +289,7 @@ void Level::SpawnRandomWeapon()
 	NewWeapon->Init(world);
 }
 
-void Level::RunCollisionResponses()
-{
-	for (auto& ColInfo : AllContacts)
-	{
-		ApplyCollision(ColInfo.Object1, ColInfo.Object2);
-		ApplyCollision(ColInfo.Object2, ColInfo.Object1);
-	}
-	AllContacts.clear();
-}
-
-void Level::TogglePause()
-{
-	GamePaused = !GamePaused;
-	for (auto& PauseElement : PauseElements)
-	{
-		PauseElement->SetActive(GamePaused);
-	}
-}
-
-void Level::AddDropoutBlock(glm::vec2 Pos, int TileCount, const char * ImagePath)
-{
-	for (int i = 0; i < TileCount; i++)
-	{
-		std::shared_ptr<DropoutBlock> FallBlock = std::make_shared<DropoutBlock>(DropoutBlock(Pos, Utils::CENTER, ImagePath));
-		FallBlock->Init(world);
-		AddEntity(FallBlock, true);
-		Pos.x += 0.5;
-	}
-}
-
-void Level::AddBlock(glm::vec2 Pos, float Width, float Height, Utils::EANCHOR anchor, const char * ImagePath)
-{
-	if (anchor == Utils::CENTER_LEFT)
-		Pos.x -= 0.25;
-	else if (anchor == Utils::CENTER_RIGHT)
-		Pos.x += 0.25;
-	else if (anchor == Utils::TOP_CENTER)
-		Pos.y += 0.25;
-	int DrawMode = 1;
-	if (Height / Width > 1)
-		DrawMode = 2;
-	std::shared_ptr<Entity> NewPlatform = std::make_shared<Entity>(Entity({ { Pos, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, anchor));
-	std::shared_ptr<Plane> NewPlatformImage = std::make_shared<Plane>(Plane(Width, Height, { 0.5f, 0.7f, 0.9f, 1.0f }, "Resources/Images/Platform.png", DrawMode, false));
-	NewPlatform->AddMesh(NewPlatformImage);
-	AddEntity(NewPlatform, true);
-	NewPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
-}
-
-void Level::AddSpike(glm::vec2 Pos)
-{
-	std::shared_ptr<SpikeHazard> SpikeHazzard = std::make_shared<SpikeHazard>(SpikeHazard({ {Pos, 3} ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
-	SpikeHazzard->Init(world);
-	AddEntity(SpikeHazzard, true);
-}
-
-void Level::RandomWeaponsSpawnCycle()
-{
-	WeaponSpawnTime -= Time::dTimeDelta;
-	if (WeaponSpawnTime <= 0.0f)
-	{
-		int RangeSize = (MaxWeaponSpawnTime - MinWeaponSpawnTime) * 1000;
-		WeaponSpawnTime = (rand() % RangeSize) / 1000 + MinWeaponSpawnTime;
-		SpawnRandomWeapon();
-		std::cout << "New random time " << WeaponSpawnTime << std::endl;
-	}
-}
-
+// Input
 void Level::PControllerInput(InputController _ControllerInput)
 {
 	// Check if players presses start button, tell level (check if paused) and act accordingly
@@ -665,6 +357,321 @@ void Level::ControllerInputAxis(InputDirection NewInput)
 	}
 }
 
+// End of Level
+void Level::OnGameComplete()
+{
+	GamePaused = true;
+	GameIsComplete = true;
+	ShowEndScreen();
+}
+
+void Level::ShowEndScreen()
+{
+	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 200), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 0.8f), Camera::GetInstance()->SCR_WIDTH * 0.8, 180));
+	std::shared_ptr<UIImage> OverallBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 140), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 0.8f), Camera::GetInstance()->SCR_WIDTH * 0.8, 380));
+	std::shared_ptr<UIText> RoundTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 250.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Round " + std::to_string(GameManager::GetInstance()->CurrentRound), "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIText> OverallTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Overall", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+	AddUIElement(RoundBackImage);
+	AddUIElement(OverallBackImage);
+	AddUIElement(RoundTitle);
+	AddUIElement(OverallTitle);
+
+	for (auto& HUDEle : IngameHUD)
+	{
+		HUDEle->SetActive(false);
+	}
+
+	// Have players stats, get from game manager, display each position, and each score
+	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
+	{
+		// Add player
+		glm::vec4 PlayerColour = { 226.0f / 255.0f, 175.0f / 255.0f, 45.0f / 255.0f, 1.0f };//  Gold { 0.2, 0.7, 0.1, 1.0 }; // Green
+		std::string PlaceMessage = "NONE";
+		std::string AdditionMessage = "+0";
+		switch (player.second.CurrentGamePlace)
+		{
+		case 1:
+		{
+			PlaceMessage = "1st";
+			AdditionMessage = "+400";
+			player.second.CurrentScore += 400;
+			break;
+		}
+		case 2:
+		{
+			PlaceMessage = "2nd";
+			AdditionMessage = "+300";
+			player.second.CurrentScore += 300;
+			PlayerColour = { 192.0f / 255.0f, 198.0f / 255.0f, 209.0f / 255.0f, 1.0f };// Silver { 0.2, 0.3, 1.0, 1.0 }; // Blue
+			break;
+		}
+		case 3:
+		{
+			PlaceMessage = "3rd";
+			AdditionMessage = "+200";
+			player.second.CurrentScore += 200;
+			PlayerColour = { 209.0f / 255.0f, 103.0f / 255.0f, 58.0f / 255.0f, 1.0f };// Bronze { 1.0, 0.7, 0.0, 1.0 }; // Yellow
+			break;
+		}
+		case 4:
+		{
+			PlaceMessage = "4th";
+			AdditionMessage = "+100";
+			player.second.CurrentScore += 100;
+			PlayerColour = { 0.6f, 0.6f, 0.6f, 1.0f };// Grey { 0.8, 0.1, 0.1, 1.0 }; // Red
+			break;
+		}
+		default:
+			PlaceMessage = "1st";
+			AdditionMessage = "+400";
+			player.second.CurrentScore += 400;			
+			break;
+		}
+		std::shared_ptr<UIText> RoundPlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT/2 - 180.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		AddUIElement(RoundPlayerPlacement);
+		std::shared_ptr<UIText> RoundPlayerAddScore(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 - 130.0f), Utils::CENTER, PlayerColour, AdditionMessage, "Resources/Fonts/Roboto-Medium.ttf", 25, Utils::CENTER));
+		AddUIElement(RoundPlayerAddScore);
+	}
+
+	// Overall Place and score
+	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
+	{
+		// Add player
+		int Place = 1;
+		for (auto& OtherPlayer : GameManager::GetInstance()->vPlayerInfo)
+		{
+			if (player.second.CurrentScore < OtherPlayer.second.CurrentScore && player.second.PlayerID != OtherPlayer.second.PlayerID) // If score is less than another player (and this player isin't the current)
+				Place++;
+		}
+		player.second.FullGamePlace = Place;
+		glm::vec4 PlayerColour = GetPlaceColour(Place);
+		std::string PlaceMessage = "4th";
+		switch (Place)
+		{
+		case 1:
+		{
+			PlaceMessage = "1st";
+			break;
+		}
+		case 2:
+		{
+			PlaceMessage = "2nd";
+			break;
+		}
+		case 3:
+		{
+			PlaceMessage = "3rd";
+			break;
+		}
+		}
+
+		std::shared_ptr<UIText> GamePlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 80.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		AddUIElement(GamePlayerPlacement);
+
+		std::shared_ptr<UIText> PlayerScore(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 140.0f), Utils::CENTER, PlayerColour, std::to_string(player.second.CurrentScore), "Resources/Fonts/Roboto-Medium.ttf", 35, Utils::CENTER));
+		AddUIElement(PlayerScore);
+
+
+		std::shared_ptr<UIImage> PlayerIcon(new UIImage(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 220), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0.8f), 100, 100, Menu::GetSkinPath(player.second.Skin), 1));
+		AddUIElement(PlayerIcon);
+	}
+
+	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300.0f), Utils::CENTER, { 0.9f, 0.9f, 0.9f, 1.0f }, "Press start to go to next round", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
+	AddUIElement(StartToContinue);
+	// Generate random new gamemode
+	// Display next gamemode (GetGamemodeString())
+		
+}
+
+// Pause System
+void Level::TogglePause()
+{
+	GamePaused = !GamePaused;
+	for (auto& PauseElement : PauseElements)
+	{
+		PauseElement->SetActive(GamePaused);
+	}
+}
+
+void BackToMenu()
+{
+	SceneManager::GetInstance()->SwitchScene("Menu");
+}
+
+void Resume()
+{
+	std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
+	LevelRef->TogglePause();
+}
+
+// Level Creation
+void Level::AddDropoutBlock(glm::vec2 Pos, int TileCount, bool Horizontal, const char * ImagePath)
+{
+	if (!Horizontal)
+	{
+		Pos.y -= 0.5f;
+		glm::vec2 StandPos = Pos;
+		StandPos.y += 0.5f;
+		PlatformPoints.push_back(StandPos);
+	}
+	for (int i = 0; i < TileCount; i++)
+	{
+		std::shared_ptr<DropoutBlock> FallBlock = std::make_shared<DropoutBlock>(DropoutBlock(Pos, Utils::CENTER, ImagePath));
+		FallBlock->Init(world);
+		AddEntity(FallBlock, true);
+
+		if (Horizontal)
+		{
+			glm::vec2 StandPos = Pos;
+			StandPos.y += 0.5f;
+			PlatformPoints.push_back(StandPos);
+		}
+		if (Horizontal)
+			Pos.x += 0.5;
+		else
+			Pos.y += 0.5;
+	}
+}
+
+void Level::AddBlock(glm::vec2 Pos, float Width, float Height, Utils::EANCHOR anchor, bool Standable, const char * ImagePath)
+{
+	if (anchor == Utils::CENTER_LEFT)
+		Pos.x -= 0.25;
+	else if (anchor == Utils::CENTER_RIGHT)
+		Pos.x += 0.25;
+	else if (anchor == Utils::TOP_CENTER)
+		Pos.y += 0.25;
+	int DrawMode = 1;
+	if (Height / Width > 1)
+		DrawMode = 2;
+	std::shared_ptr<Entity> NewPlatform = std::make_shared<Entity>(Entity({ { Pos, 0 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, anchor));
+	std::shared_ptr<Plane> NewPlatformImage = std::make_shared<Plane>(Plane(Width, Height, { 0.5f, 0.7f, 0.9f, 1.0f }, "Resources/Images/Platform.png", DrawMode, false));
+	NewPlatform->AddMesh(NewPlatformImage);
+	AddEntity(NewPlatform, true);
+	NewPlatform->SetupB2BoxBody(world, b2_staticBody, false, false);
+
+	if (Standable)
+	{
+		glm::vec2 StartPos = Utils::GetAncoredPosition2D(Pos, { Width, Height }, anchor);
+		StartPos.x -= Width / 2;
+		glm::vec2 NewStandPos = StartPos;
+		NewStandPos.y += 0.5f;
+		NewStandPos.x += 0.25f;
+		while (NewStandPos.x < StartPos.x + Width)
+		{
+			PlatformPoints.push_back(NewStandPos);
+			NewStandPos.x += 0.5f;
+		}
+	}
+}
+
+void Level::AddSpike(glm::vec2 Pos)
+{
+	std::shared_ptr<SpikeHazard> SpikeHazzard = std::make_shared<SpikeHazard>(SpikeHazard({ {Pos, 3} ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
+	SpikeHazzard->Init(world);
+	AddEntity(SpikeHazzard, true);
+}
+
+void Level::AddSpawnPoint(glm::vec2 Pos)
+{
+	SpawnPoints.push_back(Pos);
+}
+
+// Collision systems
+void Level::RunCollisionResponses()
+{
+	for (auto& ColInfo : AllContacts)
+	{
+		ApplyCollision(ColInfo.Object1, ColInfo.Object2);
+		ApplyCollision(ColInfo.Object2, ColInfo.Object1);
+	}
+	AllContacts.clear();
+}
+
+void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entity> Collided)
+{
+	std::shared_ptr<Player> Player1 = std::dynamic_pointer_cast<Player>(Object);
+	std::shared_ptr<Player> Player2 = std::dynamic_pointer_cast<Player>(Collided);
+	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
+	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Collided);
+	std::shared_ptr<Weapon> Shotgun = std::dynamic_pointer_cast<Weapon>(Collided);
+	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
+	std::shared_ptr<Bomb> Bombuu = std::dynamic_pointer_cast<Bomb>(Collided);
+	std::shared_ptr<Bullet> BulletObj = std::dynamic_pointer_cast<Bullet>(Collided);
+
+	if (Player1 && Collided->body && Player2 && Collided->body)
+	{
+		if (Player1->body->GetLinearVelocity().Length() > Player2->body->GetLinearVelocity().Length() && Player1->GetIsRolling() == true)
+		{
+			Player2->ApplyKnockback(glm::vec2(Player1->body->GetLinearVelocity().x, Player1->body->GetLinearVelocity().y), false);
+		}
+		else if (Player2->GetIsRolling() == true)
+		{
+			Player1->ApplyKnockback((glm::vec2(Player2->body->GetLinearVelocity().x, Player2->body->GetLinearVelocity().y)), false);
+		}
+	}
+	else if (Player1 && Collided->body && DropBlock) // OR if a bullet is the first object
+	{
+		DropBlock->BlockHit();
+	}
+	else if (Player1 && Collided->body && Spike) // OR if a bullet is the first object
+	{
+		std::cout << "Collided with Spike" << std::endl;
+		//SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity((Player1->shared_from_this()));		
+
+		int PlayerId = Player1->GetID();
+		DestroyEntity(Player1);
+		Players.erase(PlayerId);
+		PlayerKnockedOut(PlayerId);
+		SoundManager::GetInstance()->PlayAudio("PlayerDeath");
+	}
+	else if (Player1 && Collided->body && Bombuu)
+	{
+		std::cout << "Collision with bomb" << std::endl;
+
+		glm::vec2 Direction = glm::vec2(Player1->transform.Position.x - Bombuu->transform.Position.x, Player1->transform.Position.y - Bombuu->transform.Position.y);
+
+		Player1->ApplyKnockback((glm::vec2(Direction.x * 20, Direction.y * 20)), false);
+
+		SoundManager::GetInstance()->PlayAudio("Bomb");
+		DestroyEntity(Bombuu);
+	}
+	else if (Player1 && Collided->body && SpeedyGun) // OR if a bullet is the first object
+	{
+		std::cout << "Gun Collision" << std::endl;
+		Player1->EquipWeapon(SpeedyGun);
+
+	}
+
+	if (Collided->body && BulletObj)
+	{
+		if (Player1 && Player1 != BulletObj->GetCurrentPlayer())
+		{
+			Player1->ApplyKnockback(glm::vec2(BulletObj->body->GetLinearVelocity().x, BulletObj->body->GetLinearVelocity().y), true);
+		}
+		if (Player1 != BulletObj->GetCurrentPlayer())
+		{
+			DestroyEntity(BulletObj);
+		}
+
+	}
+}
+
+void Level::PlayerKnockedOut(int PlayerID)
+{
+	// Assign score/place
+	std::shared_ptr<UIText> KnockbackText = GameManager::GetInstance()->vPlayerInfo[PlayerID].KnockbackText;
+	KnockbackText->sText = "X";
+	KnockbackText->Colour = { 0.9f, 0.1f, 0.1f, 1.0f };
+	KnockbackText->iPSize = 80;
+	KnockbackText->SetPosition(KnockbackText->GetPosition() + glm::vec2(-20, 0));
+	GameManager::GetInstance()->vPlayerInfo[PlayerID].CurrentGamePlace = Players.size() + 1;
+	if (Players.size() <= 1)
+	{
+		OnGameComplete();
+	}
+}
+
 void PlayerContactListener::BeginContact(b2Contact * contact)
 {
 	std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
@@ -707,7 +714,9 @@ void PlayerContactListener::PreSolve(b2Contact * contact, const b2Manifold * old
 
 			std::shared_ptr<Bullet> SpeedyBullet = std::dynamic_pointer_cast<Bullet>(IsEntity1->shared_from_this());
 			std::shared_ptr<Bullet> SpeedyBullet2 = std::dynamic_pointer_cast<Bullet>(IsEntity2->shared_from_this());
-			if (SpeedyBullet || SpeedyBullet)
+			std::shared_ptr<Bomb> Bombu = std::dynamic_pointer_cast<Bomb>(IsEntity1->shared_from_this());
+			std::shared_ptr<Bomb> Bombu2 = std::dynamic_pointer_cast<Bomb>(IsEntity2->shared_from_this());
+			if ((SpeedyBullet && !Bombu2) || (SpeedyBullet2 && !Bombu))
 			{
 				contact->SetEnabled(false);
 			}
@@ -717,6 +726,35 @@ void PlayerContactListener::PreSolve(b2Contact * contact, const b2Manifold * old
 
 void PlayerContactListener::PostSolve(b2Contact * contact, const b2ContactImpulse * impulse)
 {
+}
+
+// Various functions
+glm::vec4 Level::GetPlaceColour(int Place)
+{
+	glm::vec4 PlayerColour = { 0.6f, 0.6f, 0.6f, 1.0f };// Grey { 0.8, 0.1, 0.1, 1.0 }; // Red
+	std::string PlaceMessage = "4th";
+	switch (Place)
+	{
+	case 1:
+	{
+		PlaceMessage = "1st";
+		PlayerColour = { 226.0f / 255.0f, 175.0f / 255.0f, 45.0f / 255.0f, 1.0f };//  Gold { 0.2, 0.7, 0.1, 1.0 }; // Green
+		break;
+	}
+	case 2:
+	{
+		PlaceMessage = "2nd";
+		PlayerColour = { 192.0f / 255.0f, 198.0f / 255.0f, 209.0f / 255.0f, 1.0f };// Silver { 0.2, 0.3, 1.0, 1.0 }; // Blue
+		break;
+	}
+	case 3:
+	{
+		PlaceMessage = "3rd";
+		PlayerColour = { 209.0f / 255.0f, 103.0f / 255.0f, 58.0f / 255.0f, 1.0f };// Bronze { 1.0, 0.7, 0.0, 1.0 }; // Yellow
+		break;
+	}
+	}
+	return PlayerColour;
 }
 
 std::string GetGamemodeString(Gamemode _gamemode)

@@ -54,6 +54,7 @@ public:
 protected:
 	std::vector<std::shared_ptr<Entity>> DestroyedEntities;
 	std::vector<std::shared_ptr<UIElement>> UIElementsToBeDestroyed;
+	std::vector<std::shared_ptr<Entity>> EntitiesToBeDestroyed;
 	bool bIsPersistant = false;
 
 private:

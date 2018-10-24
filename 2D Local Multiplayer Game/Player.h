@@ -34,19 +34,22 @@ public:
 	virtual void Update() override;
 	virtual void Reset();
 
+	void ChangePhysicsMode(bool IsBall);
+
 	void ApplyKnockback(glm::vec2 Direction, bool Normalize = true);
 	void AttemptMelee();
 	bool GetIsRolling();
 	void EquipWeapon(std::shared_ptr<class Weapon> NewWeapon);
 	void DropCurrentWeapon();
 	void Fire();
+	std::shared_ptr<class Weapon> CurrentWeapon;
 	int GetID() {
 		return m_iPlayerID;
 	};
 
 private:
 	// Movement
-	float fJumpForce = 600.0f;
+	float fJumpForce = 10.0f;
 	float fSmackRange = 1.0f;
 	float BaseKnockbackSize = 200.0f;
 	float BaseRollKnockbackSize = 50.0f;
@@ -57,11 +60,12 @@ private:
 	bool OutsideForcesApplying = false;
 	float KnockedBackAirControl = 0.3f;
 	float KnockBackControlTime = 0.2f;
+	float PlayerDensity = 6.1f;
 
 	bool CanJump = true;
 	float KnockedBackTimer = 0.0f;
 
-	float RollingJumpForce = 500.0f;
+	float RollingJumpForce = 8.3f;
 	float RollingFriction = 0.7f;
 	float RollingAngularDamping = 2.5f;
 	float RollingAccelerateSpeed = 12.0f;
@@ -71,10 +75,14 @@ private:
 
 	const char* NormalImage = "Resources/Images/office-square.png";
 	const char* BallImage = "Resources/Images/OfficeBall.png";
+	float CurrentHitVisualCooldown = 0;
+	float HitVisualCooldown = 0.25f;
+	void SetHitVisual(bool ShowVisual);
+
 
 	int m_iPlayerID = -1;
 
-	std::shared_ptr<class Weapon> CurrentWeapon;
+	
 };
 
 class CheckGroundRay : public b2RayCastCallback
@@ -119,15 +127,23 @@ public:
 		m_fraction = fraction;
 		Hit = true;
 
-		std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
-		for (auto& player : LevelRef->Players)
+		Entity* IsEntity = reinterpret_cast<Entity*>(fixture->GetBody()->GetUserData());
+		std::shared_ptr<Player> IsPlayer = std::dynamic_pointer_cast<Player>(IsEntity->shared_from_this());
+		if (IsPlayer)
 		{
-			if (fixture->GetBody() == player.second->body && player.second != OwningPlayer)
+			std::shared_ptr<Level> LevelRef = std::dynamic_pointer_cast<Level>(SceneManager::GetInstance()->GetCurrentScene());
+			for (auto& player : LevelRef->Players)
 			{
-				// Push to vector result
-				m_PlayerFixtureHits.push_back(player.second);
+
+				//if (fixture->GetBody() == player.second->body && player.second != OwningPlayer)
+				if (IsPlayer->GetID() == player.second->GetID() && player.second != OwningPlayer)
+				{
+					// Push to vector result
+					m_PlayerFixtureHits.push_back(player.second);
+				}
 			}
 		}
+
 		return fraction;
 	}
 	std::shared_ptr<Player> OwningPlayer;

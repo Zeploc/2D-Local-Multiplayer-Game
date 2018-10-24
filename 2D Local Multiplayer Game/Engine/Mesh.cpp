@@ -61,11 +61,12 @@ void Mesh::Render(Utils::Transform Newtransform)
 	// ABOVE CALLED FROM DERIVED RENDER
 	glUniform1i(glGetUniformLocation(program, "bIsTex"), bHasTexture);
 	glUniform1i(glGetUniformLocation(program, "bFog"), bFog);
+	glUniform4fv(1, 1, glm::value_ptr(Colour));
 	if (bHasTexture)
 	{
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
-
+		glUniform1i(glGetUniformLocation(program, "tex"), 0);
 	}
 	if (bReflection)
 	{

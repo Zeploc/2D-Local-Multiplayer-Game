@@ -20,6 +20,7 @@
 
 // Library Includes //
 #include <vector>
+#include <map>
 
 enum InputDirection
 {
@@ -29,7 +30,6 @@ enum InputDirection
 	RIGHT
 };
 
-
 struct PlayerStatus
 {
 	bool IsPlaying = false;
@@ -37,6 +37,9 @@ struct PlayerStatus
 	std::shared_ptr<UIText> PlayerJoinedText;
 	std::shared_ptr<UIText> PlayerReadyText;
 	std::shared_ptr<class UIImage> PlayerImage;
+	std::shared_ptr<class UIImage> ButtonHintImage;
+	std::shared_ptr<class UIImage> LeftHintImage;
+	std::shared_ptr<class UIImage> RightHintImage;
 	enum PlayerSkin CurrentSkin;
 	// Player asthetic chosen
 };
@@ -62,10 +65,14 @@ public:
 	void ControllerInputAxis(InputDirection NewInput);
 	void CheckPlayersToStartTimer();
 	void ResetPlayerSelectScreen();
+	void UpdateImageStatus(int ID);
 	
 	void StartGame();
 
 	void SwitchScreens(MenuScreens NewScreen);
+
+	static const char* GetSkinPath(enum PlayerSkin Skin);
+	static const char* GetInputImagePath(enum InputController InputType);
 
 private:
 	std::vector<std::shared_ptr<UIElement>> MenuElements;
@@ -75,6 +82,8 @@ private:
 	std::shared_ptr<class UIButton> CurrentSelectedButton;
 
 	std::vector<PlayerStatus> vPlayerStatus;
+
+	std::map<enum PlayerSkin, bool> UsedSkins;
 
 
 	float StartTime = 3.0f;

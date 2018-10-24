@@ -18,7 +18,7 @@
 
 enum PlayerSkin
 {
-	OfficeBall,
+	OfficeSquare,
 	SmexyHexy,
 	GuyAngle,
 	Rhombage
@@ -29,6 +29,7 @@ struct PlayerInfo
 	int PlayerID = -1;
 	int CurrentScore = 0;
 	int CurrentGamePlace = 0;
+	int FullGamePlace = 0;
 	std::shared_ptr<class UIText> KnockbackText;
 	PlayerSkin Skin;
 	// current player image/type/asthetic

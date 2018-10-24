@@ -5,7 +5,7 @@
 #include "Engine/SceneManager.h"
 #include "Engine/Scene.h"
 #include "Player.h"
-
+#include "Weapon.h"
 #include <iostream>
 #include "Engine\Input.h"
 
@@ -30,7 +30,7 @@ Bullet::~Bullet()
 
 void Bullet::Init(b2World & _world)
 {
-	SetupB2BoxBody(_world, b2_dynamicBody, false, true,1.0f,0.3f,true);
+	SetupB2BoxBody(_world, b2_dynamicBody, false, true, 3.0f, 0.3f, true);
 	if (CurrentPlayer->transform.Scale.x < 0)
 	{
 		FiredLeft = true;
@@ -40,18 +40,40 @@ void Bullet::Init(b2World & _world)
 	{
 		FiredRight = true;
 	}
+
+	if (CurrentPlayer->CurrentWeapon->GetCurrentWeapon() == SHOTGUN)
+	{
+		UsingShotgun = true;
+	}
 }
 
 void Bullet::Update()
 {
-	if (FiredLeft)
+	if (UsingShotgun)
 	{
-		this->body->SetLinearVelocity(b2Vec2{ -10,0 });
+		if (FiredLeft)
+		{
+			this->body->SetLinearVelocity(b2Vec2{ -10,10 });
+		}
+		if (FiredRight)
+		{
+			this->body->SetLinearVelocity(b2Vec2{ 10,-10 });
+		}
 	}
-	if (FiredRight)
+	else
 	{
-		this->body->SetLinearVelocity(b2Vec2{ 10,0 });
+		if (FiredLeft)
+		{
+			this->body->SetLinearVelocity(b2Vec2{ -10,0 });
+		}
+		if (FiredRight)
+		{
+			this->body->SetLinearVelocity(b2Vec2{ 10,0 });
+		}
 	}
+	
+
+	
 	
 	Entity::Update();
 	

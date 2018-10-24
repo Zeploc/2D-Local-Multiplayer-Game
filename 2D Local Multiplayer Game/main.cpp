@@ -15,7 +15,7 @@
 // Library Includes //
 #include <iostream>
 #include <time.h>
-#include <vld.h>
+//#include <vld.h>
 
 // OpenGL Library Includes //
 #include <glew.h>
@@ -67,7 +67,6 @@ void OnExit();
 bool bLoading = true;
 
 float CurrentTimer = 0.0f;
-float TickRate = 60.0f;
 double dPrevTime = 0.0f;
 
 /************************************************************
@@ -172,12 +171,12 @@ void Update()
 		double TimeDelta = (dCurrentTime - dPrevTime) / 1000;
 		dPrevTime = glutGet(GLUT_ELAPSED_TIME);
 		CurrentTimer += TimeDelta;
-		if (CurrentTimer > 1.0f / TickRate)
+		if (CurrentTimer > 1.0f / Time::TickRate)
 		{
 			SceneManager::GetInstance()->UpdateCurrentScene();
 			Time::Update();
 			SI->Update(); // HAS TO BE LAST TO HAVE FIRST PRESS AND RELEASE
-			CurrentTimer = 0.0f;
+			CurrentTimer = 1 - CurrentTimer;
 		}
 
 		//SceneManager::GetInstance()->UpdateCurrentScene();

@@ -39,7 +39,7 @@ UIButton::UIButton(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation
 	: UIElement(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, _Colour), ImageComponent(_Position, _anchor, _fRotation, _Colour, iWidth, iHeight), FuncCall(func),
 	TextComponent(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)), btnColour(_Colour), btnHighlightColour(_HightlightColour)
 {
-	SoundManager::GetInstance()->AddChannel("UIC");
+
 }
 
 /************************************************************
@@ -52,7 +52,7 @@ UIButton::UIButton(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation
 	: UIElement(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)), ImageComponent(_Position, _anchor, _fRotation, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), iWidth, iHeight, _ImagePath, 1), FuncCall(func),
 	TextComponent(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)), btnColour(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)), btnHighlightColour(_HightlightColour)
 {
-	SoundManager::GetInstance()->AddChannel("UIC");
+
 }
 
 /************************************************************
@@ -205,7 +205,7 @@ void UIButton::Pressed()
 {
 	if (m_PressSoundPath != "")
 	{
-		SoundManager::GetInstance()->PlayAudio(m_PressSoundPath, "UIC");
+		SoundManager::GetInstance()->PlayAudio(m_PressSoundPath);
 	}
 	bPressed = true;
 	bButtonPressedThisFrame = true;
