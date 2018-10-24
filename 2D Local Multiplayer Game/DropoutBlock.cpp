@@ -38,7 +38,6 @@ DropoutBlock::~DropoutBlock()
 
 void DropoutBlock::Update()
 {
-	return;
 	if (IsHit)
 	{
 		if (CurrentTimer > 0)

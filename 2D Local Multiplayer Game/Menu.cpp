@@ -90,7 +90,7 @@ Menu::Menu() : Scene("Menu")
 	CurrentSelectedButton->HoverOverride = true;
 
 	// Player Select Elements
-	std::shared_ptr<UIText> PlayerTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Player Select", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIText> PlayerTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.1, 0.9, 0.1, 1.0), "Player Select", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
 	StartTimerText = std::make_shared<UIText>(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Starting in 3...", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER);
 	StartTimerText->SetActive(false);
 
@@ -137,7 +137,6 @@ Menu::Menu() : Scene("Menu")
 	PlayerSelectElements.push_back(PlayerTitle);
 
 	// Controls Elements
-
 	std::shared_ptr<UIImage> ControlsTitle1(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 500, 70, "Resources/Images/ControlsTitle.png", 1));
 
 	//std::shared_ptr<UIText> ControlsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Controls", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
@@ -160,6 +159,7 @@ Menu::Menu() : Scene("Menu")
 	// Credits Elements
 	std::shared_ptr<UIImage> CreditsTitle1(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 500, 70, "Resources/Images/CreditsTitle.png", 1));
 	//std::shared_ptr<UIText> CreditsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Credits", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+
 	std::shared_ptr<UIImage> CreditsImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.7, Camera::GetInstance()->SCR_HEIGHT * 0.7, "Resources/Images/Credits.png", 1));
 
 	//AddUIElement(CreditsTitle);
@@ -171,7 +171,7 @@ Menu::Menu() : Scene("Menu")
 	//CreditsElements.push_back(BToBack);
 	CreditsElements.push_back(BToGoBack);
 
-	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50.0f), 0, glm::vec4(0.7, 0.7, 0.7, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
+	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50.0f), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
 	AddUIElement(BToBackPlayerSelect);
 
 	PlayerSelectElements.push_back(BToBackPlayerSelect);
@@ -221,7 +221,7 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 {
 	if (PlayerSelectElements[0]->IsActive())
 	{
-		if (Input == SPECIAL_BUTTON_RIGHT || (Input == BOTTOM_FACE_BUTTON && !vPlayerStatus[ID].IsPlaying) || (Input == RIGHT_FACE_BUTTON && !vPlayerStatus[ID].IsReady))
+		if (Input == SPECIAL_BUTTON_RIGHT || (Input == BOTTOM_FACE_BUTTON && !vPlayerStatus[ID].IsPlaying) || (Input == RIGHT_FACE_BUTTON && !vPlayerStatus[ID].IsReady && vPlayerStatus[ID].IsPlaying))
 		{
 			if (Input != RIGHT_FACE_BUTTON) vPlayerStatus[ID].IsPlaying = !vPlayerStatus[ID].IsPlaying;
 			else vPlayerStatus[ID].IsPlaying = false;
@@ -250,9 +250,13 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 				UsedSkins[vPlayerStatus[ID].CurrentSkin] = false;
 			}
 		}
+		else if (Input == RIGHT_FACE_BUTTON && !vPlayerStatus[ID].IsPlaying)
+		{
+			SwitchScreens(MENU);
+		}
 		else if (Input == BOTTOM_FACE_BUTTON || Input == RIGHT_FACE_BUTTON)
 		{
-			// Check if the player is trrying to ready up or unready
+			// Check if the player is trying to ready up or unready
 			bool AttemptReadyUp = true;
 			if (Input == RIGHT_FACE_BUTTON || vPlayerStatus[ID].IsReady)
 				AttemptReadyUp = false;
