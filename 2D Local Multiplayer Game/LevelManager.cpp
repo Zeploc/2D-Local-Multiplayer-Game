@@ -175,6 +175,58 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddSpawnPoint({ 0, 3 });
 			break;
 		}
+		case 2:
+		{
+			//Dropout Blocks
+			LevelToAddTo->AddDropoutBlock({ -6.5, 3 }, 1);
+			LevelToAddTo->AddDropoutBlock({ -6.5, -1.5 }, 1);
+			LevelToAddTo->AddDropoutBlock({ 6.5, 3 }, 1);
+			LevelToAddTo->AddDropoutBlock({ 6.5, -1.5 }, 1);
+			LevelToAddTo->AddDropoutBlock({ -1, 3 }, 5);
+			LevelToAddTo->AddDropoutBlock({ -6, 1 }, 4);
+			LevelToAddTo->AddDropoutBlock({ -2.5, 1 }, 4);
+			LevelToAddTo->AddDropoutBlock({ 1, 1 }, 4);
+			LevelToAddTo->AddDropoutBlock({ 4.5, 1 }, 4);
+			LevelToAddTo->AddDropoutBlock({ -4.5, -0.5 }, 4);
+			LevelToAddTo->AddDropoutBlock({ 3, -0.5 }, 4);
+			LevelToAddTo->AddDropoutBlock({ -2.5, -2 }, 4);
+			LevelToAddTo->AddDropoutBlock({ 1, -2 }, 4);
+
+			// Spawn Points
+			LevelToAddTo->AddSpawnPoint({ -6.5, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ 6.5, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ -1, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ 1, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ -2.5, 1.5 });
+			LevelToAddTo->AddSpawnPoint({ 2.5, 1.5 });
+			LevelToAddTo->AddSpawnPoint({ -1, 1.5 });
+			LevelToAddTo->AddSpawnPoint({ 1, 1.5 });
+			break;
+		}
+		case 3:
+		{
+			//Dropout Blocks
+			LevelToAddTo->AddDropoutBlock({ -6.5, 3 }, 12);
+			LevelToAddTo->AddDropoutBlock({ 1, 3 }, 12);
+			LevelToAddTo->AddDropoutBlock({ -6, 1 }, 10);
+			LevelToAddTo->AddDropoutBlock({ 1.5, 1 }, 10);
+			LevelToAddTo->AddDropoutBlock({ -5.5, -1 }, 8);
+			LevelToAddTo->AddDropoutBlock({ 2, -1 }, 8);
+			LevelToAddTo->AddDropoutBlock({ -5, -3 }, 6);
+			LevelToAddTo->AddDropoutBlock({ 2.5, -3 }, 6);
+			LevelToAddTo->AddDropoutBlock({ -0.5, -3.5 }, 3);
+
+			// Spawn Points
+			LevelToAddTo->AddSpawnPoint({ -6.5, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ 6.5, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ -1, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ 1, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ -5, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ 5, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ -2.5, 3.5 });
+			LevelToAddTo->AddSpawnPoint({ 2.5, 3.5 });
+			break;
+		}
 		}
 	}
 	break;
