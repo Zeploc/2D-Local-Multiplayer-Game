@@ -96,10 +96,10 @@ void LevelManager::RemoveExcessLevel()
 
 void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToAddTo)
 {
-	int RandomMap = rand() % 2;
+	int RandomMap = rand() % 4;
 	while (RandomMap == LastMapPlayed && LastMapPlayed != -1)
 	{
-		RandomMap = rand() % 2;
+		RandomMap = rand() % 4;
 	}
 	LastMapPlayed = RandomMap;
 	switch (LevelToAddTo->CurrentGamemode)
@@ -259,6 +259,8 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			break;
 		}
 		case 1:
+		case 2:
+		case 3:
 		{
 			// Layer 1
 			LevelToAddTo->AddBlock({ -7, 4 }, 6, 0.5, Utils::CENTER_LEFT, false);
