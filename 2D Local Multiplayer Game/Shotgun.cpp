@@ -23,13 +23,13 @@ void Shotgun::Fire()
 	BulletFromAGun->Init(*body->GetWorld());
 	SceneManager::GetInstance()->GetCurrentScene()->AddEntity(BulletFromAGun);
 
-	/*std::shared_ptr<Bullet> BulletFromAGun1 = std::make_shared<Bullet>(Bullet({glm::vec3 (CurrentPlayer->transform.Position.x,CurrentPlayer->transform.Position.y+30.0f,CurrentPlayer->transform.Position.z),CurrentPlayer->transform.Rotation,CurrentPlayer->transform.Scale }, Utils::CENTER, CurrentPlayer));
+	std::shared_ptr<Bullet> BulletFromAGun1 = std::make_shared<Bullet>(Bullet({CurrentPlayer->transform.Position,glm::vec3(CurrentPlayer->transform.Rotation.x,CurrentPlayer->transform.Rotation.y,CurrentPlayer->transform.Rotation.z + 20),CurrentPlayer->transform.Scale }, Utils::CENTER, CurrentPlayer));
 	BulletFromAGun1->Init(*body->GetWorld());
-	SceneManager::GetInstance()->GetCurrentScene()->AddEntity(BulletFromAGun1);*/
+	SceneManager::GetInstance()->GetCurrentScene()->AddEntity(BulletFromAGun1);
 
-	/*std::shared_ptr<Bullet> BulletFromAGun2 = std::make_shared<Bullet>(Bullet({ glm::vec3(CurrentPlayer->transform.Position.x,CurrentPlayer->transform.Position.y - 20.0f,CurrentPlayer->transform.Position.z) }, Utils::CENTER, CurrentPlayer));
+	std::shared_ptr<Bullet> BulletFromAGun2 = std::make_shared<Bullet>(Bullet({ CurrentPlayer->transform.Position,glm::vec3(CurrentPlayer->transform.Rotation.x,CurrentPlayer->transform.Rotation.y,CurrentPlayer->transform.Rotation.z - 20),CurrentPlayer->transform.Scale }, Utils::CENTER, CurrentPlayer));
 	BulletFromAGun2->Init(*body->GetWorld());
-	SceneManager::GetInstance()->GetCurrentScene()->AddEntity(BulletFromAGun2);*/
+	SceneManager::GetInstance()->GetCurrentScene()->AddEntity(BulletFromAGun2);
 
 	
 }

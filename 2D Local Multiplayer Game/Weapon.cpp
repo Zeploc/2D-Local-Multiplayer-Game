@@ -19,6 +19,7 @@
 #include "Engine\Plane.h"
 #include "Engine/Time.h"
 #include "Engine\SceneManager.h"
+#include "Engine\SoundManager.h"
 
 
 // This Includes //
@@ -37,15 +38,21 @@ Weapon::Weapon(glm::vec2 Position, Utils::EANCHOR _Anchor, WeaponType _Weapon)
 	case ROCKET_LAUNCHER:
 		break;
 	case MACHINE_GUN:
-		Texture = "Resources/Images/gun5.png";
+		Texture = "Resources/Images/Spikes.png";
 		Width = 0.65f;
 		Height = 0.15f;
 		break;
 	case GRENADE_LAUNCHER:
 		break;
 	case SNIPER:
+		Texture = "Resources/Images/Bomb.png";
+		Width = 0.65f;
+		Height = 0.15f;
 		break;
 	case SHOTGUN:
+		Texture = "Resources/Images/gun5.png";
+		Width = 0.65f;
+		Height = 0.15f;
 		break;
 	default:
 		break;
@@ -60,11 +67,27 @@ Weapon::~Weapon()
 
 }
 
-//void Weapon::Fire()
-//{
+void Weapon::Fire()
+{
+	switch (CurrentWeapon)
+	{
+	case ROCKET_LAUNCHER:
+		break;
+	case MACHINE_GUN:
+		break;
+	case GRENADE_LAUNCHER:
+		break;
+	case SNIPER:
+		SoundManager::GetInstance()->PlayAudio("MachineGunFire");
+		break;
+	default:
+		break;
+	}
 
-//
-//}
+	std::shared_ptr<Bullet> BulletFromAGun = std::make_shared<Bullet>(Bullet({ transform }, Utils::CENTER, CurrentPlayer));
+	BulletFromAGun->Init(*body->GetWorld());
+	SceneManager::GetInstance()->GetCurrentScene()->AddEntity(BulletFromAGun);
+}
 
 void Weapon::Update()
 {

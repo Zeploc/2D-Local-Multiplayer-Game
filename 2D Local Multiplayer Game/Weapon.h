@@ -31,7 +31,7 @@ public:
 	Weapon(glm::vec2 Position, Utils::EANCHOR _Anchor, WeaponType _Weapon);
 	~Weapon();
 
-	virtual void Fire() = 0;
+	virtual void Fire();
 	virtual void Update();
 	void Init(b2World & _world);
 	

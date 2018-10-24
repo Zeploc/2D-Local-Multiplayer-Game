@@ -15,7 +15,8 @@ public:
 protected:
 	bool FiredRight = false;
 	bool FiredLeft = false;
-	bool UsingShotgun = false;
+	float BulletSpeed = 10.0f;
+	glm::vec2 BulletVelocity;
 	std::shared_ptr<Player> CurrentPlayer;
 };
 
