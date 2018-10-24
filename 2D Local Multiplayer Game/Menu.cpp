@@ -137,26 +137,39 @@ Menu::Menu() : Scene("Menu")
 	PlayerSelectElements.push_back(PlayerTitle);
 
 	// Controls Elements
-	std::shared_ptr<UIText> ControlsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.1, 0.9, 0.1, 1.0), "Controls", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
-	std::shared_ptr<UIImage> ControlsImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.6, Camera::GetInstance()->SCR_HEIGHT * 0.7, "Resources/Images/Controls.png", 1));
-	std::shared_ptr<UIText> BToBack(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 60.0f), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER));
+	std::shared_ptr<UIImage> ControlsTitle1(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 500, 70, "Resources/Images/ControlsTitle.png", 1));
 
-	AddUIElement(ControlsTitle);
+	//std::shared_ptr<UIText> ControlsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Controls", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIImage> ControlsImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.6, Camera::GetInstance()->SCR_HEIGHT * 0.7, "Resources/Images/Controls.png", 1));
+	//std::shared_ptr<UIText> BToBack(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100.0f), 0, glm::vec4(0.7, 0.7, 0.7, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER));
+	std::shared_ptr<UIImage> BToGoBack(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 500, 70, "Resources/Images/Back.png", 1));
+
+
+	AddUIElement(ControlsTitle1);
+	//AddUIElement(ControlsTitle);
 	AddUIElement(ControlsImage);
-	AddUIElement(BToBack);
-	ControlsElements.push_back(ControlsTitle);
+	//AddUIElement(BToBack);
+	AddUIElement(BToGoBack);
+	ControlsElements.push_back(ControlsTitle1);
+	//ControlsElements.push_back(ControlsTitle);
 	ControlsElements.push_back(ControlsImage);
-	ControlsElements.push_back(BToBack);
+	//ControlsElements.push_back(BToBack);
+	ControlsElements.push_back(BToGoBack);
 
 	// Credits Elements
-	std::shared_ptr<UIText> CreditsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.1, 0.9, 0.1, 1.0), "Credits", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIImage> CreditsTitle1(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 500, 70, "Resources/Images/CreditsTitle.png", 1));
+	//std::shared_ptr<UIText> CreditsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Credits", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+
 	std::shared_ptr<UIImage> CreditsImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.7, Camera::GetInstance()->SCR_HEIGHT * 0.7, "Resources/Images/Credits.png", 1));
 
-	AddUIElement(CreditsTitle);
+	//AddUIElement(CreditsTitle);
 	AddUIElement(CreditsImage);
+	AddUIElement(CreditsTitle1);
 	CreditsElements.push_back(CreditsImage);
-	CreditsElements.push_back(CreditsTitle);
-	CreditsElements.push_back(BToBack);
+	CreditsElements.push_back(CreditsTitle1);
+	//CreditsElements.push_back(CreditsTitle);
+	//CreditsElements.push_back(BToBack);
+	CreditsElements.push_back(BToGoBack);
 
 	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50.0f), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
 	AddUIElement(BToBackPlayerSelect);
