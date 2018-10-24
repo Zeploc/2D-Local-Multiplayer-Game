@@ -181,6 +181,7 @@
     <ClCompile Include="MenuPlayerController.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="Shotgun.cpp" />
     <ClCompile Include="SpikeHazard.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
@@ -228,6 +229,7 @@
     <ClInclude Include="MenuPlayerController.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="Shotgun.h" />
     <ClInclude Include="SpikeHazard.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>

@@ -39,6 +39,7 @@
 #include "Menu.h"
 #include "Bomb.h"
 #include "Bullet.h"
+#include "Shotgun.h"
 
 // Library Includes //
 #include <iostream>
@@ -276,10 +277,10 @@ void Level::SpawnRandomWeapon()
 		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
 		break;
 	case SNIPER:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+		NewWeapon = std::make_shared<Shotgun>(Shotgun(RandomPos, Utils::CENTER));
 		break;
 	case SHOTGUN:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+		NewWeapon = std::make_shared<Shotgun>(Shotgun(RandomPos, Utils::CENTER));
 		break;
 	default:
 		break;
@@ -593,6 +594,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	std::shared_ptr<Player> Player2 = std::dynamic_pointer_cast<Player>(Collided);
 	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
 	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Collided);
+	std::shared_ptr<Weapon> Shotgun = std::dynamic_pointer_cast<Weapon>(Collided);
 	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
 	std::shared_ptr<Bomb> Bombuu = std::dynamic_pointer_cast<Bomb>(Collided);
 	std::shared_ptr<Bullet> BulletObj = std::dynamic_pointer_cast<Bullet>(Collided);

@@ -42,6 +42,7 @@ public:
 	void EquipWeapon(std::shared_ptr<class Weapon> NewWeapon);
 	void DropCurrentWeapon();
 	void Fire();
+	std::shared_ptr<class Weapon> CurrentWeapon;
 	int GetID() {
 		return m_iPlayerID;
 	};
@@ -81,7 +82,7 @@ private:
 
 	int m_iPlayerID = -1;
 
-	std::shared_ptr<class Weapon> CurrentWeapon;
+	
 };
 
 class CheckGroundRay : public b2RayCastCallback
