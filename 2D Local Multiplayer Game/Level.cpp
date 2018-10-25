@@ -34,7 +34,6 @@
 #include "SpikeHazard.h"
 #include "GameManager.h"
 #include "LevelManager.h"
-#include "MachineGun.h"
 #include "DropoutBlock.h"
 #include "Menu.h"
 #include "Bomb.h"
@@ -52,6 +51,30 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 {
 	CurrentGamemode = LevelGM;
 
+	std::string Path = "Resources/Images/";
+
+	switch (CurrentGamemode)
+	{
+	case DROPOUT:
+	{
+		Path += "DropoutTEMP.png";
+	}
+	break;
+	case BOMB_SURVIVAL:
+	{
+		Path += "BombTEMP.png";
+	}
+	break;
+	}
+
+	std::shared_ptr<Entity> BackgroundEnt = std::make_shared<Entity>(Entity({ { 0,0, -2 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
+	std::shared_ptr<Plane> BackgroundImage = std::make_shared<Plane>(Plane(23, 16, { 0.5f, 0.7f, 0.9f, 1.0f }, Path.c_str(), 1, true));
+	BackgroundEnt->AddMesh(BackgroundImage);
+	AddEntity(BackgroundEnt, true);
+
+
+	
+	
 	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "PlayerDeath");
 	// Pause Screen elements
 	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
@@ -165,14 +188,6 @@ void Level::Update()
 	
 	auto Endit = Players.end();
 
-	if (Input::GetInstance()->KeyState[(unsigned char)'l'] == Input::INPUT_FIRST_PRESS)
-	{
-		NewWeapon = std::make_shared<MachineGun>(MachineGun({ 0, 0 }, Utils::CENTER));
-		AddEntity(NewWeapon);
-		NewWeapon->Init(world);
-		
-		Players[0]->EquipWeapon(NewWeapon);
-	}
 
 	for (auto it = Players.begin(); it != Endit;)
 	{
@@ -267,18 +282,14 @@ void Level::SpawnRandomWeapon()
 	std::shared_ptr<class Weapon> NewWeapon;
 	switch (NewWeaponType)
 	{
-	case ROCKET_LAUNCHER:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
-		break;
 	case MACHINE_GUN:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
-		break;
-	case GRENADE_LAUNCHER:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+	case ROCKET_LAUNCHER:
+		NewWeapon = std::make_shared<Weapon>(Weapon(RandomPos, Utils::CENTER, MACHINE_GUN));
 		break;
 	case SNIPER:
 		NewWeapon = std::make_shared<Weapon>(Weapon(RandomPos, Utils::CENTER, SNIPER));
 		break;
+	case GRENADE_LAUNCHER:
 	case SHOTGUN:
 		NewWeapon = std::make_shared<Shotgun>(Shotgun(RandomPos, Utils::CENTER));
 		break;
@@ -594,11 +605,11 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	std::shared_ptr<Player> Player2 = std::dynamic_pointer_cast<Player>(Collided);
 	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
 	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Collided);
-	std::shared_ptr<Weapon> Shotgun = std::dynamic_pointer_cast<Weapon>(Collided);
 	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
 	std::shared_ptr<Bomb> Bombuu = std::dynamic_pointer_cast<Bomb>(Collided);
 	std::shared_ptr<Bullet> BulletObj = std::dynamic_pointer_cast<Bullet>(Collided);
 	std::shared_ptr<Bullet> BulletObj2 = std::dynamic_pointer_cast<Bullet>(Object);
+	std::shared_ptr<Weapon> Gun2 = std::dynamic_pointer_cast<Weapon>(Object);
 	
 
 	if (Player1 && Collided->body && Player2 && Collided->body)
@@ -651,7 +662,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 		{
 			if (Player1)
 			{
-				Player1->ApplyKnockback(glm::vec2(BulletObj->body->GetLinearVelocity().x, BulletObj->body->GetLinearVelocity().y), true);
+				Player1->ApplyKnockback(glm::vec2(BulletObj->body->GetLinearVelocity().x, BulletObj->body->GetLinearVelocity().y), BulletObj->GetKnockbackSize());
 			}
 
 			if (BulletObj2)
@@ -667,7 +678,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 				DropBlock->BlockHit();
 				DestroyEntity(BulletObj);
 			}
-			else
+			else if (!Gun2)
 			{
 				DestroyEntity(BulletObj);
 			}

@@ -12,10 +12,13 @@ public:
 	std::shared_ptr<class Player> GetCurrentPlayer() { return CurrentPlayer; };
 	virtual void Update() override;
 
+	float GetKnockbackSize() { return KnockbackSize; };
+
 protected:
 	bool FiredRight = false;
 	bool FiredLeft = false;
 	float BulletSpeed = 10.0f;
+	float KnockbackSize = 10.0f;
 	glm::vec2 BulletVelocity;
 	std::shared_ptr<Player> CurrentPlayer;
 };

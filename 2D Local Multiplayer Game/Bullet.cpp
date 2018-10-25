@@ -31,7 +31,7 @@ Bullet::~Bullet()
 
 void Bullet::Init(b2World & _world)
 {
-	float Density = 3.0f;
+	
 	if (CurrentPlayer->transform.Scale.x < 0)
 	{
 		FiredLeft = true;
@@ -47,23 +47,26 @@ void Bullet::Init(b2World & _world)
 	case ROCKET_LAUNCHER:
 		break;
 	case MACHINE_GUN:
-		Density = 0.5f;
+		BulletSpeed = 10;
+		KnockbackSize = -80;
 		break;
 	case GRENADE_LAUNCHER:
 		break;
 	case SNIPER:
-		Density = 10.0f;
-		BulletSpeed = 20.0f;
+		BulletSpeed = 30.0f;
+		KnockbackSize = 100;
 		break;
 	case SHOTGUN:
+		BulletSpeed = 10;
+		KnockbackSize = 10;
 	default:
 		break;
 	}
 
-	SetupB2BoxBody(_world, b2_dynamicBody, false, true, Density, 0.0f, true);
+	SetupB2BoxBody(_world, b2_dynamicBody, false, true, 3, 0.0f, true);
 
 	BulletVelocity = { BulletSpeed, 0 };
-	BulletVelocity = glm::rotateZ(glm::vec3(BulletVelocity, 0), body->GetAngle());
+	BulletVelocity = glm::rotateZ(glm::vec3(BulletVelocity, 0), (body->GetAngle() / b2_pi) * 180);
 }
 
 void Bullet::Update()

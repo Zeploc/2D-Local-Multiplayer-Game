@@ -180,7 +180,7 @@ void Player::Update()
 		DropCurrentWeapon();
 	}
 
-	if (!bIsRollingMode && CurrentWeapon && ((Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUMPER] == Input::INPUT_FIRST_PRESS))
+	if (!bIsRollingMode && CurrentWeapon && ((Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUMPER] == Input::INPUT_FIRST_PRESS || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUMPER] == Input::INPUT_HOLD))
 	{
 		Fire();
 	}
@@ -309,24 +309,17 @@ void Player::ChangePhysicsMode(bool IsBall)
 	body->CreateFixture(&fixtureDef);
 }
 
-void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
+void Player::ApplyKnockback(glm::vec2 Direction, float KnockbackSize)
 {
 	SetHitVisual(true);
 	SoundManager::GetInstance()->PlayAudio("KnockbackSound " + std::to_string(m_iPlayerID));
-	if (Normalize)
-	{
-		Direction = glm::normalize(Direction);
-		Direction *= BaseKnockbackSize * KnockbackPercentage;
 
-		if (glm::normalize(Direction).y >= -0.1f && glm::normalize(Direction).y <= 0.1f)
-			Direction.y = 0.5f;
-	}
-	else
-	{
-		if (glm::normalize(Direction).y >= -0.1f && glm::normalize(Direction).y <= 0.1f)
-			Direction.y = abs(Direction.x) * 0.5;
-		Direction *= BaseRollKnockbackSize * KnockbackPercentage;
-	}
+	Direction = glm::normalize(Direction);
+
+	if (glm::normalize(Direction).y >= -0.1f && glm::normalize(Direction).y <= 0.1f)
+		Direction.y = 0.5f;
+
+	Direction *= (BaseKnockbackSize + KnockbackSize) * KnockbackPercentage;
 	KnockbackPercentage += 0.1f;
 
 	std::cout << "Applying knockback to player " << m_iPlayerID << "by " << glm::to_string(Direction) << "\n";
