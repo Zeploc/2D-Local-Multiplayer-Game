@@ -175,7 +175,6 @@
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelManager.cpp" />
-    <ClCompile Include="MachineGun.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MenuPlayerController.cpp" />
@@ -224,7 +223,6 @@
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelManager.h" />
-    <ClInclude Include="MachineGun.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuPlayerController.h" />
     <ClInclude Include="Player.h" />

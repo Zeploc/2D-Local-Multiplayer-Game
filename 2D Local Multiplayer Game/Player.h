@@ -36,7 +36,7 @@ public:
 
 	void ChangePhysicsMode(bool IsBall);
 
-	void ApplyKnockback(glm::vec2 Direction, bool Normalize = true);
+	void ApplyKnockback(glm::vec2 Direction, float KnockbackSize = 0.0f);
 	void AttemptMelee();
 	bool GetIsRolling();
 	void EquipWeapon(std::shared_ptr<class Weapon> NewWeapon);

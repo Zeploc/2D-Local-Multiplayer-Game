@@ -219,6 +219,9 @@ void Menu::OnLoadScene()
 
 	// Setting Screen
 	SwitchScreens(Menu::MENU);
+
+	SoundManager::GetInstance()->PauseAudio("MainTrack");
+	SoundManager::GetInstance()->PlayAudio("MenuTrack");
 }
 
 void Menu::PlayerControllerInput(int ID, InputController Input)
@@ -227,10 +230,16 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 	{
 		if (Input == SPECIAL_BUTTON_RIGHT || (Input == BOTTOM_FACE_BUTTON && !vPlayerStatus[ID].IsPlaying) || (Input == RIGHT_FACE_BUTTON && !vPlayerStatus[ID].IsReady && vPlayerStatus[ID].IsPlaying))
 		{
+			SoundManager::GetInstance()->AddAudio("Resources/Sounds/Button.mp3",false,"ButtonSound");
+			SoundManager::GetInstance()->SetChannelVolume("ButtonSound", 0.35);
+			SoundManager::GetInstance()->AddAudio("Resources/Sounds/menu-click.wav", false, "ReadyUpSound");
+			SoundManager::GetInstance()->SetChannelVolume("ReadyUpSound", 0.35);
+
 			if (Input != RIGHT_FACE_BUTTON) vPlayerStatus[ID].IsPlaying = !vPlayerStatus[ID].IsPlaying;
 			else vPlayerStatus[ID].IsPlaying = false;
-			if (vPlayerStatus[ID].IsPlaying)
+			if (vPlayerStatus[ID].IsPlaying) // Joining
 			{
+				SoundManager::GetInstance()->PlayAudio("ButtonSound");
 				vPlayerStatus[ID].PlayerJoinedText->sText = "Joined";
 				vPlayerStatus[ID].PlayerImage->SetActive(true);
 				vPlayerStatus[ID].ButtonHintImage->SetImage(GetInputImagePath(BOTTOM_FACE_BUTTON), 85, 60);
@@ -240,7 +249,7 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 				StartTimerText->SetActive(false);
 				UpdateImageStatus(ID);
 			}
-			else
+			else // leaving
 			{
 				vPlayerStatus[ID].PlayerJoinedText->sText = "Press Start to join";
 				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
@@ -257,6 +266,7 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 		else if (Input == RIGHT_FACE_BUTTON && !vPlayerStatus[ID].IsPlaying)
 		{
 			SwitchScreens(MENU);
+			//Back to main menu from player select
 		}
 		else if (Input == BOTTOM_FACE_BUTTON || Input == RIGHT_FACE_BUTTON)
 		{
@@ -271,8 +281,9 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 				return;
 			}
 
-			if (AttemptReadyUp)
+			if (AttemptReadyUp) //Readying up
 			{
+				SoundManager::GetInstance()->PlayAudio("ReadyUpSound");
 				vPlayerStatus[ID].IsReady = true;
 				vPlayerStatus[ID].PlayerReadyText->SetActive(true);
 				vPlayerStatus[ID].LeftHintImage->SetActive(false);
@@ -280,7 +291,7 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 				UsedSkins[vPlayerStatus[ID].CurrentSkin] = true;
 				vPlayerStatus[ID].ButtonHintImage->SetImage(GetInputImagePath(RIGHT_FACE_BUTTON), 85, 60);
 			}
-			else
+			else //Unready
 			{
 				vPlayerStatus[ID].IsReady = false;
 				vPlayerStatus[ID].PlayerReadyText->SetActive(false);
@@ -321,6 +332,7 @@ void Menu::PlayerControllerInput(int ID, InputController Input)
 		if (ControlsElements[0]->IsActive() || CreditsElements[0]->IsActive())
 		{
 			SwitchScreens(MENU);
+			//Back to main menu
 		}
 	}
 	else if (Input == BOTTOM_FACE_BUTTON)
@@ -423,6 +435,7 @@ void Menu::UpdateImageStatus(int ID)
 
 void Menu::StartGame()
 {
+
 	GameManager::GetInstance()->RemovePlayers(); // Restart Players map
 	for (int i = 0; i < vPlayerStatus.size(); i++)
 	{
@@ -435,8 +448,7 @@ void Menu::StartGame()
 		}
 	}
 	LevelManager::GetInstance()->NewRound(GetRandomGamemode()); // New level
-	
-	SoundManager::GetInstance()->PlayAudio("MainTrack");
+
 }
 
 void Menu::SwitchScreens(MenuScreens NewScreen)

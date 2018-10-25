@@ -9,5 +9,9 @@ public:
 
 
 	virtual void Fire() override;
+
+
+	
+
 };
 
