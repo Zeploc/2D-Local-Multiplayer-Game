@@ -53,13 +53,17 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	CurrentGamemode = LevelGM;
 
 	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "PlayerDeath");
+
 	// Pause Screen elements
 	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
-	std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Paused", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
-	std::shared_ptr<UIButton> ResumeBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 80), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, Resume));
-	ResumeBtn->AddText("RESUME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
-	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), 480, 70, BackToMenu));
-	QuitBtn->AddText("QUIT", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+	std::shared_ptr<UIImage> Title(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 375, 56, "Resources/Images/Pause.png"));
+	//std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Paused", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
+	std::shared_ptr<UIButton> ResumeBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 80), Utils::CENTER, 0.0f,"Resources/Images/Resume.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, Resume));
+	//ResumeBtn->AddText("RESUME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+	ResumeBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
+	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, "Resources/Images/Quit.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, BackToMenu));
+	//QuitBtn->AddText("QUIT", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
+	QuitBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
 
 	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT), Utils::BOTTOM_CENTER, 0.0f, glm::vec4(0.2f, 0.2f, 0.2f, 0.8f), Camera::GetInstance()->SCR_WIDTH, 70));
 	AddUIElement(RoundBackImage);
