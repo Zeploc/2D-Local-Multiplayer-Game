@@ -95,6 +95,12 @@ void Bullet::Init(b2World & _world)
 
 void Bullet::Update()
 {
+	Entity::Update();
+
+	if (transform.Position.x > 20 || transform.Position.x < -20 || transform.Position.y < -20 || transform.Position.y > 20)
+	{
+		SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity(this->shared_from_this());
+	}
 
 	if (FiredLeft)
 	{
@@ -105,6 +111,5 @@ void Bullet::Update()
 		this->body->SetLinearVelocity(b2Vec2{ BulletVelocity.x, BulletVelocity.y });
 	}	
 	
-	Entity::Update();
 		
 }
