@@ -102,7 +102,7 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 		RandomMap = rand() % 4;
 	}
 	LastMapPlayed = RandomMap;
-	switch (LevelToAddTo->CurrentGamemode)
+	switch (BOMB_SURVIVAL)//LevelToAddTo->CurrentGamemode)
 	{
 	case DROPOUT:
 	{
@@ -233,7 +233,7 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 	case BOMB_SURVIVAL:
 	default:
 	{
-		switch (RandomMap)
+		switch (2)//RandomMap)
 		{
 		case 0:
 		default:
@@ -259,8 +259,6 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			break;
 		}
 		case 1:
-		case 2:
-		case 3:
 		{
 			// Layer 1
 			LevelToAddTo->AddBlock({ -7, 4 }, 6, 0.5, Utils::CENTER_LEFT, false);
@@ -324,7 +322,7 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddBlock({ -7, -0.5 }, 4);
 			LevelToAddTo->AddBlock({ -3, -0.5 }, 4);
 			LevelToAddTo->AddBlock({ 1.5, -0.5 }, 4);
-			LevelToAddTo->AddBlock({ 5.5, -0.5 }, 4);
+			LevelToAddTo->AddBlock({ 5.5, -0.5 }, 4);//
 
 			LevelToAddTo->AddDropoutBlock({ -5, -0.5 }, 4);
 			LevelToAddTo->AddDropoutBlock({ 3.5, -0.5 }, 4);
