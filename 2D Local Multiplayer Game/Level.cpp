@@ -74,7 +74,6 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 
 
 	
-	
 	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "PlayerDeath");
 	// Pause Screen elements
 	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
@@ -124,6 +123,8 @@ Level::~Level()
 void Level::OnLoadScene()
 {
 	Scene::OnLoadScene();
+	SoundManager::GetInstance()->PlayAudio("MainTrack");
+	SoundManager::GetInstance()->PauseAudio("MenuTrack");
 	LevelManager::GetInstance()->RemoveExcessLevel();
 	LevelManager::GetInstance()->AddRandomMapForGamemode(std::dynamic_pointer_cast<Level>(this->shared_from_this()));
 	glm::vec3 SpawnPosition = { -1, 2, 0 };

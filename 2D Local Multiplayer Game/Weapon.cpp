@@ -38,14 +38,14 @@ Weapon::Weapon(glm::vec2 Position, Utils::EANCHOR _Anchor, WeaponType _Weapon)
 	case ROCKET_LAUNCHER:
 		break;
 	case MACHINE_GUN:
-		Texture = "Resources/Images/Spikes.png";
+		Texture = "Resources/Images/MachineGun.png";
 		Width = 0.65f;
 		Height = 0.15f;
 		break;
 	case GRENADE_LAUNCHER:
 		break;
 	case SNIPER:
-		Texture = "Resources/Images/Bomb.png";
+		Texture = "Resources/Images/Sniper.png";
 		Width = 0.65f;
 		Height = 0.15f;
 		break;

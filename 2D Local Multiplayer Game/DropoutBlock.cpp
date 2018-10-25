@@ -18,6 +18,7 @@
 // Engine Includes //
 #include "Engine\Plane.h"
 #include "Engine\Time.h"
+#include "Engine\SoundManager.h"
 
 
 DropoutBlock::DropoutBlock(glm::vec2 Position, Utils::EANCHOR _Anchor, const char* ImagePath, float _Width, float _Height, float _FallDelay, float _RespawnTime)
@@ -84,6 +85,8 @@ void DropoutBlock::BlockHit()
 
 void DropoutBlock::Drop()
 {
+	SoundManager::GetInstance()->AddAudio("Resources/Sounds/Woosh.mp3", false, "DropoutSound");
+	SoundManager::GetInstance()->PlayAudio("DropoutSound");
 	IsFalling = true;
 	IsHit = false;
 	CurrentTimer = RespawnTime;
