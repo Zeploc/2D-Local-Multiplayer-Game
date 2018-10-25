@@ -37,7 +37,7 @@ bool UIButton::bButtonPressedThisFrame = false;
 ************************************************************/
 UIButton::UIButton(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation, glm::vec4 _Colour, glm::vec4 _HightlightColour, int iWidth, int iHeight, void(*func)())
 	: UIElement(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, _Colour), ImageComponent(_Position, _anchor, _fRotation, _Colour, iWidth, iHeight), FuncCall(func),
-	TextComponent(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)), btnColour(_Colour), btnHighlightColour(_HightlightColour)
+	TextComponent(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)), btnHighlightColour(_HightlightColour)
 {
 
 }
@@ -50,7 +50,7 @@ UIButton::UIButton(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation
 ************************************************************/
 UIButton::UIButton(glm::vec2 _Position, Utils::EANCHOR _anchor, float _fRotation, const char * _ImagePath, glm::vec4 _HightlightColour, int iWidth, int iHeight, void(*func)())
 	: UIElement(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)), ImageComponent(_Position, _anchor, _fRotation, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), iWidth, iHeight, _ImagePath, 1), FuncCall(func),
-	TextComponent(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)), btnColour(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)), btnHighlightColour(_HightlightColour)
+	TextComponent(UIImage::GetPositionFromAnchor(_Position, _anchor, iWidth, iHeight), _fRotation, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)), btnHighlightColour(_HightlightColour)
 {
 
 }
@@ -185,7 +185,7 @@ void UIButton::Update()
 		Hovered();
 	}
 	else
-		ImageComponent.Colour = btnColour;
+		ImageComponent.Colour = Colour;
 }
 
 /************************************************************

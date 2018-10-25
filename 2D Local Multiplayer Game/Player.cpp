@@ -327,6 +327,11 @@ void Player::ApplyKnockback(glm::vec2 Direction, float KnockbackSize)
 	OutsideForcesApplying = true;
 	KnockedBackTimer = KnockBackControlTime;
 	GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].KnockbackText->sText = std::to_string(int(KnockbackPercentage * 100)) + "%";
+
+	/*if (body->GetLinearVelocity().x <= 0.1f)
+	{
+		body->GetFixtureList()->SetFriction(NormalFriction);
+	}*/
 }
 
 void Player::AttemptMelee()
