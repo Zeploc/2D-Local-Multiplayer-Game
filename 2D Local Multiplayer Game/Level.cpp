@@ -72,8 +72,7 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	BackgroundEnt->AddMesh(BackgroundImage);
 	AddEntity(BackgroundEnt, true);
 
-
-	
+		
 	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "PlayerDeath");
 
 	// Pause Screen elements
@@ -83,7 +82,7 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	std::shared_ptr<UIButton> ResumeBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 80), Utils::CENTER, 0.0f,"Resources/Images/Resume.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, Resume));
 	//ResumeBtn->AddText("RESUME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	ResumeBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
-	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, "Resources/Images/Quit.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, BackToMenu));
+	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, "Resources/Images/PauseQuit.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, BackToMenu));
 	//QuitBtn->AddText("QUIT", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	QuitBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
 
@@ -514,6 +513,9 @@ void Level::ShowEndScreen()
 	// Generate random new gamemode
 	// Display next gamemode (GetGamemodeString())
 		
+	/*std::shared_ptr<UIText> NextGamemode(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), GetGamemodeString(CurrentGamemode), "Resources/Fonts/Super Mario Bros.ttf", 60, Utils::CENTER));
+	AddUIElement(NextGamemode);*/
+
 }
 
 // Pause System

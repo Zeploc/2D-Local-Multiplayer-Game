@@ -236,7 +236,6 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 		switch (RandomMap)
 		{
 		case 0:
-		case 3:
 		default:
 		{
 			// Blocks
@@ -260,7 +259,6 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			break;
 		}
 		case 1:
-		case 2:
 		{
 			// Layer 1
 			LevelToAddTo->AddBlock({ 0, 4.5 }, 3.5, 0.5, Utils::CENTER, false);
@@ -319,52 +317,48 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddSpawnPoint({ 6, -3 });
 			break;
 		}
-		case 5:
+		case 2:
 		{
 			// Blocks
-			LevelToAddTo->AddBlock({ -7, -0.5 }, 4);
-			LevelToAddTo->AddBlock({ -3, -0.5 }, 4);
-			LevelToAddTo->AddBlock({ 1.5, -0.5 }, 4);
-			LevelToAddTo->AddBlock({ 5.5, -0.5 }, 4);//
+			LevelToAddTo->AddBlock({ -7, -2.5 }, 4);
+			LevelToAddTo->AddBlock({ -3, -1.5 }, 4);
+			LevelToAddTo->AddBlock({ 3, -1.5 }, 4);
+			LevelToAddTo->AddBlock({ 7, -2.5 }, 4);//
 
-			LevelToAddTo->AddDropoutBlock({ -5, -1 }, 4);
-			LevelToAddTo->AddDropoutBlock({ 3.5, -1 }, 4);
+			LevelToAddTo->AddDropoutBlock({ -5.5, 1 }, 4);
+			LevelToAddTo->AddDropoutBlock({ 4, 1 }, 4);
 
 			// Spikes
-			LevelToAddTo->AddSpike({ -7, 1 });
-			LevelToAddTo->AddSpike({ 7, 1 });
-			LevelToAddTo->AddSpike({ -1.5, 1 });
-			LevelToAddTo->AddSpike({ 1.5, 1 });
+			LevelToAddTo->AddSpike({ -7, -2 });
+			LevelToAddTo->AddSpike({ 7, -2 });
+			LevelToAddTo->AddSpike({ -2.5, -1 });
+			LevelToAddTo->AddSpike({ 2.5, -1 });
 
 			// Spawn Points
-			LevelToAddTo->AddSpawnPoint({ -6, 1 });
-			LevelToAddTo->AddSpawnPoint({ -5.5, 1 });
-			LevelToAddTo->AddSpawnPoint({ -3, 1 });
-			LevelToAddTo->AddSpawnPoint({ -2.5, 1 });
-			LevelToAddTo->AddSpawnPoint({ 2.5, 1 });
-			LevelToAddTo->AddSpawnPoint({ 3, 1 });
-			LevelToAddTo->AddSpawnPoint({ 5.5, 1 });
-			LevelToAddTo->AddSpawnPoint({ 6, 1 });
+			LevelToAddTo->AddSpawnPoint({ -4, -1 });
+			LevelToAddTo->AddSpawnPoint({ 4, -1 });
+			LevelToAddTo->AddSpawnPoint({ -8.5, -2 });
+			LevelToAddTo->AddSpawnPoint({ 8.5, -2 });
 			break;
 		}
-		case 6:
+		case 3:
 		{
 			// Blocks
-			LevelToAddTo->AddBlock({ -6, 2.5 }, 5);
-			LevelToAddTo->AddBlock({ -6, -0.5 }, 5);
-			LevelToAddTo->AddBlock({ -6, -3.5 }, 5);
-			LevelToAddTo->AddBlock({ -1, 2.5 }, 5);
-			LevelToAddTo->AddBlock({ -1, -0.5 }, 5);
-			LevelToAddTo->AddBlock({ -1, -3.5 }, 5);
-			LevelToAddTo->AddBlock({ 4, 2.5 }, 5);
-			LevelToAddTo->AddBlock({ 4, -0.5 }, 5);
-			LevelToAddTo->AddBlock({ 4, -3.5 }, 5);
+			LevelToAddTo->AddBlock({ -7, 2.5 }, 5);
+			LevelToAddTo->AddBlock({ -7, -0.5 }, 5);
+			LevelToAddTo->AddBlock({ -7, -3.5 }, 5);
+			LevelToAddTo->AddBlock({ 0, 2.5 }, 5);
+			LevelToAddTo->AddBlock({ 0, -0.5 }, 5);
+			LevelToAddTo->AddBlock({ 0, -3.5 }, 5);
+			LevelToAddTo->AddBlock({ 7, 2.5 }, 5);
+			LevelToAddTo->AddBlock({ 7, -0.5 }, 5);
+			LevelToAddTo->AddBlock({ 7, -3.5 }, 5);
 
 
-			LevelToAddTo->AddDropoutBlock({ -3.5, 1 }, 5);
-			LevelToAddTo->AddDropoutBlock({ -3.5, -2 }, 5);
-			LevelToAddTo->AddDropoutBlock({ 1.5, 1 }, 5);
-			LevelToAddTo->AddDropoutBlock({ 1.5, -2 }, 5);
+			LevelToAddTo->AddDropoutBlock({ -4.5, 1 }, 5);
+			LevelToAddTo->AddDropoutBlock({ -4.5, -2 }, 5);
+			LevelToAddTo->AddDropoutBlock({ 2.5, 1 }, 5);
+			LevelToAddTo->AddDropoutBlock({ 2.5, -2 }, 5);
 
 			// Spikes
 			LevelToAddTo->AddSpike({ 0, 3 });
@@ -372,12 +366,12 @@ void LevelManager::AddRandomMapForGamemode(std::shared_ptr<class Level> LevelToA
 			LevelToAddTo->AddSpike({ 0, -3 });
 
 			// Spawn Points
-			LevelToAddTo->AddSpawnPoint({ -5, 3 });
-			LevelToAddTo->AddSpawnPoint({ -5, 0 });
-			LevelToAddTo->AddSpawnPoint({ -5, -3 });
-			LevelToAddTo->AddSpawnPoint({ 5, 3 });
-			LevelToAddTo->AddSpawnPoint({ 5, 0 });
-			LevelToAddTo->AddSpawnPoint({ 5, -3 });
+			LevelToAddTo->AddSpawnPoint({ -6, 3 });
+			LevelToAddTo->AddSpawnPoint({ -6, 0 });
+			LevelToAddTo->AddSpawnPoint({ -6, -3 });
+			LevelToAddTo->AddSpawnPoint({ 6, 3 });
+			LevelToAddTo->AddSpawnPoint({ 6, 0 });
+			LevelToAddTo->AddSpawnPoint({ 6, -3 });
 			break;
 		}
 		}

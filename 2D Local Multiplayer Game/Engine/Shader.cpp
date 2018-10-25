@@ -154,6 +154,10 @@ GLuint Shader::BindUITextureArray(float fWidth, float fHeight, const char * Text
 		float xValue = (fWidth / fHeight) *  ((float)height / (float)width);
 		UVCoords = glm::vec4(0, xValue, 0, 1);
 	}
+	else if (_DrawMode == 0)
+	{
+		UVCoords = { 0, 1, 0, 1 };
+	}
 	float fHalfWidth = fWidth / 2;
 	float fHalfHeight = fHeight / 2;
 
