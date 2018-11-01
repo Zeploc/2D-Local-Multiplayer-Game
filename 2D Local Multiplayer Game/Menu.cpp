@@ -105,9 +105,9 @@ Menu::Menu() : Scene("Menu")
 	{
 		PlayerStatus NewPlayerStatus;
 		float XPos = Camera::GetInstance()->SCR_WIDTH / 2 - 450 + 300 * i;
-		//std::shared_ptr<UIImage> PlayerBacking(new UIImage(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 20), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 280, 450, "Resources/Images/PlayerBackground.png", 0));
-		//AddUIElement(PlayerBacking);
-		//PlayerSelectElements.push_back(PlayerBacking);
+		std::shared_ptr<UIImage> PlayerBacking(new UIImage(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 20), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 280, 450, "Resources/Images/PlayerBackground.png", 0));
+		AddUIElement(PlayerBacking);
+		PlayerSelectElements.push_back(PlayerBacking);
 		std::shared_ptr<UIText> PlayerLabel(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 160), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "Player " + std::to_string(i + 1), "Resources/Fonts/MarioLuigi2.ttf", 25, Utils::CENTER));
 		AddUIElement(PlayerLabel);
 		PlayerSelectElements.push_back(PlayerLabel);
