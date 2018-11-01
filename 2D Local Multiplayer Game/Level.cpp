@@ -90,7 +90,7 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	AddUIElement(RoundBackImage);
 	IngameHUD.push_back(RoundBackImage);
 
-	FPSText = std::make_shared<UIText>( UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH, Camera::GetInstance()->SCR_HEIGHT), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "FPS", "Resources/Fonts/Super Mario Bros.ttf", 20, Utils::BOTTOM_RIGHT));
+	FPSText = std::make_shared<UIText>( UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH, Camera::GetInstance()->SCR_HEIGHT), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "FPS", "Resources/Fonts/MarioLuigi2.ttf", 20, Utils::BOTTOM_RIGHT));
 	AddUIElement(FPSText);
 
 	AddUIElement(BackImage);
@@ -142,7 +142,7 @@ void Level::OnLoadScene()
 		}
 		// Add player
 		glm::vec4 KnockbackColour = GetPlaceColour(player.second.FullGamePlace);
-		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(140 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::BOTTOM_LEFT, KnockbackColour, "100%", "Resources/Fonts/Super Mario Bros.ttf", 45, Utils::CENTER));
+		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(140 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::BOTTOM_LEFT, KnockbackColour, "100%", "Resources/Fonts/MarioLuigi2.ttf", 45, Utils::CENTER));
 		AddUIElement(KnockbackPercentage);
 		std::shared_ptr<UIImage> KnockbackIcon(new UIImage(glm::vec2(50 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 50, 50, Menu::GetSkinPath(player.second.Skin), 1));
 		AddUIElement(KnockbackIcon);
@@ -396,10 +396,10 @@ void Level::OnGameComplete()
 
 void Level::ShowEndScreen()
 {
-	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 200), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0.5f), Camera::GetInstance()->SCR_WIDTH * 0.8, 180, "Resources/Images/RoundBackImage.png"));
-	std::shared_ptr<UIImage> OverallBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 140), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0.5f), Camera::GetInstance()->SCR_WIDTH * 0.8, 380, "Resources/Images/OverallBackImage.png"));
-	std::shared_ptr<UIText> RoundTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 250.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Round " + std::to_string(GameManager::GetInstance()->CurrentRound), "Resources/Fonts/Super Mario Bros.ttf", 80, Utils::CENTER));
-	std::shared_ptr<UIText> OverallTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Overall", "Resources/Fonts/Super Mario Bros.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 200), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.8, 180, "Resources/Images/RoundBackImage.png"));
+	std::shared_ptr<UIImage> OverallBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 140), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.8, 380, "Resources/Images/OverallBackImage.png"));
+	std::shared_ptr<UIText> RoundTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 240.0f), 0, glm::vec4(1.0, 1.0, 1.0, 1.0), "Round " + std::to_string(GameManager::GetInstance()->CurrentRound), "Resources/Fonts/MarioLuigi2.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIText> OverallTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(1.0, 1.0, 1.0, 1.0), "Overall", "Resources/Fonts/MarioLuigi2.ttf", 80, Utils::CENTER));
 	AddUIElement(RoundBackImage);
 	AddUIElement(OverallBackImage);
 	AddUIElement(RoundTitle);
@@ -412,6 +412,14 @@ void Level::ShowEndScreen()
 
 	float StartPos = 250;
 	float Offset = 250.0f;
+
+	float XPositions[4] = 
+	{
+		Camera::GetInstance()->SCR_HEIGHT / 2 - 300,
+		Camera::GetInstance()->SCR_HEIGHT / 2 - 600,
+		Camera::GetInstance()->SCR_HEIGHT / 2 + 300,
+		Camera::GetInstance()->SCR_HEIGHT / 2 + 600,
+	};
 
 	// Have players stats, get from game manager, display each position, and each score
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
@@ -459,9 +467,10 @@ void Level::ShowEndScreen()
 			player.second.CurrentScore += 400;			
 			break;
 		}
-		std::shared_ptr<UIText> RoundPlayerPlacement(new UIText(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT/2 - 180.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Super Mario Bros.ttf", 45, Utils::CENTER));
+		//StartPos + Offset * player.first
+		std::shared_ptr<UIText> RoundPlayerPlacement(new UIText(glm::vec2(XPositions[player.first] , Camera::GetInstance()->SCR_HEIGHT/2 - 180.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/MarioLuigi2.ttf", 45, Utils::CENTER));
 		AddUIElement(RoundPlayerPlacement);
-		std::shared_ptr<UIText> RoundPlayerAddScore(new UIText(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 - 130.0f), Utils::CENTER, PlayerColour, AdditionMessage, "Resources/Fonts/Super Mario Bros.ttf", 25, Utils::CENTER));
+		std::shared_ptr<UIText> RoundPlayerAddScore(new UIText(glm::vec2(XPositions[player.first], Camera::GetInstance()->SCR_HEIGHT / 2 - 130.0f), Utils::CENTER, PlayerColour, AdditionMessage, "Resources/Fonts/MarioLuigi2.ttf", 25, Utils::CENTER));
 		AddUIElement(RoundPlayerAddScore);
 	}
 
@@ -497,23 +506,23 @@ void Level::ShowEndScreen()
 		}
 		}
 
-		std::shared_ptr<UIText> GamePlayerPlacement(new UIText(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 80.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Super Mario Bros.ttf", 45, Utils::CENTER));
+		std::shared_ptr<UIText> GamePlayerPlacement(new UIText(glm::vec2(XPositions[player.first], Camera::GetInstance()->SCR_HEIGHT / 2 + 80.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/MarioLuigi2.ttf", 45, Utils::CENTER));
 		AddUIElement(GamePlayerPlacement);
 
-		std::shared_ptr<UIText> PlayerScore(new UIText(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 140.0f), Utils::CENTER, PlayerColour, std::to_string(player.second.CurrentScore), "Resources/Fonts/Super Mario Bros.ttf", 35, Utils::CENTER));
+		std::shared_ptr<UIText> PlayerScore(new UIText(glm::vec2(XPositions[player.first], Camera::GetInstance()->SCR_HEIGHT / 2 + 140.0f), Utils::CENTER, PlayerColour, std::to_string(player.second.CurrentScore), "Resources/Fonts/MarioLuigi2.ttf", 35, Utils::CENTER));
 		AddUIElement(PlayerScore);
 
 
-		std::shared_ptr<UIImage> PlayerIcon(new UIImage(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 220), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 100, 100, Menu::GetSkinPath(player.second.Skin), 1));
+		std::shared_ptr<UIImage> PlayerIcon(new UIImage(glm::vec2(XPositions[player.first], Camera::GetInstance()->SCR_HEIGHT / 2 + 220), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 100, 100, Menu::GetSkinPath(player.second.Skin), 1));
 		AddUIElement(PlayerIcon);
 	}
 
-	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300.0f), Utils::CENTER, { 0.9f, 0.9f, 0.9f, 1.0f }, "Press start to go to next round", "Resources/Fonts/Super Mario Bros.ttf", 30, Utils::CENTER));
+	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300.0f), Utils::CENTER, { 0.9f, 0.9f, 0.9f, 1.0f }, "Press start to go to next round", "Resources/Fonts/MarioLuigi2.ttf", 30, Utils::CENTER));
 	AddUIElement(StartToContinue);
 	// Generate random new gamemode
 	// Display next gamemode (GetGamemodeString())
 		
-	/*std::shared_ptr<UIText> NextGamemode(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), GetGamemodeString(CurrentGamemode), "Resources/Fonts/Super Mario Bros.ttf", 60, Utils::CENTER));
+	/*std::shared_ptr<UIText> NextGamemode(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), GetGamemodeString(CurrentGamemode), "Resources/Fonts/MarioLuigi2.ttf", 60, Utils::CENTER));
 	AddUIElement(NextGamemode);*/
 
 }

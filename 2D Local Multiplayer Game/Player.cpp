@@ -285,6 +285,7 @@ void Player::ChangePhysicsMode(bool IsBall)
 		body->SetFixedRotation(false);
 		std::dynamic_pointer_cast<Plane>(EntityMesh)->TextureSource = BallImage;
 		EntityMesh->Rebind();
+		body->ApplyForceToCenter(b2Vec2(0.0f, 5.0f), true);
 	}
 	else
 	{

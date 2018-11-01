@@ -46,6 +46,9 @@ Menu::Menu() : Scene("Menu")
 
 	SoundManager::GetInstance()->SetChannelVolume("MenuTrack", 0.15);
 	SoundManager::GetInstance()->PlayAudio("MenuTrack");
+
+	GameManager::GetInstance()->CurrentRound = 1;
+
 	// Menu Elements
 	//std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Local Multiplayer Game", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
 	
@@ -94,8 +97,8 @@ Menu::Menu() : Scene("Menu")
 	CurrentSelectedButton->HoverOverride = true;
 
 	// Player Select Elements
-	std::shared_ptr<UIText> PlayerTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "Player Select", "Resources/Fonts/Super Mario Bros.ttf", 80, Utils::CENTER));
-	StartTimerText = std::make_shared<UIText>(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100.0f), 0, glm::vec4(0.9, 0.1, 0.1, 1.0), "Starting in 3...", "Resources/Fonts/Super Mario Bros.ttf", 40, Utils::CENTER);
+	std::shared_ptr<UIText> PlayerTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "Player Select", "Resources/Fonts/MarioLuigi2.ttf", 80, Utils::CENTER));
+	StartTimerText = std::make_shared<UIText>(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 200.0f), 0, glm::vec4(0.9, 0.1, 0.1, 1.0), "Starting in 3...", "Resources/Fonts/MarioLuigi2.ttf", 40, Utils::CENTER);
 	StartTimerText->SetActive(false);
 
 	for (int i = 0; i < 4; i++)
@@ -105,13 +108,13 @@ Menu::Menu() : Scene("Menu")
 		//std::shared_ptr<UIImage> PlayerBacking(new UIImage(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 20), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 280, 450, "Resources/Images/PlayerBackground.png", 0));
 		//AddUIElement(PlayerBacking);
 		//PlayerSelectElements.push_back(PlayerBacking);
-		std::shared_ptr<UIText> PlayerLabel(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 160), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "Player " + std::to_string(i + 1), "Resources/Fonts/Super Mario Bros.ttf", 25, Utils::CENTER));
+		std::shared_ptr<UIText> PlayerLabel(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 160), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "Player " + std::to_string(i + 1), "Resources/Fonts/MarioLuigi2.ttf", 25, Utils::CENTER));
 		AddUIElement(PlayerLabel);
 		PlayerSelectElements.push_back(PlayerLabel);
-		std::shared_ptr<UIText> PlayerJoin(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 120), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "Press Start to join", "Resources/Fonts/Super Mario Bros.ttf", 20, Utils::CENTER));
+		std::shared_ptr<UIText> PlayerJoin(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 - 120), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "Press Start to join", "Resources/Fonts/MarioLuigi2.ttf", 20, Utils::CENTER));
 		AddUIElement(PlayerJoin);
 		PlayerSelectElements.push_back(PlayerJoin);
-		std::shared_ptr<UIText> PlayerReady(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 200), 0, glm::vec4(0.9, 0.1, 0.1, 1.0), "Ready", "Resources/Fonts/Super Mario Bros.ttf", 25, Utils::CENTER));
+		std::shared_ptr<UIText> PlayerReady(new UIText(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 200), 0, glm::vec4(0.9, 0.1, 0.1, 1.0), "Ready", "Resources/Fonts/MarioLuigi2.ttf", 25, Utils::CENTER));
 		AddUIElement(PlayerReady);
 		PlayerSelectElements.push_back(PlayerReady);
 		std::shared_ptr<UIImage> PlayerImage(new UIImage(glm::vec2(XPos, Camera::GetInstance()->SCR_HEIGHT / 2 + 0), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 200, 200, "Resources/Images/office-square.png", 1));
@@ -178,7 +181,7 @@ Menu::Menu() : Scene("Menu")
 	//CreditsElements.push_back(BToBack);
 	CreditsElements.push_back(BToGoBack);
 
-	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50.0f), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "B to go back", "Resources/Fonts/Super Mario Bros.ttf", 30, Utils::CENTER));
+	std::shared_ptr<UIText> BToBackPlayerSelect(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100.0f), 0, glm::vec4(0.1, 0.1, 0.9, 1.0), "B to go back", "Resources/Fonts/MarioLuigi2.ttf", 30, Utils::CENTER));
 	AddUIElement(BToBackPlayerSelect);
 
 	PlayerSelectElements.push_back(BToBackPlayerSelect);

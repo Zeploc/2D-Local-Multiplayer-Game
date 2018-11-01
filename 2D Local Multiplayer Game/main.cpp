@@ -79,14 +79,14 @@ int main(int argc, char **argv)
 {
 	srand(unsigned int(time(NULL)));
 	// init GLUT and create Window
-	CAM->Init(1280, 720, glm::vec3(0, 0, 10), glm::vec3(0, 0, -1), glm::vec3(0, 1.0f, 0.0f));
+	CAM->Init(1920, 1080, glm::vec3(0, 0, 10), glm::vec3(0, 0, -1), glm::vec3(0, 1.0f, 0.0f));
 	CAM->SwitchProjection(Camera::ORTHAGRAPHIC);
 	glutInit(&argc, argv);
 	//glutInitWindowPosition(0, 0);
 	glutInitWindowSize(CAM->SCR_WIDTH, CAM->SCR_HEIGHT);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutCreateWindow("Game Window");
-	//glutFullScreen();
+	glutFullScreen();
 
 	// OpenGL init
 	glewInit();		
