@@ -170,7 +170,7 @@ void Player::Update()
 		CanJump = false;
 	}
 
-	if (Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[LEFT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS  && m_iPlayerID == 1))
+	if (!bIsRollingMode && Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[LEFT_FACE_BUTTON] == Input::INPUT_FIRST_PRESS || (Input::GetInstance()->KeyState[(unsigned char)'f'] == Input::INPUT_FIRST_PRESS  && m_iPlayerID == 1))
 	{
 		AttemptMelee();
 	}
@@ -180,7 +180,7 @@ void Player::Update()
 		DropCurrentWeapon();
 	}
 
-	if ((Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) && CurrentWeapon != NULL || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUMPER] == Input::INPUT_FIRST_PRESS && CurrentWeapon != NULL)
+	if (!bIsRollingMode && CurrentWeapon && ((Input::GetInstance()->MouseState[Input::MOUSE_LEFT] == Input::INPUT_FIRST_PRESS && m_iPlayerID == 1) || Input::GetInstance()->Players[m_iPlayerID]->ControllerButtons[RIGHT_BUMPER] == Input::INPUT_FIRST_PRESS))
 	{
 		Fire();
 	}
@@ -334,6 +334,11 @@ void Player::ApplyKnockback(glm::vec2 Direction, bool Normalize)
 	OutsideForcesApplying = true;
 	KnockedBackTimer = KnockBackControlTime;
 	GameManager::GetInstance()->vPlayerInfo[m_iPlayerID].KnockbackText->sText = std::to_string(int(KnockbackPercentage * 100)) + "%";
+
+	/*if (body->GetLinearVelocity().x <= 0.1f)
+	{
+		body->GetFixtureList()->SetFriction(NormalFriction);
+	}*/
 }
 
 void Player::AttemptMelee()
@@ -373,7 +378,7 @@ void Player::DropCurrentWeapon()
 
 void Player::Fire()
 {
-	CurrentWeapon->Fire();
+	if (CurrentWeapon) CurrentWeapon->Fire();
 }
 
 void Player::SetHitVisual(bool ShowVisual)

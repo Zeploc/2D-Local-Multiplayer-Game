@@ -78,6 +78,6 @@ void Bomb::Update()
 
 void Bomb::Init(b2World& world)
 {
-	SetupB2CircleBody(world, b2_dynamicBody, true, true, 10.0f);
+	SetupB2CircleBody(world, b2_dynamicBody, true, true, 5.0f);
 	
 }

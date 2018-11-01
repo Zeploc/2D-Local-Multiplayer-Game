@@ -44,6 +44,7 @@ public:
 	UIText TextComponent;
 	UIImage ImageComponent;
 
+
 	void DrawUIElement();
 	void Update();
 	void SetPosition(glm::vec2 _NewPosition);
@@ -67,7 +68,6 @@ private:
 	bool bHasText = false;
 
 
-	glm::vec4 btnColour;
 	glm::vec4 btnHighlightColour;
 
 	const char* m_PressSoundPath = "";

@@ -176,7 +176,7 @@ void Update()
 			SceneManager::GetInstance()->UpdateCurrentScene();
 			Time::Update();
 			SI->Update(); // HAS TO BE LAST TO HAVE FIRST PRESS AND RELEASE
-			CurrentTimer = 1 - CurrentTimer;
+			CurrentTimer = (1.0f / Time::TickRate) - CurrentTimer;
 		}
 
 		//SceneManager::GetInstance()->UpdateCurrentScene();
