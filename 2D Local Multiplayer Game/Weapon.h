@@ -48,6 +48,7 @@ protected:
 	WeaponType CurrentWeapon;
 	float Timer = 0.0;
 	float CooldownTime = 1.0;
+	float CurrentFireRate = 0.0f;
 
 	std::shared_ptr<class Player> CurrentPlayer;
 };

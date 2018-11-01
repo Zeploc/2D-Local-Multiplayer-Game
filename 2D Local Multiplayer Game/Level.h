@@ -112,6 +112,8 @@ public:
 	int32 positionIterations = 2;
 
 	float CameraCloseRange = 5;
+	float CameraCloseRangeHighest = 3;
+	float CameraCloseRangeLowest = 4;
 	float CameraClosestZoom = 160.0f;
 	float CameraFurthestZoom = 120.0f; // Smaller is further
 	float CameraZoomOutMultiplyer = 15.0f;

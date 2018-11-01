@@ -34,7 +34,6 @@
 #include "SpikeHazard.h"
 #include "GameManager.h"
 #include "LevelManager.h"
-#include "MachineGun.h"
 #include "DropoutBlock.h"
 #include "Menu.h"
 #include "Bomb.h"
@@ -52,16 +51,38 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 {
 	CurrentGamemode = LevelGM;
 
+	std::string Path = "Resources/Images/";
+
+	switch (CurrentGamemode)
+	{
+	case DROPOUT:
+	{
+		Path += "DropoutTEMP.png";
+	}
+	break;
+	case BOMB_SURVIVAL:
+	{
+		Path += "BombTEMP.png";
+	}
+	break;
+	}
+
+	std::shared_ptr<Entity> BackgroundEnt = std::make_shared<Entity>(Entity({ { 0,0, -2 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
+	std::shared_ptr<Plane> BackgroundImage = std::make_shared<Plane>(Plane(23, 16, { 0.5f, 0.7f, 0.9f, 1.0f }, Path.c_str(), 1, true));
+	BackgroundEnt->AddMesh(BackgroundImage);
+	AddEntity(BackgroundEnt, true);
+
+		
 	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "PlayerDeath");
 
 	// Pause Screen elements
-	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.7));
+	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.8, Camera::GetInstance()->SCR_HEIGHT * 0.8, "Resources/Images/PauseBackground.png"));
 	std::shared_ptr<UIImage> Title(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 375, 56, "Resources/Images/Pause.png"));
 	//std::shared_ptr<UIText> Title(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Paused", "Resources/Fonts/Roboto-Black.ttf", 100, Utils::CENTER));
 	std::shared_ptr<UIButton> ResumeBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 80), Utils::CENTER, 0.0f,"Resources/Images/Resume.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, Resume));
 	//ResumeBtn->AddText("RESUME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	ResumeBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
-	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, "Resources/Images/Quit.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, BackToMenu));
+	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, "Resources/Images/PauseQuit.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, BackToMenu));
 	//QuitBtn->AddText("QUIT", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	QuitBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
 
@@ -69,7 +90,7 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	AddUIElement(RoundBackImage);
 	IngameHUD.push_back(RoundBackImage);
 
-	FPSText = std::make_shared<UIText>( UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH, Camera::GetInstance()->SCR_HEIGHT), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "FPS", "Resources/Fonts/Roboto-Thin.ttf", 20, Utils::BOTTOM_RIGHT));
+	FPSText = std::make_shared<UIText>( UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH, Camera::GetInstance()->SCR_HEIGHT), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "FPS", "Resources/Fonts/Super Mario Bros.ttf", 20, Utils::BOTTOM_RIGHT));
 	AddUIElement(FPSText);
 
 	AddUIElement(BackImage);
@@ -86,11 +107,12 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	QuitBtn->SetActive(false);
 	CurrentSelectedButton = ResumeBtn;
 	CurrentSelectedButton->HoverOverride = true;
-		
+	
 
 	world.SetGravity(b2Vec2(0.0f, -gravity));
 
 	Camera::GetInstance()->SetWindowScale(CameraClosestZoom);
+	Camera::GetInstance()->SetCameraPos({ 0, -0.5, 10 });
 
 	timeStep = 1.0f / Time::TickRate;
 
@@ -105,6 +127,8 @@ Level::~Level()
 void Level::OnLoadScene()
 {
 	Scene::OnLoadScene();
+	SoundManager::GetInstance()->PlayAudio("MainTrack");
+	SoundManager::GetInstance()->PauseAudio("MenuTrack");
 	LevelManager::GetInstance()->RemoveExcessLevel();
 	LevelManager::GetInstance()->AddRandomMapForGamemode(std::dynamic_pointer_cast<Level>(this->shared_from_this()));
 	glm::vec3 SpawnPosition = { -1, 2, 0 };
@@ -118,7 +142,7 @@ void Level::OnLoadScene()
 		}
 		// Add player
 		glm::vec4 KnockbackColour = GetPlaceColour(player.second.FullGamePlace);
-		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(140 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::BOTTOM_LEFT, KnockbackColour, "100%", "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(140 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::BOTTOM_LEFT, KnockbackColour, "100%", "Resources/Fonts/Super Mario Bros.ttf", 45, Utils::CENTER));
 		AddUIElement(KnockbackPercentage);
 		std::shared_ptr<UIImage> KnockbackIcon(new UIImage(glm::vec2(50 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 50, 50, Menu::GetSkinPath(player.second.Skin), 1));
 		AddUIElement(KnockbackIcon);
@@ -136,6 +160,9 @@ void Level::OnLoadScene()
 		IngameHUD.push_back(KnockbackPercentage);
 		IngameHUD.push_back(KnockbackIcon);
 	}
+
+	int RangeSize = (MaxWeaponSpawnTime - MinWeaponSpawnTime) * 1000;
+	WeaponSpawnTime = (rand() % RangeSize) / 1000 + MinWeaponSpawnTime;
 }
 
 void Level::Update()
@@ -169,20 +196,22 @@ void Level::Update()
 	
 	auto Endit = Players.end();
 
-	if (Input::GetInstance()->KeyState[(unsigned char)'l'] == Input::INPUT_FIRST_PRESS)
-	{
-		NewWeapon = std::make_shared<MachineGun>(MachineGun({ 0, 0 }, Utils::CENTER));
-		AddEntity(NewWeapon);
-		NewWeapon->Init(world);
-		
-		Players[0]->EquipWeapon(NewWeapon);
-	}
 
 	for (auto it = Players.begin(); it != Endit;)
 	{
 		if ((*it).second->transform.Position.x < -CameraCloseRange || (*it).second->transform.Position.x > CameraCloseRange)
 		{
 			float PDist = abs((*it).second->transform.Position.x) - CameraCloseRange;
+			if (PDist > RangeOutsideClosetView) RangeOutsideClosetView = PDist;
+		}
+		else if ((*it).second->transform.Position.y > CameraCloseRangeHighest)
+		{
+			float PDist = abs((*it).second->transform.Position.y) - CameraCloseRangeHighest;
+			if (PDist > RangeOutsideClosetView) RangeOutsideClosetView = PDist;
+		}
+		else if ((*it).second->transform.Position.y < -CameraCloseRangeLowest)
+		{
+			float PDist = abs((*it).second->transform.Position.y) - CameraCloseRangeLowest;
 			if (PDist > RangeOutsideClosetView) RangeOutsideClosetView = PDist;
 		}
 		// Check if they've fallen out
@@ -271,18 +300,14 @@ void Level::SpawnRandomWeapon()
 	std::shared_ptr<class Weapon> NewWeapon;
 	switch (NewWeaponType)
 	{
-	case ROCKET_LAUNCHER:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
-		break;
 	case MACHINE_GUN:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
-		break;
-	case GRENADE_LAUNCHER:
-		NewWeapon = std::make_shared<MachineGun>(MachineGun(RandomPos, Utils::CENTER));
+	case ROCKET_LAUNCHER:
+		NewWeapon = std::make_shared<Weapon>(Weapon(RandomPos, Utils::CENTER, MACHINE_GUN));
 		break;
 	case SNIPER:
 		NewWeapon = std::make_shared<Weapon>(Weapon(RandomPos, Utils::CENTER, SNIPER));
 		break;
+	case GRENADE_LAUNCHER:
 	case SHOTGUN:
 		NewWeapon = std::make_shared<Shotgun>(Shotgun(RandomPos, Utils::CENTER));
 		break;
@@ -371,10 +396,10 @@ void Level::OnGameComplete()
 
 void Level::ShowEndScreen()
 {
-	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 200), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 0.8f), Camera::GetInstance()->SCR_WIDTH * 0.8, 180));
-	std::shared_ptr<UIImage> OverallBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 140), Utils::CENTER, 0.0f, glm::vec4(0.3f, 0.3f, 0.3f, 0.8f), Camera::GetInstance()->SCR_WIDTH * 0.8, 380));
-	std::shared_ptr<UIText> RoundTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 250.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Round " + std::to_string(GameManager::GetInstance()->CurrentRound), "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
-	std::shared_ptr<UIText> OverallTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Overall", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 200), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0.5f), Camera::GetInstance()->SCR_WIDTH * 0.8, 180, "Resources/Images/RoundBackImage.png"));
+	std::shared_ptr<UIImage> OverallBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 140), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0.5f), Camera::GetInstance()->SCR_WIDTH * 0.8, 380, "Resources/Images/OverallBackImage.png"));
+	std::shared_ptr<UIText> RoundTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 250.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Round " + std::to_string(GameManager::GetInstance()->CurrentRound), "Resources/Fonts/Super Mario Bros.ttf", 80, Utils::CENTER));
+	std::shared_ptr<UIText> OverallTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Overall", "Resources/Fonts/Super Mario Bros.ttf", 80, Utils::CENTER));
 	AddUIElement(RoundBackImage);
 	AddUIElement(OverallBackImage);
 	AddUIElement(RoundTitle);
@@ -384,6 +409,9 @@ void Level::ShowEndScreen()
 	{
 		HUDEle->SetActive(false);
 	}
+
+	float StartPos = 250;
+	float Offset = 250.0f;
 
 	// Have players stats, get from game manager, display each position, and each score
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
@@ -431,9 +459,9 @@ void Level::ShowEndScreen()
 			player.second.CurrentScore += 400;			
 			break;
 		}
-		std::shared_ptr<UIText> RoundPlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT/2 - 180.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		std::shared_ptr<UIText> RoundPlayerPlacement(new UIText(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT/2 - 180.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Super Mario Bros.ttf", 45, Utils::CENTER));
 		AddUIElement(RoundPlayerPlacement);
-		std::shared_ptr<UIText> RoundPlayerAddScore(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 - 130.0f), Utils::CENTER, PlayerColour, AdditionMessage, "Resources/Fonts/Roboto-Medium.ttf", 25, Utils::CENTER));
+		std::shared_ptr<UIText> RoundPlayerAddScore(new UIText(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 - 130.0f), Utils::CENTER, PlayerColour, AdditionMessage, "Resources/Fonts/Super Mario Bros.ttf", 25, Utils::CENTER));
 		AddUIElement(RoundPlayerAddScore);
 	}
 
@@ -469,22 +497,25 @@ void Level::ShowEndScreen()
 		}
 		}
 
-		std::shared_ptr<UIText> GamePlayerPlacement(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 80.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Roboto-Medium.ttf", 45, Utils::CENTER));
+		std::shared_ptr<UIText> GamePlayerPlacement(new UIText(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 80.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/Super Mario Bros.ttf", 45, Utils::CENTER));
 		AddUIElement(GamePlayerPlacement);
 
-		std::shared_ptr<UIText> PlayerScore(new UIText(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 140.0f), Utils::CENTER, PlayerColour, std::to_string(player.second.CurrentScore), "Resources/Fonts/Roboto-Medium.ttf", 35, Utils::CENTER));
+		std::shared_ptr<UIText> PlayerScore(new UIText(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 140.0f), Utils::CENTER, PlayerColour, std::to_string(player.second.CurrentScore), "Resources/Fonts/Super Mario Bros.ttf", 35, Utils::CENTER));
 		AddUIElement(PlayerScore);
 
 
-		std::shared_ptr<UIImage> PlayerIcon(new UIImage(glm::vec2(190 + 300 * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 220), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0.8f), 100, 100, Menu::GetSkinPath(player.second.Skin), 1));
+		std::shared_ptr<UIImage> PlayerIcon(new UIImage(glm::vec2(StartPos + Offset * player.first, Camera::GetInstance()->SCR_HEIGHT / 2 + 220), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 100, 100, Menu::GetSkinPath(player.second.Skin), 1));
 		AddUIElement(PlayerIcon);
 	}
 
-	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300.0f), Utils::CENTER, { 0.9f, 0.9f, 0.9f, 1.0f }, "Press start to go to next round", "Resources/Fonts/Roboto-Regular.ttf", 30, Utils::CENTER));
+	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300.0f), Utils::CENTER, { 0.9f, 0.9f, 0.9f, 1.0f }, "Press start to go to next round", "Resources/Fonts/Super Mario Bros.ttf", 30, Utils::CENTER));
 	AddUIElement(StartToContinue);
 	// Generate random new gamemode
 	// Display next gamemode (GetGamemodeString())
 		
+	/*std::shared_ptr<UIText> NextGamemode(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), GetGamemodeString(CurrentGamemode), "Resources/Fonts/Super Mario Bros.ttf", 60, Utils::CENTER));
+	AddUIElement(NextGamemode);*/
+
 }
 
 // Pause System
@@ -598,11 +629,11 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	std::shared_ptr<Player> Player2 = std::dynamic_pointer_cast<Player>(Collided);
 	std::shared_ptr<DropoutBlock> DropBlock = std::dynamic_pointer_cast<DropoutBlock>(Collided);
 	std::shared_ptr<Weapon> SpeedyGun = std::dynamic_pointer_cast<Weapon>(Collided);
-	std::shared_ptr<Weapon> Shotgun = std::dynamic_pointer_cast<Weapon>(Collided);
 	std::shared_ptr<SpikeHazard> Spike = std::dynamic_pointer_cast<SpikeHazard>(Collided);
 	std::shared_ptr<Bomb> Bombuu = std::dynamic_pointer_cast<Bomb>(Collided);
 	std::shared_ptr<Bullet> BulletObj = std::dynamic_pointer_cast<Bullet>(Collided);
 	std::shared_ptr<Bullet> BulletObj2 = std::dynamic_pointer_cast<Bullet>(Object);
+	std::shared_ptr<Weapon> Gun2 = std::dynamic_pointer_cast<Weapon>(Object);
 	
 
 	if (Player1 && Collided->body && Player2 && Collided->body)
@@ -655,7 +686,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 		{
 			if (Player1)
 			{
-				Player1->ApplyKnockback(glm::vec2(BulletObj->body->GetLinearVelocity().x, BulletObj->body->GetLinearVelocity().y), true);
+				Player1->ApplyKnockback(glm::vec2(BulletObj->body->GetLinearVelocity().x, BulletObj->body->GetLinearVelocity().y), BulletObj->GetKnockbackSize());
 			}
 
 			if (BulletObj2)
@@ -671,7 +702,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 				DropBlock->BlockHit();
 				DestroyEntity(BulletObj);
 			}
-			else
+			else if (!Gun2)
 			{
 				DestroyEntity(BulletObj);
 			}

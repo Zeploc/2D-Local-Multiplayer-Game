@@ -29,13 +29,13 @@ public:
 
 private:
 	float FallDelay = 1.5f;
-	float RespawnTime = 2.0f;
+	float RespawnTime = 3.0f;
 
 	bool IsHit = false;
 	bool IsFalling = false;
 	float CurrentTimer = 0.0f;
 
-	float FallAcceleration = 9.8f;
+	float FallAcceleration = 11.8f;
 	float CurrentFallSpeed = 0.0f;
 };
 
