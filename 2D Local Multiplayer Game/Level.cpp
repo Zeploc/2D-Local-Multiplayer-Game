@@ -68,7 +68,7 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	}
 
 	std::shared_ptr<Entity> BackgroundEnt = std::make_shared<Entity>(Entity({ { 0,0, -2 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> BackgroundImage = std::make_shared<Plane>(Plane(23, 16, { 0.5f, 0.7f, 0.9f, 1.0f }, Path.c_str(), 1, true));
+	std::shared_ptr<Plane> BackgroundImage = std::make_shared<Plane>(Plane(31, 24, { 0.5f, 0.7f, 0.9f, 1.0f }, Path.c_str(), 1, true));
 	BackgroundEnt->AddMesh(BackgroundImage);
 	AddEntity(BackgroundEnt, true);
 
@@ -415,10 +415,10 @@ void Level::ShowEndScreen()
 
 	float XPositions[4] = 
 	{
-		Camera::GetInstance()->SCR_HEIGHT / 2 - 300,
-		Camera::GetInstance()->SCR_HEIGHT / 2 - 600,
-		Camera::GetInstance()->SCR_HEIGHT / 2 + 300,
-		Camera::GetInstance()->SCR_HEIGHT / 2 + 600,
+		Camera::GetInstance()->SCR_WIDTH / 2 - 450,
+		Camera::GetInstance()->SCR_WIDTH / 2 - 150,
+		Camera::GetInstance()->SCR_WIDTH / 2 + 150,
+		Camera::GetInstance()->SCR_WIDTH / 2 + 450,
 	};
 
 	// Have players stats, get from game manager, display each position, and each score
