@@ -84,7 +84,7 @@ protected:
 	std::shared_ptr<CollisionBounds> MeshCollisionBounds;
 	bool bIsLit = false;
 	bool bReflection = false;
-	bool bFog = true;
+	bool bFog = false;
 	
 	struct InitialState
 	{

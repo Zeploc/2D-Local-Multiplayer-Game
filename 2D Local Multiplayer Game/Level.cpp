@@ -68,11 +68,10 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	}
 
 	std::shared_ptr<Entity> BackgroundEnt = std::make_shared<Entity>(Entity({ { 0,0, -2 } ,{ 0, 0, 0 },{ 1, 1, 1 } }, Utils::CENTER));
-	std::shared_ptr<Plane> BackgroundImage = std::make_shared<Plane>(Plane(31, 24, { 0.5f, 0.7f, 0.9f, 1.0f }, Path.c_str(), 1, true));
+	std::shared_ptr<Plane> BackgroundImage = std::make_shared<Plane>(Plane(34, 25, { 0.5f, 0.7f, 0.9f, 1.0f }, Path.c_str(), 1, true));
 	BackgroundEnt->AddMesh(BackgroundImage);
 	AddEntity(BackgroundEnt, true);
-
-		
+	
 	SoundManager::GetInstance()->AddAudio("Resources/Sounds/DeathSound.wav", false, "PlayerDeath");
 
 	// Pause Screen elements
@@ -86,7 +85,7 @@ Level::Level(std::string sSceneName, Gamemode LevelGM) : Scene(sSceneName), worl
 	//QuitBtn->AddText("QUIT", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
 	QuitBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
 
-	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT), Utils::BOTTOM_CENTER, 0.0f, glm::vec4(0.2f, 0.2f, 0.2f, 0.8f), Camera::GetInstance()->SCR_WIDTH, 70));
+	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT), Utils::BOTTOM_CENTER, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 0.6f), Camera::GetInstance()->SCR_WIDTH, 70));
 	AddUIElement(RoundBackImage);
 	IngameHUD.push_back(RoundBackImage);
 
@@ -142,9 +141,9 @@ void Level::OnLoadScene()
 		}
 		// Add player
 		glm::vec4 KnockbackColour = GetPlaceColour(player.second.FullGamePlace);
-		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(140 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::BOTTOM_LEFT, KnockbackColour, "100%", "Resources/Fonts/MarioLuigi2.ttf", 45, Utils::CENTER));
+		std::shared_ptr<UIText> KnockbackPercentage(new UIText(glm::vec2(310 + 450 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::BOTTOM_LEFT, KnockbackColour, "100%", "Resources/Fonts/MarioLuigi2.ttf", 45, Utils::CENTER));
 		AddUIElement(KnockbackPercentage);
-		std::shared_ptr<UIImage> KnockbackIcon(new UIImage(glm::vec2(50 + 330 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 50, 50, Menu::GetSkinPath(player.second.Skin), 1));
+		std::shared_ptr<UIImage> KnockbackIcon(new UIImage(glm::vec2(220 + 450 * player.first, Camera::GetInstance()->SCR_HEIGHT - 35), Utils::CENTER, 0, { 1.0f, 1.0f, 1.0f, 1.0f }, 50, 50, Menu::GetSkinPath(player.second.Skin), 1));
 		AddUIElement(KnockbackIcon);
 		std::shared_ptr<Player> PlayerEnt = std::make_shared<Player>(Player(SpawnPosition, player.second.PlayerID));
 		AddEntity(PlayerEnt, true);
@@ -204,15 +203,28 @@ void Level::Update()
 			float PDist = abs((*it).second->transform.Position.x) - CameraCloseRange;
 			if (PDist > RangeOutsideClosetView) RangeOutsideClosetView = PDist;
 		}
-		else if ((*it).second->transform.Position.y > CameraCloseRangeHighest)
+
+		if ((*it).second->transform.Position.y > CameraCloseRangeHighest)
 		{
 			float PDist = abs((*it).second->transform.Position.y) - CameraCloseRangeHighest;
-			if (PDist > RangeOutsideClosetView) RangeOutsideClosetView = PDist;
+			if (PDist > RangeOutsideClosetView)
+			{
+				if (PDist > RangeOutsideClosetView)
+				{
+					RangeOutsideClosetView = PDist;
+				}
+			}
 		}
 		else if ((*it).second->transform.Position.y < -CameraCloseRangeLowest)
 		{
 			float PDist = abs((*it).second->transform.Position.y) - CameraCloseRangeLowest;
-			if (PDist > RangeOutsideClosetView) RangeOutsideClosetView = PDist;
+			if (PDist > RangeOutsideClosetView)
+			{
+				if (PDist > RangeOutsideClosetView)
+				{
+					RangeOutsideClosetView = PDist;
+				}
+			}
 		}
 		// Check if they've fallen out
 		if ((*it).second->transform.Position.y < PlayerFalloutYPosition)
@@ -425,7 +437,6 @@ void Level::ShowEndScreen()
 	for (auto& player : GameManager::GetInstance()->vPlayerInfo)
 	{
 		// Add player
-		glm::vec4 PlayerColour = { 226.0f / 255.0f, 175.0f / 255.0f, 45.0f / 255.0f, 1.0f };//  Gold { 0.2, 0.7, 0.1, 1.0 }; // Green
 		std::string PlaceMessage = "NONE";
 		std::string AdditionMessage = "+0";
 		switch (player.second.CurrentGamePlace)
@@ -442,7 +453,6 @@ void Level::ShowEndScreen()
 			PlaceMessage = "2nd";
 			AdditionMessage = "+300";
 			player.second.CurrentScore += 300;
-			PlayerColour = { 192.0f / 255.0f, 198.0f / 255.0f, 209.0f / 255.0f, 1.0f };// Silver { 0.2, 0.3, 1.0, 1.0 }; // Blue
 			break;
 		}
 		case 3:
@@ -450,7 +460,6 @@ void Level::ShowEndScreen()
 			PlaceMessage = "3rd";
 			AdditionMessage = "+200";
 			player.second.CurrentScore += 200;
-			PlayerColour = { 209.0f / 255.0f, 103.0f / 255.0f, 58.0f / 255.0f, 1.0f };// Bronze { 1.0, 0.7, 0.0, 1.0 }; // Yellow
 			break;
 		}
 		case 4:
@@ -458,15 +467,16 @@ void Level::ShowEndScreen()
 			PlaceMessage = "4th";
 			AdditionMessage = "+100";
 			player.second.CurrentScore += 100;
-			PlayerColour = { 0.6f, 0.6f, 0.6f, 1.0f };// Grey { 0.8, 0.1, 0.1, 1.0 }; // Red
 			break;
 		}
 		default:
 			PlaceMessage = "1st";
 			AdditionMessage = "+400";
-			player.second.CurrentScore += 400;			
+			player.second.CurrentScore += 400;		
+			player.second.CurrentGamePlace = 1;
 			break;
 		}
+		glm::vec4 PlayerColour = GetPlaceColour(player.second.CurrentGamePlace);
 		//StartPos + Offset * player.first
 		std::shared_ptr<UIText> RoundPlayerPlacement(new UIText(glm::vec2(XPositions[player.first] , Camera::GetInstance()->SCR_HEIGHT/2 - 180.0f), Utils::CENTER, PlayerColour, PlaceMessage, "Resources/Fonts/MarioLuigi2.ttf", 45, Utils::CENTER));
 		AddUIElement(RoundPlayerPlacement);
@@ -663,13 +673,16 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 	else if (Player1 && Collided->body && Spike) // OR if a bullet is the first object
 	{
 		std::cout << "Collided with Spike" << std::endl;
-		//SceneManager::GetInstance()->GetCurrentScene()->DestroyEntity((Player1->shared_from_this()));		
 
-		int PlayerId = Player1->GetID();
+		glm::vec2 Direction = Player1->transform.Position - Spike->transform.Position;
+
+		Player1->ApplyKnockback((glm::vec2(Direction.x, Direction.y)), 100);
+
+		/*int PlayerId = Player1->GetID();
 		DestroyEntity(Player1);
 		Players.erase(PlayerId);
 		PlayerKnockedOut(PlayerId);
-		SoundManager::GetInstance()->PlayAudio("PlayerDeath");
+		SoundManager::GetInstance()->PlayAudio("PlayerDeath");*/
 	}
 	else if (Player1 && Collided->body && Bombuu)
 	{
@@ -677,7 +690,7 @@ void Level::ApplyCollision(std::shared_ptr<Entity> Object, std::shared_ptr<Entit
 
 		glm::vec2 Direction = glm::vec2(Player1->transform.Position.x - Bombuu->transform.Position.x, Player1->transform.Position.y - Bombuu->transform.Position.y);
 
-		Player1->ApplyKnockback((glm::vec2(Direction.x * 20, Direction.y * 20)), false);
+		Player1->ApplyKnockback((glm::vec2(Direction.x, Direction.y)), 30);
 
 		SoundManager::GetInstance()->PlayAudio("Bomb");
 		DestroyEntity(Bombuu);
@@ -727,8 +740,8 @@ void Level::PlayerKnockedOut(int PlayerID)
 	std::shared_ptr<UIText> KnockbackText = GameManager::GetInstance()->vPlayerInfo[PlayerID].KnockbackText;
 	KnockbackText->sText = "X";
 	KnockbackText->Colour = { 0.9f, 0.1f, 0.1f, 1.0f };
-	KnockbackText->iPSize = 80;
-	KnockbackText->SetPosition(KnockbackText->GetPosition() + glm::vec2(-20, 0));
+	KnockbackText->iPSize = 70;
+	KnockbackText->SetPosition(KnockbackText->GetPosition() + glm::vec2(-30, 10));
 	GameManager::GetInstance()->vPlayerInfo[PlayerID].CurrentGamePlace = Players.size() + 1;
 	if (Players.size() <= 1)
 	{
@@ -795,25 +808,21 @@ void PlayerContactListener::PostSolve(b2Contact * contact, const b2ContactImpuls
 // Various functions
 glm::vec4 Level::GetPlaceColour(int Place)
 {
-	glm::vec4 PlayerColour = { 0.6f, 0.6f, 0.6f, 1.0f };// Grey { 0.8, 0.1, 0.1, 1.0 }; // Red
-	std::string PlaceMessage = "4th";
+	glm::vec4 PlayerColour = { 0.3f, 0.3f, 0.3f, 1.0f };// Grey { 0.8, 0.1, 0.1, 1.0 }; // Red
 	switch (Place)
 	{
 	case 1:
 	{
-		PlaceMessage = "1st";
 		PlayerColour = { 226.0f / 255.0f, 175.0f / 255.0f, 45.0f / 255.0f, 1.0f };//  Gold { 0.2, 0.7, 0.1, 1.0 }; // Green
 		break;
 	}
 	case 2:
 	{
-		PlaceMessage = "2nd";
-		PlayerColour = { 192.0f / 255.0f, 198.0f / 255.0f, 209.0f / 255.0f, 1.0f };// Silver { 0.2, 0.3, 1.0, 1.0 }; // Blue
+		PlayerColour = { 212.0f / 255.0f, 218.0f / 255.0f, 229.0f / 255.0f, 1.0f };// Silver { 0.2, 0.3, 1.0, 1.0 }; // Blue
 		break;
 	}
 	case 3:
 	{
-		PlaceMessage = "3rd";
 		PlayerColour = { 209.0f / 255.0f, 103.0f / 255.0f, 58.0f / 255.0f, 1.0f };// Bronze { 1.0, 0.7, 0.0, 1.0 }; // Yellow
 		break;
 	}

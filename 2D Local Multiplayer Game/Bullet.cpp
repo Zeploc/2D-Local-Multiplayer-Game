@@ -38,7 +38,7 @@ Bullet::Bullet(Utils::Transform _Transform, Utils::EANCHOR _Anchor, std::shared_
 		
 		break;
 	}
-	float Width = 0.2f;
+	float Width = 0.3f;
 	float Height = 0.1f;
 	glm::vec4 UVCoords = glm::vec4{ 0, 1, 0, 1 };
 	
@@ -88,6 +88,7 @@ void Bullet::Init(b2World & _world)
 	}
 
 	SetupB2BoxBody(_world, b2_dynamicBody, false, true, 3, 0.0f, true);
+	body->SetGravityScale(0);
 
 	BulletVelocity = { BulletSpeed, 0 };
 	BulletVelocity = glm::rotateZ(glm::vec3(BulletVelocity, 0), (body->GetAngle() * b2_pi) / 180);

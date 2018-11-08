@@ -39,20 +39,20 @@ Weapon::Weapon(glm::vec2 Position, Utils::EANCHOR _Anchor, WeaponType _Weapon)
 		break;
 	case MACHINE_GUN:
 		Texture = "Resources/Images/MachineGun.png";
-		Width = 0.65f;
-		Height = 0.15f;
+		Width = 1.0f;
+		Height = 0.34f;
 		break;
 	case GRENADE_LAUNCHER:
 		break;
 	case SNIPER:
 		Texture = "Resources/Images/Sniper.png";
-		Width = 0.65f;
-		Height = 0.15f;
+		Width = 1.0f;
+		Height = 0.34f;
 		break;
 	case SHOTGUN:
 		Texture = "Resources/Images/gun5.png";
-		Width = 0.65f;
-		Height = 0.15f;
+		Width = 1.0f;
+		Height = 0.34f;
 		break;
 	default:
 		break;
