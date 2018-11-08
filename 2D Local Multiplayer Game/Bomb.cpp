@@ -55,6 +55,7 @@ void Bomb::Update()
 				}
 			}
 			SoundManager::GetInstance()->PlayAudio("Bomb");
+			SoundManager::GetInstance()->SetChannelVolume("Bomb", 0.3);
 			CurrentLevel->DestroyEntity(this->shared_from_this());
 		}
 	}

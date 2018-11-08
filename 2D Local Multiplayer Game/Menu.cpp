@@ -56,19 +56,19 @@ Menu::Menu() : Scene("Menu")
 
 	std::shared_ptr<UIButton> StartBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, "Resources/Images/Play.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, SelectPlayersBtn));
 	//StartBtn->AddText("START GAME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
-	StartBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
+	StartBtn->Colour = { 0.4f, 0.4f, 0.4f, 1.0f };
 	
 	std::shared_ptr<UIButton> ControlsBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 80), Utils::CENTER, 0.0f, "Resources/Images/Controls1.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, ControlsScreenBtn));
 	//ControlsBtn->AddText("CONTROLS", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
-	ControlsBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
+	ControlsBtn->Colour = { 0.4f, 0.4f, 0.4f, 1.0f };
 	
 	std::shared_ptr<UIButton> CreditsBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 160), Utils::CENTER, 0.0f, "Resources/Images/Credits1.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, CreditsScreenBtn));
 	//CreditsBtn->AddText("CREDITS", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
-	CreditsBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
+	CreditsBtn->Colour = { 0.4f, 0.4f, 0.4f, 1.0f };
 	
 	std::shared_ptr<UIButton> QuitBtn(new UIButton(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 240), Utils::CENTER, 0.0f, "Resources/Images/Quit.png", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 480, 70, ExitGameBtn));
 	//QuitBtn->AddText("QUIT GAME", "Resources/Fonts/Roboto-Thin.ttf", 34, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Utils::CENTER, { 0, 0 });
-	QuitBtn->Colour = { 0.6f, 0.6f, 0.6f, 1.0f };
+	QuitBtn->Colour = { 0.4f, 0.4f, 0.4f, 1.0f };
 	
 	std::shared_ptr<UIImage> BackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH, Camera::GetInstance()->SCR_HEIGHT, "Resources/Images/TitleBack.png", 1));
 	std::shared_ptr<UIImage> UIIMG(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 600, 100, "Resources/Box.png", 1));
@@ -152,7 +152,7 @@ Menu::Menu() : Scene("Menu")
 	//std::shared_ptr<UIText> ControlsTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, 100.0f), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Controls", "Resources/Fonts/Roboto-Black.ttf", 80, Utils::CENTER));
 	std::shared_ptr<UIImage> ControlsImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.6, Camera::GetInstance()->SCR_HEIGHT * 0.7, "Resources/Images/Controls.png", 1));
 	//std::shared_ptr<UIText> BToBack(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100.0f), 0, glm::vec4(0.7, 0.7, 0.7, 1.0), "B to go back", "Resources/Fonts/Roboto-Regular.ttf", 40, Utils::CENTER));
-	std::shared_ptr<UIImage> BToGoBack(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 50), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 500, 70, "Resources/Images/Back.png", 1));
+	std::shared_ptr<UIImage> BToGoBack(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT - 100), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 500, 70, "Resources/Images/Back.png", 1));
 
 
 	AddUIElement(ControlsTitle1);

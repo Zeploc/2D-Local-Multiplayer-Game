@@ -162,7 +162,7 @@ void Level::OnLoadScene()
 	}
 
 	int RangeSize = (MaxWeaponSpawnTime - MinWeaponSpawnTime) * 1000;
-	WeaponSpawnTime = (rand() % RangeSize) / 1000 + MinWeaponSpawnTime;
+	WeaponSpawnTime = (rand() % 2) / 1000 + MinWeaponSpawnTime;
 }
 
 void Level::Update()

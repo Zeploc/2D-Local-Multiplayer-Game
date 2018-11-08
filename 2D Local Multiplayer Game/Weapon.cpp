@@ -82,6 +82,7 @@ void Weapon::Fire()
 		break;
 	case MACHINE_GUN:
 		SoundManager::GetInstance()->PlayAudio("MachineGunFire");
+		SoundManager::GetInstance()->SetChannelVolume("MachineGunFire", 0.5f);
 		CurrentFireRate = 0.4f;
 		break;
 	case GRENADE_LAUNCHER:
