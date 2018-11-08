@@ -82,14 +82,14 @@ void Weapon::Fire()
 		break;
 	case MACHINE_GUN:
 		SoundManager::GetInstance()->PlayAudio("MachineGunFire");
-		CurrentFireRate = 0.1f;
+		CurrentFireRate = 0.4f;
 		break;
 	case GRENADE_LAUNCHER:
 		CurrentFireRate = 1.5f;
 		break;
 	case SNIPER:
 		SoundManager::GetInstance()->PlayAudio("MachineGunFire");
-		CurrentFireRate = 2.0f;
+		CurrentFireRate = 1.5f;
 		break;
 	default:
 		break;

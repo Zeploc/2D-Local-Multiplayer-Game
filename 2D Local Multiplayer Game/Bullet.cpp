@@ -72,13 +72,13 @@ void Bullet::Init(b2World & _world)
 		break;
 	case MACHINE_GUN:
 		BulletSpeed = 10;
-		KnockbackSize = -80;
+		KnockbackSize = -70;
 		break;
 	case GRENADE_LAUNCHER:
 		break;
 	case SNIPER:
 		BulletSpeed = 30.0f;
-		KnockbackSize = 100;
+		KnockbackSize = 130;
 		break;
 	case SHOTGUN:
 		BulletSpeed = 10;

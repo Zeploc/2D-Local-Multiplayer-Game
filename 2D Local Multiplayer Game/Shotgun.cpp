@@ -38,6 +38,6 @@ void Shotgun::Fire()
 	BulletFromAGun2->Init(*body->GetWorld());
 	SceneManager::GetInstance()->GetCurrentScene()->AddEntity(BulletFromAGun2);
 
-	CurrentFireRate = 1.5f;
+	CurrentFireRate = 2.0f;
 }
 
