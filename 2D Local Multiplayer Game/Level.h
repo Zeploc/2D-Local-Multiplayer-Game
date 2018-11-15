@@ -124,6 +124,7 @@ public:
 	bool GameIsComplete = false;
 
 	Gamemode CurrentGamemode;
+	Gamemode NextSelectedGamemode;
 
 private:
 	PlayerContactListener CustomContactListener;

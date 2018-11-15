@@ -270,7 +270,7 @@ void Player::ChangePhysicsMode(bool IsBall)
 			body->GetFixtureList()->SetFilterData(NoCollisionFilter);*/
 
 	bIsRollingMode = IsBall;
-
+		
 	b2Fixture *fixtureA = body->GetFixtureList();
 	body->DestroyFixture(fixtureA);
 

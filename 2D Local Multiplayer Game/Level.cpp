@@ -339,7 +339,7 @@ void Level::PControllerInput(InputController _ControllerInput)
 		if (GameIsComplete)
 		{
 			// next random round
-			LevelManager::GetInstance()->NewRound(GetRandomGamemode());
+			LevelManager::GetInstance()->NewRound(NextSelectedGamemode);
 			GameManager::GetInstance()->CurrentRound++;
 			if (GameManager::GetInstance()->CurrentRound > GameManager::GetInstance()->NumRounds)
 			{
@@ -408,12 +408,13 @@ void Level::OnGameComplete()
 
 void Level::ShowEndScreen()
 {
-	std::shared_ptr<UIImage> RoundBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 200), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.8, 180, "Resources/Images/RoundBackImage.png"));
-	std::shared_ptr<UIImage> OverallBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 140), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.8, 380, "Resources/Images/OverallBackImage.png"));
+	NextSelectedGamemode = GetRandomGamemode();
+	std::shared_ptr<UIImage> RoundSeperatorImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 75), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Camera::GetInstance()->SCR_WIDTH * 0.5, 40, "Resources/Images/RoundBackImage.png"));
+	std::shared_ptr<UIImage> OverallBackImage(new UIImage(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), Utils::CENTER, 0.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0.8f), Camera::GetInstance()->SCR_WIDTH * 0.8, 1000, "Resources/Images/PauseBackground.png"));
 	std::shared_ptr<UIText> RoundTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 - 240.0f), 0, glm::vec4(1.0, 1.0, 1.0, 1.0), "Round " + std::to_string(GameManager::GetInstance()->CurrentRound), "Resources/Fonts/MarioLuigi2.ttf", 80, Utils::CENTER));
 	std::shared_ptr<UIText> OverallTitle(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2), 0, glm::vec4(1.0, 1.0, 1.0, 1.0), "Overall", "Resources/Fonts/MarioLuigi2.ttf", 80, Utils::CENTER));
-	AddUIElement(RoundBackImage);
 	AddUIElement(OverallBackImage);
+	AddUIElement(RoundSeperatorImage);
 	AddUIElement(RoundTitle);
 	AddUIElement(OverallTitle);
 
@@ -527,13 +528,13 @@ void Level::ShowEndScreen()
 		AddUIElement(PlayerIcon);
 	}
 
-	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300.0f), Utils::CENTER, { 0.9f, 0.9f, 0.9f, 1.0f }, "Press start to go to next round", "Resources/Fonts/MarioLuigi2.ttf", 30, Utils::CENTER));
+	std::shared_ptr<UIText> StartToContinue(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300.0f), Utils::CENTER, { 0.9f, 0.9f, 0.9f, 1.0f }, "Press start to go to next round", "Resources/Fonts/MarioLuigi2.ttf", 35, Utils::CENTER));
 	AddUIElement(StartToContinue);
 	// Generate random new gamemode
 	// Display next gamemode (GetGamemodeString())
 		
-	/*std::shared_ptr<UIText> NextGamemode(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 300), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), GetGamemodeString(CurrentGamemode), "Resources/Fonts/MarioLuigi2.ttf", 60, Utils::CENTER));
-	AddUIElement(NextGamemode);*/
+	std::shared_ptr<UIText> NextGamemode(new UIText(glm::vec2(Camera::GetInstance()->SCR_WIDTH / 2, Camera::GetInstance()->SCR_HEIGHT / 2 + 450), 0, glm::vec4(0.9, 0.9, 0.9, 1.0), "Next Gamemode: " + GetGamemodeString(NextSelectedGamemode), "Resources/Fonts/MarioLuigi2.ttf", 60, Utils::CENTER));
+	AddUIElement(NextGamemode);
 
 }
 
